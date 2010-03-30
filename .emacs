@@ -112,14 +112,16 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/yasnippet/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/nxhtml/"))
 
+(if (>= emacs-major-version 23)
+  (progn
+    ;; Espresso (javascript) mode
+    (autoload #'espresso-mode "espresso" "Start espresso-mode" t)
+    (add-to-list 'auto-mode-alist '("\\.js$" . espresso-mode))
+    (add-to-list 'auto-mode-alist '("\\.json$" . espresso-mode))
 
-;; Espresso (javascript) mode
-(autoload #'espresso-mode "espresso" "Start espresso-mode" t)
-(add-to-list 'auto-mode-alist '("\\.js$" . espresso-mode))
-(add-to-list 'auto-mode-alist '("\\.json$" . espresso-mode))
-
-;; nXhtml mode
-(load "~/.emacs.d/nxhtml/autostart.el")
+    ;; nXhtml mode
+    (load "~/.emacs.d/nxhtml/autostart.el")
+  ))
 
 ;; Graphviz Dot Mode
 (load-file "~/.emacs.d/graphviz-dot-mode.el")
@@ -347,13 +349,20 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(mode-line ((t (:foreground "cyan" :inverse-video t))))
  '(mode-line-inactive ((default (:inherit mode-line)) (nil (:foreground "white"))))
  '(mumamo-background-chunk-major ((t nil)))
  '(mumamo-background-chunk-submode1 ((((class color) (min-colors 8)) nil)))
  '(mumamo-background-chunk-submode2 ((((class color) (min-colors 8)) nil)))
  '(mumamo-background-chunk-submode3 ((((class color) (min-colors 8)) nil)))
  '(mumamo-background-chunk-submode4 ((((class color) (min-colors 8)) nil))))
+
+;; Only set mode-line face if running in a terminal
+(if (eq window-system nil)
+    (progn
+      (custom-set-faces
+       '(mode-line ((t (:foreground "cyan" :inverse-video t)))))
+      ))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions
