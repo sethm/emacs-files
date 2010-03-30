@@ -110,6 +110,16 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/tuareg/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/rinari/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/yasnippet/"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/nxhtml/"))
+
+
+;; Espresso (javascript) mode
+(autoload #'espresso-mode "espresso" "Start espresso-mode" t)
+(add-to-list 'auto-mode-alist '("\\.js$" . espresso-mode))
+(add-to-list 'auto-mode-alist '("\\.json$" . espresso-mode))
+
+;; nXhtml mode
+(load "~/.emacs.d/nxhtml/autostart.el")
 
 ;; Graphviz Dot Mode
 (load-file "~/.emacs.d/graphviz-dot-mode.el")

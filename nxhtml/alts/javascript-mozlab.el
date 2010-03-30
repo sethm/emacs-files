@@ -244,7 +244,8 @@ list."
                 "private" "protected" "public" "return" "static" 
                 "super" "switch" "synchronized" "this" "throw" 
                 "throws" "transient" "try" "typeof" "var" "void" 
-                "volatile" "while" "with") 'words)
+                "volatile" "while" "with"
+                "let") 'words)
   "Regular expression matching any JavaScript keyword.")
 
 (defconst js-basic-type-re
@@ -333,13 +334,13 @@ list."
 
 (defconst js-possibly-braceless-keyword-re
   (regexp-opt
-   '("catch" "do" "else" "finally" "for" "if" "try" "while" "with")
+   '("catch" "do" "else" "finally" "for" "if" "try" "while" "with" "let")
    'words)
   "Regular expression matching keywords that are optionally
   followed by an opening brace.")
 
 (defconst js-indent-operator-re
-  (concat "[-+*/%<>=&^|?:]\\([^-+*/]\\|$\\)\\|"
+  (concat "[-+*/%<>=&^|?:.]\\([^-+*/]\\|$\\)\\|"
           (regexp-opt '("in" "instanceof") 'words))
   "Regular expression matching operators that affect indentation
   of continued expressions.")
@@ -685,6 +686,17 @@ Key bindings:
   (setq comment-end "")
   (set (make-local-variable 'fill-paragraph-function) 
        'javascript-fill-paragraph)
+
+  ;; Make c-mark-function work
+  (setq c-nonsymbol-token-regexp "!=\\|%=\\|&[&=]\\|\\*[/=]\\|\\+[+=]\\|-[=-]\\|/[*/=]\\|<\\(?:<=\\|[<=]\\)\\|==\\|>\\(?:>\\(?:>=\\|[=>]\\)\\|[=>]\\)\\|\\^=\\||[=|]\\|[]!%&(-,./:-?[{-~^-]"
+        c-stmt-delim-chars "^;{}?:"
+        c-syntactic-ws-end "[ \n	
+\f/]"
+        c-syntactic-eol "\\(\\s \\|/\\*\\([^*\n
+]\\|\\*[^/\n
+]\\)*\\*/\\)*\\(\\(/\\*\\([^*\n
+]\\|\\*[^/\n
+]\\)*\\|\\\\\\)?$\\|//\\)")
 
   ;; Imenu
   (setq imenu-case-fold-search nil)
