@@ -31,10 +31,10 @@
 (global-set-key (kbd "C-<up>")    'windmove-up)
 (global-set-key (kbd "C-<down>")  'windmove-down)
 
-;; save a list of open files in ~/.emacs.desktop
-;; save the desktop file automatically if it already exists
-(setq desktop-save "~/.emacs.d/emacs.desktop")
-(desktop-save-mode 1)
+;; ;; save a list of open files in ~/.emacs.desktop
+;; ;; save the desktop file automatically if it already exists
+;; (setq desktop-save "~/.emacs.d/emacs.desktop")
+;; (desktop-save-mode 1)
 
 ;; Show (line,column) in the modeline
 (setq line-number-mode t)
@@ -48,22 +48,22 @@
 (setq max-lisp-eval-depth 4000)		; default is 400
 (setq max-specpdl-size 5000)		; default is 1000
 
-;; save a bunch of variables to the desktop file
-;; for lists specify the len of the maximal saved data also
-(setq desktop-globals-to-save
-      (append '((extended-command-history . 30)
-                (file-name-history        . 100)
-                (grep-history             . 30)
-                (compile-history          . 30)
-                (minibuffer-history       . 50)
-                (query-replace-history    . 60)
-                (read-expression-history  . 60)
-                (regexp-history           . 60)
-                (regexp-search-ring       . 20)
-                (search-ring              . 20)
-                (shell-command-history    . 50)
-                tags-file-name
-                register-alist)))
+;; ;; save a bunch of variables to the desktop file
+;; ;; for lists specify the len of the maximal saved data also
+;; (setq desktop-globals-to-save
+;;      (append '((extended-command-history . 30)
+;;                (file-name-history        . 100)
+;;                (grep-history             . 30)
+;;                (compile-history          . 30)
+;;                (minibuffer-history       . 50)
+;;                (query-replace-history    . 60)
+;;                (read-expression-history  . 60)
+;;                (regexp-history           . 60)
+;;                (regexp-search-ring       . 20)
+;;                (search-ring              . 20)
+;;                (shell-command-history    . 50)
+;;                tags-file-name
+;;                register-alist)))
 
 ;; Turn off annoyances.
 (setq inhibit-startup-message t)
@@ -94,7 +94,7 @@
 	    (setq dired-omit-files "^\\.[a-z|A-Z]+\\|^\\.?#\\|^\\.$")
 	    (dired-omit-mode 1)))
 
-;; Enagble upcase-region function
+;; Enable upcase-region function
 (put 'upcase-region 'disabled nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -117,6 +117,13 @@
     (autoload #'espresso-mode "espresso" "Start espresso-mode" t)
     (add-to-list 'auto-mode-alist '("\\.js$" . espresso-mode))
     (add-to-list 'auto-mode-alist '("\\.json$" . espresso-mode))
+
+    ;; HTML5 mode for nXhtml
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/html5-el/"))
+    (eval-after-load "rng-loc"
+      '(add-to-list 'rng-schema-locating-files (expand-file-name "~/.emacs.d/html5-el/schemas.xml")))
+    
+    (require 'whattf-dt)
 
     ;; nXhtml mode
     (add-to-list 'load-path (expand-file-name "~/.emacs.d/nxhtml/"))
