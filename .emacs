@@ -14,13 +14,13 @@
 ;;;; Configure window movement keys.
 ;;
 ;; OS X as the client
-(global-set-key (read-kbd-macro "M-[ 5 d") 'windmove-left)
+(global-set-key (read-kbd-macro "M-[ 5 D") 'windmove-left)
 (global-set-key (read-kbd-macro "M-[ 5 C") 'windmove-right)
 (global-set-key (read-kbd-macro "M-[ 5 A") 'windmove-up)
 (global-set-key (read-kbd-macro "M-[ 5 B") 'windmove-down)
 ;;
 ;; Linux as the client
-(global-set-key (read-kbd-macro "M-[ 1 ; 5 d") 'windmove-left)
+(global-set-key (read-kbd-macro "M-[ 1 ; 5 D") 'windmove-left)
 (global-set-key (read-kbd-macro "M-[ 1 ; 5 C") 'windmove-right)
 (global-set-key (read-kbd-macro "M-[ 1 ; 5 A") 'windmove-up)
 (global-set-key (read-kbd-macro "M-[ 1 ; 5 B") 'windmove-down)
@@ -118,6 +118,9 @@
              (setq c-basic-offset 2)
              (setq tab-width 2)
              (setq indent-tabs-mode nil)))
+
+;; Outline mode
+(add-to-list 'auto-mode-alist '("\\.outline$" . outline-mode))
 
 ;; PHP mode
 
@@ -276,6 +279,7 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(cssm-indent-level 4)
+ '(default-frame-alist (quote ((menu-bar-lines . 1) (background-mode . light))))
  '(ecb-auto-activate t)
  '(ecb-layout-name "left13")
  '(ecb-options-version "2.32")
