@@ -1,0 +1,3 @@
+[submodule "html5-el"]
+	path = html5-el
+	url = git://github.com/hober/html5-el.git
