@@ -360,7 +360,6 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(mode-line-inactive ((default (:inherit mode-line)) (nil (:foreground "white"))))
  '(mumamo-background-chunk-major ((t nil)))
  '(mumamo-background-chunk-submode1 ((((class color) (min-colors 8)) nil)))
  '(mumamo-background-chunk-submode2 ((((class color) (min-colors 8)) nil)))
@@ -371,13 +370,36 @@
 (if (eq window-system nil)
     (progn
       (custom-set-faces
-       '(mode-line ((t (:foreground "cyan" :inverse-video t)))))
-      ))
+       '(mode-line ((t (:foreground "cyan" :inverse-video t))))
+       '(mode-line-inactive ((default (:inherit mode-line)) (nil (:foreground "white"))))
+       )))
+
+;; Window system is Mac OS X ("Emacs for OS X")
+(if (string= window-system "ns")
+  (progn
+    (normal-erase-is-backspace-mode 1)
+    (set-default-font "-apple-inconsolata-medium-r-normal--17-170-72-72-m-170-utf-8")
+  ))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun catalog ()
+  (interactive)
+  (find-file "/seth@dev-sb01.glyde.com:~/Work/catalog/")
+  )
+
+(defun trunk ()
+  (interactive)
+  (find-file "/seth@dev-sb01.glyde.com:~/Work/trunk/")
+  )
+
+(defun branch ()
+  (interactive)
+  (find-file "/seth@dev-sb01.glyde.com:~/Work/branch/")
+  )
 
 (defun insert-clisp-project ()
   "Insert a template (with DEFPACKAGE and IN-PACKAGE forms) into
