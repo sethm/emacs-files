@@ -1,23 +1,19 @@
-;;; slime-scratch.el --- Object clipboard for SLIME
-;;
-;; Author: Helmut Eller  <heller@common-lisp.net>
-;; License: GNU GPL (same license as Emacs)
-;;
-;; This add a few commands to put objects into a clipboard and
-;; to insert textual references to those objects.
-;;
-;; The clipboard command prefix is C-c @.
-;;
-;; C-c @ +   adds an object to the clipboard
-;; C-c @ @   inserts a reference to an object in the clipboard
-;; C-c @ ?   displays the clipboard
-;;
-;; This package also also binds the + key in the inspector and
-;; debugger to add the object at point to the clipboard.
-;;
 
-(require 'slime)
-(slime-require :swank-clipboard)
+(define-slime-contrib slime-clipboard
+  "This add a few commands to put objects into a clipboard and to
+insert textual references to those objects.
+
+The clipboard command prefix is C-c @.
+
+ C-c @ +   adds an object to the clipboard
+ C-c @ @   inserts a reference to an object in the clipboard
+ C-c @ ?   displays the clipboard
+
+This package also also binds the + key in the inspector and
+debugger to add the object at point to the clipboard."
+  (:authors "Helmut Eller  <heller@common-lisp.net>")
+  (:license "GPL")
+  (:swank-dependencies swank-clipboard))
 
 (define-derived-mode slime-clipboard-mode fundamental-mode
   "Slime-Clipboard"
@@ -65,8 +61,8 @@
 		    #'slime-clipboard-display-entries))
 
 (defun slime-clipboard-display-entries (entries)
-  (slime-with-popup-buffer ("*Slime Clipboard*")
-    (slime-clipboard-mode)
+  (slime-with-popup-buffer ((slime-buffer-name :clipboard)
+                            :mode 'slime-clipboard-mode)
     (slime-clipboard-insert-entries entries)))
 
 (defun slime-clipboard-insert-entries (entries)

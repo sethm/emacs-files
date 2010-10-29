@@ -1,26 +1,31 @@
-;;; slime-autodoc.el --- show fancy arglist in echo area
-;;
-;; Authors: Luke Gorrie  <luke@bluetail.com>
-;;          Lawrence Mitchell  <wence@gmx.li>
-;;          Matthias Koeppe  <mkoeppe@mail.math.uni-magdeburg.de>
-;;          Tobias C. Rittweiler <tcr@freebits.de>
-;;          and others
-;; 
-;; License: GNU GPL (same license as Emacs)
-;;
-;;; Installation:
-;;
-;; Add this to your .emacs: 
-;;
-;;   (add-to-list 'load-path "<directory-of-this-file>")
-;;   (add-hook 'slime-load-hook (lambda () (require 'slime-autodoc)))
-;;
 
-(eval-and-compile
-  (assert (not (featurep 'xemacs)) ()
-	  "slime-autodoc doesn't work with XEmacs"))
+(define-slime-contrib slime-autodoc
+  "Show fancy arglist in echo area."
+  (:gnu-emacs-only t)
+  (:license "GPL")
+  (:authors "Luke Gorrie  <luke@bluetail.com>"
+            "Lawrence Mitchell  <wence@gmx.li>"
+            "Matthias Koeppe  <mkoeppe@mail.math.uni-magdeburg.de>"
+            "Tobias C. Rittweiler  <tcr@freebits.de>")
+  (:slime-dependencies slime-parse)
+  (:swank-dependencies swank-arglists)
+  (:on-load 
+   (dolist (h '(slime-mode-hook slime-repl-mode-hook sldb-mode-hook))
+     (add-hook h 'slime-autodoc-maybe-enable)))
+  (:on-unload
+   ;; FIXME: This doesn't disable eldoc-mode in existing buffers.
+   (setq slime-echo-arglist-function 'slime-show-arglist)
+   (dolist (h '(slime-mode-hook slime-repl-mode-hook sldb-mode-hook))
+     (remove-hook h 'slime-autodoc-maybe-enable))))
 
-(require 'slime-parse)
+(defun slime-autodoc-maybe-enable ()
+  (when slime-use-autodoc-mode
+    (slime-autodoc-mode 1)
+    (setq slime-echo-arglist-function
+          (lambda () 
+            (if slime-autodoc-mode
+                (eldoc-message (slime-autodoc))
+                (slime-show-arglist))))))
 
 (defcustom slime-use-autodoc-mode t
   "When non-nil always enable slime-autodoc-mode in slime-mode.")
@@ -62,12 +67,11 @@
   "Return a cache key and a swank form."
   (let* ((levels slime-autodoc-accuracy-depth)
          (buffer-form (slime-parse-form-upto-point levels)))
-    (values buffer-form
-            (multiple-value-bind (width height)
-                (slime-autodoc-message-dimensions)
+    (when buffer-form
+      (values buffer-form
               `(swank:autodoc ',buffer-form
-                              :print-right-margin ,width
-                              :print-lines ,height)))))
+                              :print-right-margin
+                              ,(window-width (minibuffer-window)))))))
 
 (defun slime-autodoc-global-at-point ()
   "Return the global variable name at point, if any."
@@ -86,23 +90,6 @@ Default value assumes +this+ or *that* naming conventions."
 Globals are recognised purely by *this-naming-convention*."
   (and (< (length name) 80) ; avoid overflows in regexp matcher
        (string-match slime-global-variable-name-regexp name)))
-
-(defvar slime-autodoc-dimensions-function nil)
-
-(defun slime-autodoc-message-dimensions ()
-  "Return the available width and height for pretty printing autodoc
-messages."
-  (cond
-   (slime-autodoc-dimensions-function
-    (funcall slime-autodoc-dimensions-function))
-   (slime-autodoc-use-multiline-p 
-    ;; Use the full width of the minibuffer;
-    ;; minibuffer will grow vertically if necessary
-    (values (window-width (minibuffer-window))
-            nil))
-   (t
-    ;; Try to fit everything in one line; we cut off when displaying
-    (values 1000 1))))
 
 
 ;;;; Autodoc cache
@@ -124,15 +111,18 @@ Return DOCUMENTATION."
 
 ;;;; Formatting autodoc
 
-(defun slime-format-autodoc (doc)
-  (setq doc (slime-fontify-string doc))
-  (unless slime-autodoc-use-multiline-p
-    (setq doc (slime-oneliner doc)))
-  doc)
+(defsubst slime-canonicalize-whitespace (string)
+  (replace-regexp-in-string "[ \n\t]+" " "  string))
+
+(defun slime-format-autodoc (doc multilinep)
+  (let ((doc (slime-fontify-string doc)))
+    (if multilinep
+        doc
+        (slime-oneliner (slime-canonicalize-whitespace doc)))))
 
 (defun slime-fontify-string (string)
   "Fontify STRING as `font-lock-mode' does in Lisp mode."
-  (with-current-buffer (get-buffer-create " *slime-fontify*")
+  (with-current-buffer (get-buffer-create (slime-buffer-name :fontify 'hidden))
     (erase-buffer)
     (unless (eq major-mode 'lisp-mode)
       ;; Just calling (lisp-mode) will turn slime-mode on in that buffer,
@@ -153,8 +143,8 @@ Return DOCUMENTATION."
 
 ;;;; slime-autodoc-mode
 
-
-(defun slime-autodoc ()
+(defun* slime-autodoc (&optional (multilinep slime-autodoc-use-multiline-p)
+                                 cache-multiline)
   "Returns the cached arglist information as string, or nil.
 If it's not in the cache, the cache will be updated asynchronously."
   (interactive)
@@ -163,25 +153,57 @@ If it's not in the cache, the cache will be updated asynchronously."
     ;; background, so it'd be rather disastrous if it touched match
     ;; data.
     (save-match-data
-      (unless (slime-inside-string-or-comment-p)
-        (multiple-value-bind (cache-key retrieve-form) 
+      (unless (if (fboundp 'slime-repl-inside-string-or-comment-p)
+                  (slime-repl-inside-string-or-comment-p)
+                  (slime-inside-string-or-comment-p))
+        (multiple-value-bind (cache-key retrieve-form)
             (slime-make-autodoc-rpc-form)
-          (let ((cached (slime-get-cached-autodoc cache-key)))
-            (if cached
-                cached
-                ;; If nothing is in the cache, we first decline (by
-                ;; returning nil), and fetch the arglist information
-                ;; asynchronously.
-                (prog1 nil
-                  (slime-eval-async retrieve-form
-                    (lexical-let ((cache-key cache-key))
-                      (lambda (doc)
-                        (unless (eq doc :not-available) 
-                          (setq doc (slime-format-autodoc doc))
-                          ;; Now that we've got our information,
-                          ;; get it to the user ASAP.
-                          (eldoc-message doc)
-                          (slime-store-into-autodoc-cache cache-key doc)))))))))))))
+          (let* (cached
+                 (multilinep (or (slime-autodoc-multiline-cached (car cache-key))
+                                 multilinep)))
+            (slime-autodoc-cache-multiline (car cache-key) cache-multiline)
+            (cond
+              ((not cache-key) nil)
+              ((setq cached (slime-get-cached-autodoc cache-key))
+               (slime-format-autodoc cached multilinep))
+              (t
+               ;; If nothing is in the cache, we first decline (by
+               ;; returning nil), and fetch the arglist information
+               ;; asynchronously.
+               (slime-eval-async retrieve-form
+                 (lexical-let ((cache-key cache-key)
+                               (multilinep multilinep))
+                   (lambda (doc)
+                     (unless (eq doc :not-available)
+                       (slime-store-into-autodoc-cache cache-key doc)
+                       ;; Now that we've got our information,
+                       ;; get it to the user ASAP.
+                       (eldoc-message
+                        (slime-format-autodoc doc multilinep))))))
+               nil))))))))
+
+(defvar slime-autodoc-cache-car nil)
+
+(defun slime-autodoc-multiline-cached (cache-key)
+  (equal cache-key
+         slime-autodoc-cache-car))
+
+(defun slime-autodoc-cache-multiline (cache-key cache-new-p)
+  (cond (cache-new-p
+         (setq slime-autodoc-cache-car
+               cache-key))
+        ((not (equal cache-key
+                     slime-autodoc-cache-car))
+         (setq slime-autodoc-cache-car nil))))
+
+(defun slime-autodoc-manually ()
+  "Like slime-autodoc, but when called twice,
+or after slime-autodoc was already automatically called, 
+display multiline arglist"
+  (interactive)
+  (eldoc-message (slime-autodoc (or slime-autodoc-use-multiline-p
+                                    slime-autodoc-mode)
+                                t)))
 
 (make-variable-buffer-local (defvar slime-autodoc-mode nil))
 
@@ -208,42 +230,30 @@ If it's not in the cache, the cache will be updated asynchronously."
                (not (active-minibuffer-window))
                ;; Display arglist only when inferior Lisp will be able
                ;; to cope with the request.
-               (slime-background-activities-enabled-p))))
+               (slime-background-activities-enabled-p)))
+    (slime-bind-keys slime-doc-map t '((?A slime-autodoc-manually))))
   ad-return-value)
 
 
 ;;;; Initialization
 
-(defun slime-autodoc-init ()
-  (dolist (h '(slime-mode-hook slime-repl-mode-hook sldb-mode-hook))
-    (add-hook h 'slime-autodoc-maybe-enable)))
 
-(defun slime-autodoc-maybe-enable ()
-  (when slime-use-autodoc-mode
-    (slime-autodoc-mode 1)
-    (setq slime-echo-arglist-function
-          (lambda () 
-            (if slime-autodoc-mode
-                (eldoc-message (slime-autodoc))
-                (slime-show-arglist))))))
-
-;;; FIXME: This doesn't disable eldoc-mode in existing buffers.
-(defun slime-autodoc-unload ()
-  (setq slime-echo-arglist-function 'slime-show-arglist)
-  (dolist (h '(slime-mode-hook slime-repl-mode-hook sldb-mode-hook))
-    (remove-hook h 'slime-autodoc-maybe-enable)))
-
-(slime-require :swank-arglists)
 
 ;;;; Test cases
 
+(defun slime-autodoc-to-string ()
+  "Retrieve and return autodoc for form at point."
+  (let ((autodoc (slime-eval (second (slime-make-autodoc-rpc-form)))))
+    (if (eq autodoc :not-available)
+        :not-available
+        (slime-canonicalize-whitespace autodoc))))
+
 (defun slime-check-autodoc-at-point (arglist)
-  (let ((slime-autodoc-use-multiline-p nil))
-    (slime-test-expect (format "Autodoc in `%s' (at %d) is as expected" 
-                               (buffer-string) (point)) 
-                       arglist
-                       (slime-eval (second (slime-make-autodoc-rpc-form)))
-                       'equal)))
+  (slime-test-expect (format "Autodoc in `%s' (at %d) is as expected" 
+                             (buffer-string) (point)) 
+                     arglist
+                     (slime-autodoc-to-string)
+                     'equal))
 
 (def-slime-test autodoc.1
     (buffer-sexpr wished-arglist &optional skip-trailing-test-p)
@@ -287,6 +297,8 @@ If it's not in the cache, the cache will be updated asynchronously."
       ;; Test context-sensitive autodoc (DEFMETHOD)
       ("(defmethod swank::arglist-dispatch (*HERE*"
        "(defmethod arglist-dispatch (===> operator <=== arguments) &body body)")
+      ("(defmethod swank::arglist-dispatch :before (*HERE*"
+       "(defmethod arglist-dispatch :before (===> operator <=== arguments) &body body)")
 
       ;; Test context-sensitive autodoc (APPLY)
       ("(apply 'swank::eval-for-emacs*HERE*"
@@ -307,6 +319,8 @@ If it's not in the cache, the cache will be updated asynchronously."
       ;; Test &KEY and nested arglists
       ("(swank::with-retry-restart (:msg *HERE*"
        "(with-retry-restart (&key ===> (msg \"Retry.\") <===) &body body)")
+      ("(swank::with-retry-restart (:msg *HERE*(foo"
+       "(with-retry-restart (&key ===> (msg \"Retry.\") <===) &body body)" t)
       ("(swank::start-server \"/tmp/foo\" :coding-system *HERE*"
        "(start-server port-file &key (style swank:*communication-style*) (dont-close swank:*dont-close*) ===> (coding-system swank::*coding-system*) <===)")
       
@@ -317,7 +331,14 @@ If it's not in the cache, the cache will be updated asynchronously."
        "(declare ((string &optional ===> size <===) &rest variables))")
       ("(declare (type (string *HERE*"
        "(declare (type (string &optional ===> size <===) &rest variables))")
-      )
+
+      ;; Test local functions
+      ("(flet ((foo (x y) (+ x y))) (foo *HERE*" "(foo ===> x <=== y)")
+      ("(macrolet ((foo (x y) `(+ ,x ,y))) (foo *HERE*" "(foo ===> x <=== y)")
+      ("(labels ((foo (x y) (+ x y))) (foo *HERE*" "(foo ===> x <=== y)")
+      ("(labels ((foo (x y) (+ x y)) 
+                 (bar (y) (foo *HERE*" 
+       "(foo ===> x <=== y)"))
   (slime-check-top-level)
   (with-temp-buffer
     (setq slime-buffer-package "COMMON-LISP-USER")

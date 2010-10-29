@@ -1,17 +1,30 @@
-;;; swank-presentations.el --- imitat LispM' presentations
-;;;
-;;; Authors: Alan Ruttenberg  <alanr-l@mumble.net>
-;;;          Matthias Koeppe  <mkoeppe@mail.math.uni-magdeburg.de>
-;;;
-;;; License: GNU GPL (same license as Emacs)
-;;;
-;;; Installation
-;;
-;; Add this to your .emacs: 
-;;
-;;   (add-to-list 'load-path "<directory-of-this-file>")
-;;   (add-hook 'slime-load-hook (lambda () (require 'slime-presentations)))
-;;
+
+(define-slime-contrib slime-presentations
+  "Imitate LispM presentations."
+  (:authors "Alan Ruttenberg  <alanr-l@mumble.net>"
+            "Matthias Koeppe  <mkoeppe@mail.math.uni-magdeburg.de>")
+  (:license "GPL")
+  (:slime-dependencies slime-repl)
+  (:swank-dependencies swank-presentations)
+  (:on-load
+   (add-hook 'slime-repl-mode-hook
+             (lambda ()
+               ;; Respect the syntax text properties of presentation.
+               (set (make-local-variable 'parse-sexp-lookup-properties) t)
+               (slime-add-local-hook 'after-change-functions 
+                                     'slime-after-change-function)))
+   (add-hook 'slime-event-hooks 'slime-dispatch-presentation-event)
+   (setq slime-write-string-function 'slime-presentation-write)
+   (add-hook 'slime-repl-return-hooks 'slime-presentation-on-return-pressed)
+   (add-hook 'slime-repl-current-input-hooks 'slime-presentation-current-input)
+   (add-hook 'slime-open-stream-hooks 'slime-presentation-on-stream-open)
+   (add-hook 'slime-repl-clear-buffer-hook 'slime-clear-presentations)
+   (add-hook 'slime-edit-definition-hooks 'slime-edit-presentation)
+   (setq slime-inspector-insert-ispec-function 'slime-presentation-inspector-insert-ispec)
+   (setq sldb-insert-frame-variable-value-function 
+         'slime-presentation-sldb-insert-frame-variable-value)
+   (slime-presentation-init-keymaps)
+   (slime-presentation-add-easy-menu)))
 
 (defface slime-repl-output-mouseover-face
   (if (featurep 'xemacs)
@@ -345,15 +358,22 @@ Also return the start position, end position, and buffer of the presentation."
         (unless presentation
           (error "No presentation at click"))
         (values presentation start end (current-buffer))))))
-          
+
+(defun slime-check-presentation (from to buffer presentation)
+  (unless (slime-eval `(cl:nth-value 1 (swank:lookup-presented-object
+                                        ',(slime-presentation-id presentation))))
+    (with-current-buffer buffer
+      (slime-remove-presentation-properties from to presentation))))
+
 (defun slime-copy-or-inspect-presentation-at-mouse (event)
   (interactive "e") ; no "@" -- we don't want to select the clicked-at window
   (multiple-value-bind (presentation start end buffer)
       (slime-presentation-around-click event)
+    (slime-check-presentation start end buffer presentation)
     (if (with-current-buffer buffer
           (eq major-mode 'slime-repl-mode))
         (slime-copy-presentation-at-mouse-to-repl event)
-      (slime-inspect-presentation-at-mouse event))))
+        (slime-inspect-presentation-at-mouse event))))
 
 (defun slime-inspect-presentation (presentation start end buffer)
   (let ((reset-p 
@@ -379,7 +399,7 @@ Also return the start position, end position, and buffer of the presentation."
   (let* ((id (slime-presentation-id presentation))
 	 (presentation-string (format "Presentation %s" id))
 	 (location (slime-eval `(swank:find-definition-for-thing
-				 (swank::lookup-presented-object
+				 (swank:lookup-presented-object
 				  ',(slime-presentation-id presentation))))))
     (slime-edit-definition-cont
      (and location (list (make-slime-xref :dspec `(,presentation-string)
@@ -415,7 +435,7 @@ Also return the start position, end position, and buffer of the presentation."
     (unless (eql major-mode 'slime-repl-mode)
       (slime-switch-to-output-buffer))
     (flet ((do-insertion ()
-	     (unless (looking-back "\\s-")
+	     (unless (looking-back "\\s-" (- (point) 1))
 	       (insert " "))
 	     (insert presentation-text)
 	     (unless (or (eolp) (looking-at "\\s-"))
@@ -475,7 +495,7 @@ Also return the start position, end position, and buffer of the presentation."
 (defun slime-describe-presentation (presentation)
   (slime-eval-describe 
      `(swank::describe-to-string
-       (swank::lookup-presented-object ',(slime-presentation-id presentation)))))
+       (swank:lookup-presented-object ',(slime-presentation-id presentation)))))
 
 (defun slime-describe-presentation-at-mouse (event)
   (interactive "@e")
@@ -492,7 +512,7 @@ Also return the start position, end position, and buffer of the presentation."
   (slime-eval-describe 
      `(swank::swank-pprint
        (cl:list
-        (swank::lookup-presented-object ',(slime-presentation-id presentation))))))
+        (swank:lookup-presented-object ',(slime-presentation-id presentation))))))
 
 (defun slime-pretty-print-presentation-at-mouse (event)
   (interactive "@e")
@@ -632,12 +652,12 @@ A negative argument means move backward instead."
 the presented object."
   (let ((id (slime-presentation-id presentation)))
     (etypecase id
-      (number         
+      (number
        ;; Make sure it works even if *read-base* is not 10.
-       (format "(swank:get-repl-result #10r%d)" id))
+       (format "(swank:lookup-presented-object-or-lose %d.)" id))
       (list
        ;; for frame variables and inspector parts
-       (format "(swank:get-repl-result '%s)" id)))))
+       (format "(swank:lookup-presented-object-or-lose '%s)" id)))))
 
 (defun slime-buffer-substring-with-reified-output (start end)
   (let ((str-props (buffer-substring start end))
@@ -667,6 +687,7 @@ If replace it non-nil the current input is replaced with the old
 output; otherwise the new input is appended."
   (multiple-value-bind (presentation beg end) 
       (slime-presentation-around-or-before-point (point))
+    (slime-check-presentation beg end (current-buffer) presentation)
     (let ((old-output (buffer-substring beg end))) ;;keep properties
       ;; Append the old input or replace the current input
       (cond (replace (goto-char slime-repl-input-start-mark))
@@ -741,43 +762,24 @@ output; otherwise the new input is appended."
      t)
     (t nil)))
 
+(defun slime-presentation-write-result (string)
+  (with-current-buffer (slime-output-buffer)
+    (let ((marker (slime-output-target-marker :repl-result)))
+      (goto-char marker)
+      (slime-propertize-region `(face slime-repl-result-face
+                                      rear-nonsticky (face))
+        (insert string))
+      ;; Move the input-start marker after the REPL result.
+      (set-marker marker (point)))
+    (slime-repl-show-maximum-output)))
+
 (defun slime-presentation-write (string &optional target)
   (case target
     ((nil)                              ; Regular process output
-     (with-current-buffer (slime-output-buffer)
-       (slime-with-output-end-mark
-	(slime-propertize-region '(face slime-repl-output-face
-					rear-nonsticky (face))
-	  (insert string))
-        (set-marker slime-output-end (point))
-        (when (and (= (point) slime-repl-prompt-start-mark)
-                   (not (bolp)))
-          (insert "\n")
-          (set-marker slime-output-end (1- (point))))
-        (if (< slime-repl-input-start-mark (point))
-            (set-marker slime-repl-input-start-mark
-                        (point))))))
+     (slime-repl-emit string))
     (:repl-result                       
-     (with-current-buffer (slime-output-buffer)
-       (let ((marker (slime-output-target-marker target)))
-         (goto-char marker)
-         (let ((result-start (point)))
-	   (slime-propertize-region `(face slime-repl-result-face
-					   rear-nonsticky (face))
-	     (insert string))
-           ;; Move the input-start marker after the REPL result.
-           (set-marker marker (point))))))
-    (t
-     (let* ((marker (slime-output-target-marker target))
-            (buffer (and marker (marker-buffer marker))))
-       (when buffer
-         (with-current-buffer buffer
-           (save-excursion 
-             ;; Insert STRING at MARKER, then move MARKER behind
-             ;; the insertion.
-             (goto-char marker)
-             (insert-before-markers string)
-             (set-marker marker (point)))))))))
+     (slime-presentation-write-result string))
+    (t (slime-emit-to-target string target))))
 
 (defun slime-presentation-current-input (&optional until-point-p)
   "Return the current input as string.
@@ -787,12 +789,11 @@ buffer. Presentations of old results are expanded into code."
 					       (point-max)))
 
 (defun slime-presentation-on-return-pressed ()
-  (cond ((and (car (slime-presentation-around-or-before-point (point)))
-	      (< (point) slime-repl-input-start-mark))
-	 (slime-repl-grab-old-output end-of-input)
-	 (slime-repl-recenter-if-needed)
-	 t)
-	(t nil)))
+  (when (and (car (slime-presentation-around-or-before-point (point)))
+             (< (point) slime-repl-input-start-mark))
+    (slime-repl-grab-old-output end-of-input)
+    (slime-repl-recenter-if-needed)
+    t))
 
 (defun slime-presentation-on-stream-open (stream)
   (require 'bridge)
@@ -829,6 +830,8 @@ even on Common Lisp implementations without weak hash tables."
                  'mouse-face 'highlight
                  'face 'slime-inspector-value-face)
          (slime-insert-presentation string `(:inspected-part ,id) t)))
+      ((:label string)
+       (insert (slime-inspector-fontify label string)))
       ((:action string id)
        (slime-insert-propertized (list 'slime-action-number id
                                        'mouse-face 'highlight
@@ -839,33 +842,5 @@ even on Common Lisp implementations without weak hash tables."
   (slime-insert-presentation
    (in-sldb-face local-value value)
    `(:frame-var ,slime-current-thread ,(car frame) ,index) t))
-
-;;; Initialization
-
-(defun slime-presentations-init ()
-  (add-hook 'slime-repl-mode-hook
-	    (lambda ()
-	      ;; Respect the syntax text properties of presentation.
-	      (set (make-local-variable 'parse-sexp-lookup-properties) t)
-	      (slime-add-local-hook 'after-change-functions 
-                                    'slime-after-change-function)))
-  (add-hook 'slime-event-hooks 'slime-dispatch-presentation-event)
-  (setq slime-write-string-function 'slime-presentation-write)
-  (add-hook 'slime-repl-return-hooks 'slime-presentation-on-return-pressed)
-  (add-hook 'slime-repl-current-input-hooks 'slime-presentation-current-input)
-  (add-hook 'slime-open-stream-hooks 'slime-presentation-on-stream-open)
-  (add-hook 'slime-repl-clear-buffer-hook 'slime-clear-presentations)
-  (add-hook 'slime-connected-hook 'slime-install-presentations)
-  (add-hook 'slime-edit-definition-hooks 'slime-edit-presentation)
-  (setq slime-inspector-insert-ispec-function 'slime-presentation-inspector-insert-ispec)
-  (setq sldb-insert-frame-variable-value-function 
-	'slime-presentation-sldb-insert-frame-variable-value)
-  (slime-presentation-init-keymaps)
-  (slime-presentation-add-easy-menu))
-
-(defun slime-install-presentations ()
-  (slime-eval-async '(swank:swank-require :swank-presentations)))
-
-(slime-presentations-init)
 
 (provide 'slime-presentations)

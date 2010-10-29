@@ -30,10 +30,6 @@
                (and (zerop i) (null list)))))
     (sequence (= (length seq) n))))
 
-(declaim (inline ensure-list))
-(defun ensure-list (thing)
-  (if (listp thing) thing (list thing)))
-
 (declaim (inline memq))
 (defun memq (item list)
   (member item list :test #'eq))
@@ -55,25 +51,10 @@ Otherwise NIL is returned."
       (special-operator-p symbol)
       (member symbol '(declare declaim))))
 
-(defun valid-operator-name-p (string)
-  "Is STRING the name of a function, macro, or special-operator?"
-  (let ((symbol (parse-symbol string)))
-    (valid-operator-symbol-p symbol)))
-
-(defun valid-function-name-p (form)
-  (and (match form
-         ((#'symbolp _)         t)
-         (('setf (#'symbolp _)) t)
-         (_                     nil))
+(defun function-exists-p (form)
+  (and (valid-function-name-p form)
        (fboundp form)
        t))
-
-(defun interesting-variable-p (symbol)
-  (and symbol
-       (symbolp symbol)
-       (boundp symbol)
-       (not (memq symbol '(cl:t cl:nil)))
-       (not (keywordp symbol))))
 
 (defmacro multiple-value-or (&rest forms)
   (if (null forms)
@@ -251,19 +232,19 @@ Otherwise NIL is returned."
     (let ((index 0))
       (pprint-logical-block (nil nil :prefix "(" :suffix ")")
         (when operator
-          (princ-arg operator)
+          (print-arg operator)
           (pprint-indent :current 1))   ; 1 due to possibly added space
         (do-decoded-arglist (remove-given-args arglist provided-args)
           (&provided (arg)
              (space)
-             (princ-arg arg)
+             (print-arg arg)
              (incf index))
           (&required (arg)
              (space)
              (if (arglist-p arg)
                  (print-arglist-recursively arg :index index)
                  (with-highlighting (:index index)
-                   (princ-arg arg)))
+                   (print-arg arg)))
              (incf index))
           (&optional :initially
              (when (arglist.optional-args arglist)
@@ -275,7 +256,7 @@ Otherwise NIL is returned."
                  (print-arglist-recursively arg :index index)
                  (with-highlighting (:index index)
                    (if (null init-value)
-                       (princ-arg arg)
+                       (print-arg arg)
                        (format t "~:@<~A ~S~@:>" arg init-value))))
              (incf index))
           (&key :initially
@@ -296,7 +277,7 @@ Otherwise NIL is returned."
                          ((not (keywordp keyword))
                           (format t "~:@<(~S ..)~@:>" keyword))
                          (t
-                          (princ-arg keyword))))))
+                          (princ keyword))))))
           (&key :finally
              (when (arglist.allow-other-keys-p arglist)
                (space)
@@ -307,7 +288,7 @@ Otherwise NIL is returned."
                (princ '&any)))
           (&any (arg)
              (space)
-             (prin1-arg arg))
+             (print-arg arg))
           (&rest (args bodyp)
              (space)
              (princ (if bodyp '&body '&rest))
@@ -315,20 +296,17 @@ Otherwise NIL is returned."
              (if (arglist-p args)
                  (print-arglist-recursively args :index index)
                  (with-highlighting (:index index)
-                   (princ-arg args))))
+                   (print-arg args))))
           ;; FIXME: add &UNKNOWN-JUNK?
           )))))
 
-
-(defun princ-arg (arg)
-  (princ (if (arglist-dummy-p arg)
-             (arglist-dummy.string-representation arg)
-             arg)))
-
-(defun prin1-arg (arg)
-  (if (arglist-dummy-p arg)
-      (princ (arglist-dummy.string-representation arg))
-      (prin1 arg)))
+(defun print-arg (arg)
+  (let ((arg (if (arglist-dummy-p arg)
+                 (arglist-dummy.string-representation arg)
+                 arg)))
+    (if (keywordp arg)
+        (prin1 arg)
+        (princ arg))))
 
 (defun print-decoded-arglist-as-template (decoded-arglist &key
                                           (prefix "(") (suffix ")"))
@@ -373,27 +351,37 @@ Otherwise NIL is returned."
     (*print-readably* . nil)
     (*print-level*    . 10)
     (*print-length*   . 20)
-    (*print-escape*   . nil))) ; no package qualifiers.
+    (*print-escape*   . nil)))
+
+(defvar *arglist-show-packages* t)
+
+(defmacro with-arglist-io-syntax (&body body)
+  (let ((package (gensym)))
+    `(let ((,package *package*))
+       (with-standard-io-syntax
+         (let ((*package* (if *arglist-show-packages*
+                              *package*
+                              ,package)))
+           (with-bindings *arglist-pprint-bindings*
+             ,@body))))))
 
 (defun decoded-arglist-to-string (decoded-arglist
                                   &key operator highlight
-                                  print-right-margin print-lines)
+                                  print-right-margin)
   (with-output-to-string (*standard-output*)
-    (with-standard-io-syntax
-      (with-bindings *arglist-pprint-bindings*
-	(let ((*print-right-margin* print-right-margin)
-	      (*print-lines* print-lines))
-	  (print-decoded-arglist decoded-arglist 
-                                 :operator operator 
-                                 :highlight highlight))))))
+    (with-arglist-io-syntax
+      (let ((*print-right-margin* print-right-margin))
+        (print-decoded-arglist decoded-arglist 
+                               :operator operator 
+                               :highlight highlight)))))
 
-(defun decoded-arglist-to-template-string (decoded-arglist &key (prefix "(") (suffix ")"))
+(defun decoded-arglist-to-template-string (decoded-arglist
+                                           &key (prefix "(") (suffix ")"))
   (with-output-to-string (*standard-output*)
-    (with-standard-io-syntax
-      (with-bindings *arglist-pprint-bindings*
-        (print-decoded-arglist-as-template decoded-arglist
-                                           :prefix prefix
-                                           :suffix suffix)))))
+    (with-arglist-io-syntax
+      (print-decoded-arglist-as-template decoded-arglist
+                                         :prefix prefix
+                                         :suffix suffix))))
 
 ;;;; Arglist Decoding / Encoding
 
@@ -516,8 +504,9 @@ Return an OPTIONAL-ARG structure."
     for arg = (if (consp arglist)
                   (pop arglist)
                   (progn
-                    (setf mode '&rest)
-                    arglist))
+                    (prog1 arglist
+                      (setf mode '&rest
+                            arglist nil))))
     do (cond
          ((eql mode '&unknown-junk)
           ;; don't leave this mode -- we don't know how the arglist
@@ -564,7 +553,7 @@ Return an OPTIONAL-ARG structure."
                (push arg (arglist.known-junk result)))
             (&any
                (push arg (arglist.any-args result))))))
-    until (atom arglist)
+        until (null arglist)
     finally (nreversef (arglist.required-args result))
     finally (nreversef (arglist.optional-args result))
     finally (nreversef (arglist.keyword-args result))
@@ -959,6 +948,7 @@ If the arglist is not available, return :NOT-AVAILABLE."))
       :not-available
       (arglist-dispatch (car form) (cdr form))))
 
+(export 'arglist-dispatch)
 (defgeneric arglist-dispatch (operator arguments)
   ;; Default method
   (:method (operator arguments)
@@ -975,20 +965,23 @@ If the arglist is not available, return :NOT-AVAILABLE."))
 
 (defmethod arglist-dispatch ((operator (eql 'defmethod)) arguments)
   (match (cons operator arguments)
-    (('defmethod (#'valid-function-name-p gf-name) . _)
+    (('defmethod (#'function-exists-p gf-name) . rest)
      (let ((gf (fdefinition gf-name)))
        (when (typep gf 'generic-function)
          (with-available-arglist (arglist) (decode-arglist (arglist gf))
-           (return-from arglist-dispatch
-             (make-arglist :provided-args (list gf-name)
-                           :required-args (list arglist)
-                           :rest "body" :body-p t))))))
+           (let ((qualifiers (loop for x in rest
+                                   until (or (listp x) (empty-arg-p x))
+                                   collect x)))
+             (return-from arglist-dispatch
+               (make-arglist :provided-args (cons gf-name qualifiers)
+                             :required-args (list arglist)
+                             :rest "body" :body-p t)))))))
     (_)) ; Fall through
   (call-next-method))
 
 (defmethod arglist-dispatch ((operator (eql 'define-compiler-macro)) arguments)
   (match (cons operator arguments)
-    (('define-compiler-macro (#'valid-function-name-p gf-name) . _)
+    (('define-compiler-macro (#'function-exists-p gf-name) . _)
      (let ((gf (fdefinition gf-name)))
        (with-available-arglist (arglist) (decode-arglist (arglist gf))
          (return-from arglist-dispatch
@@ -1091,41 +1084,48 @@ If the arglist is not available, return :NOT-AVAILABLE."))
 ;;; %CURSOR-MARKER%)). Only the forms up to point should be
 ;;; considered.
 
-(defslimefun autodoc (raw-form &key print-right-margin print-lines)
+(defslimefun autodoc (raw-form &key print-right-margin)
   "Return a string representing the arglist for the deepest subform in
 RAW-FORM that does have an arglist. The highlighted parameter is
 wrapped in ===> X <===."
   (handler-bind ((serious-condition
                   #'(lambda (c)
                       (unless (debug-on-swank-error)
-                        (let ((*print-right-margin* print-right-margin)
-                              (*print-lines* print-lines))
+                        (let ((*print-right-margin* print-right-margin))
                           (return-from autodoc
                             (format nil "Arglist Error: \"~A\"" c)))))))
-      (with-buffer-syntax ()
-        (multiple-value-bind (form arglist obj-at-cursor form-path)
-            (find-subform-with-arglist (parse-raw-form raw-form))
-          (cond ((interesting-variable-p obj-at-cursor)
-                 (print-variable-to-string obj-at-cursor))
-                (t
-                 (with-available-arglist (arglist) arglist
-                   (decoded-arglist-to-string
-                    arglist
-                    :print-right-margin print-right-margin
-                    :print-lines print-lines
-                    :operator (car form)
-                    :highlight (form-path-to-arglist-path form-path
-                                                          form
-                                                          arglist)))))))))
+    (with-buffer-syntax ()
+      (multiple-value-bind (form arglist obj-at-cursor form-path)
+          (find-subform-with-arglist (parse-raw-form raw-form))
+        (cond ((boundp-and-interesting obj-at-cursor)
+               (print-variable-to-string obj-at-cursor))
+              (t
+               (with-available-arglist (arglist) arglist
+                 (decoded-arglist-to-string
+                  arglist
+                  :print-right-margin print-right-margin
+                  :operator (car form)
+                  :highlight (form-path-to-arglist-path form-path
+                                                        form
+                                                        arglist)))))))))
+
+(defun boundp-and-interesting (symbol)
+  (and symbol
+       (symbolp symbol)
+       (boundp symbol)
+       (not (memq symbol '(cl:t cl:nil)))
+       (not (keywordp symbol))))
 
 (defun print-variable-to-string (symbol)
   "Return a short description of VARIABLE-NAME, or NIL."
   (let ((*print-pretty* t) (*print-level* 4)
         (*print-length* 10) (*print-lines* 1)
-        (*print-readably* nil))
+        (*print-readably* nil)
+        (value (symbol-value symbol)))
     (call/truncated-output-to-string
      75 (lambda (s)
-          (format s "~A => ~S" symbol (symbol-value symbol))))))
+          (without-printing-errors (:object value :stream s)
+            (format s "~A ~A~S" symbol *echo-area-prefix* value))))))
 
 
 (defslimefun complete-form (raw-form)
@@ -1285,22 +1285,23 @@ object."
   (:method ((operator (eql 'cl:flet)) args)
     (let ((defs (first args))
           (body (rest args)))
-      (cond ((null body) nil)           ; `(flet ((foo (x) |'
-            ((atom defs) nil)           ; `(flet ,foo (|'
+      (cond ((null body) nil)            ; `(flet ((foo (x) |'
+            ((atom defs) nil)            ; `(flet ,foo (|'
             (t (%collect-op/argl-alist defs)))))
   ;; LABELS
   (:method ((operator (eql 'cl:labels)) args)
     ;; Notice that we only have information to "look backward" and
     ;; show arglists of previously occuring local functions.
-    (let ((defs (first args))
-          (body (rest args)))
-      (cond ((atom defs) nil)
-            ((not (null body))
-             (extract-local-op-arglists 'cl:flet args))
-            (t
-             (let ((def.body (cddr (car (last defs)))))
-               (when def.body
-                 (%collect-op/argl-alist defs)))))))
+    (destructuring-bind (defs . body) args
+      (unless (or (atom defs) (null body))   ; `(labels ,foo (|'
+        (let ((current-def (car (last defs))))
+          (cond ((atom current-def) nil) ; `(labels ((foo (x) ...)|'
+                ((not (null body))
+                 (extract-local-op-arglists 'cl:flet args))
+                (t
+                 (let ((def.body (cddr current-def)))
+                   (when def.body
+                     (%collect-op/argl-alist defs)))))))))
   ;; MACROLET
   (:method ((operator (eql 'cl:macrolet)) args)
     (extract-local-op-arglists 'cl:labels args)))
@@ -1395,8 +1396,10 @@ to the argument (NTH `provided-argument-index' `provided-arguments')."
          (let* ((argument      (nth arg-index provided-arguments))
                 (provided-keys (subseq provided-arguments positional-args#)))
            (loop for (key value) on provided-keys by #'cddr
-                 when (eq value argument) 
-                 return key)))))))
+                 when (eq value argument)
+                 return (match key
+                            (('quote symbol) symbol)
+                            (_ key)))))))))
 
 (defun arglist-ref (arglist &rest indices)
   "Returns the parameter in ARGLIST along the INDICIES path. Numbers
@@ -1415,10 +1418,14 @@ represent key parameters."
                      do (decf index args#)
                    finally (return (or rest nil)))))
          (ref-keyword-arg (arglist keyword)
-           (assert (symbolp keyword) (keyword))
-           (do-decoded-arglist arglist
-             (&key (kw arg) (when (eq kw keyword)
-                              (return-from ref-keyword-arg arg))))
+           ;; keyword argument may be any symbol,
+           ;; not only from the KEYWORD package.
+           (let ((keyword (match keyword
+                            (('quote symbol) symbol)
+                            (_ keyword))))
+             (do-decoded-arglist arglist
+               (&key (kw arg) (when (eq kw keyword)
+                                (return-from ref-keyword-arg arg)))))
            nil))
     (dolist (index indices)
       (assert (arglist-p arglist))

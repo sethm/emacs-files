@@ -439,7 +439,9 @@
       (funcall function))))
 
 (defimplementation swank-compile-file (input-file output-file 
-                                       load-p external-format)
+                                       load-p external-format
+                                       &key policy)
+  (declare (ignore policy))
   (with-compilation-hooks ()
     (let ((*buffer-name* nil)
           (ext:*ignore-extra-close-parentheses* nil))
@@ -2026,8 +2028,3 @@ The `symbol-value' of each element is a type tag.")
 ;;; Not implemented in SCL.
 (defimplementation make-weak-key-hash-table (&rest args)
   (apply #'make-hash-table :weak-p t args))
-
-;; Local Variables:
-;; pbook-heading-regexp:    "^;;;\\(;+\\)"
-;; pbook-commentary-regexp: "^;;;\\($\\|[^;]\\)"
-;; End:

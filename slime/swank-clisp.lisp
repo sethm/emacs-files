@@ -177,7 +177,7 @@
 (defvar *external-format-to-coding-system*
   '(((:charset "iso-8859-1" :line-terminator :unix)
      "latin-1-unix" "iso-latin-1-unix" "iso-8859-1-unix")
-    ((:charset "iso-8859-1":latin-1)
+    ((:charset "iso-8859-1")
      "latin-1" "iso-latin-1" "iso-8859-1")
     ((:charset "utf-8") "utf-8")
     ((:charset "utf-8" :line-terminator :unix) "utf-8-unix")
@@ -605,7 +605,9 @@ Execute BODY with NAME's function slot set to FUNCTION."
                           :location (compiler-note-location))))
 
 (defimplementation swank-compile-file (input-file output-file
-                                       load-p external-format)
+                                       load-p external-format
+                                       &key policy)
+  (declare (ignore policy))
   (with-compilation-hooks ()
     (with-compilation-unit ()
       (multiple-value-bind (fasl-file warningsp failurep)
@@ -846,8 +848,3 @@ Execute BODY with NAME's function slot set to FUNCTION."
                 ,@(if restart-function 
                       `((:init-function ,restart-function))))))
     (apply #'ext:saveinitmem args)))
-
-;;; Local Variables:
-;;; eval: (put 'compile-file-frobbing-notes 'lisp-indent-function 1)
-;;; eval: (put 'dynamic-flet 'common-lisp-indent-function 1)
-;;; End:

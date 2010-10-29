@@ -12,7 +12,10 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require :sock)
-  (require :process))
+  (require :process)
+  #+(version>= 8 2)
+  (require 'lldb)
+  )
 
 (import-from :excl *gray-stream-symbols* :swank-backend)
 
@@ -46,6 +49,9 @@
     (when external-format
       (setf (stream-external-format s) external-format))
     s))
+
+(defimplementation socket-fd (stream)
+  (excl::stream-input-handle stream))
 
 (defvar *external-format-to-coding-system*
   '((:iso-8859-1 
@@ -131,9 +137,10 @@
     (funcall debugger-loop-fn)))
 
 (defimplementation sldb-break-at-start (fname)
-  ;; :print-before is kind of mis-used but we just want to stuff our break form
-  ;; somewhere. This does not work for setf, :before and :after methods, which
-  ;; need special syntax in the trace call, see ACL's doc/debugging.htm chapter 10.
+  ;; :print-before is kind of mis-used but we just want to stuff our
+  ;; break form somewhere. This does not work for setf, :before and
+  ;; :after methods, which need special syntax in the trace call, see
+  ;; ACL's doc/debugging.htm chapter 10.
   (eval `(trace (,fname
                  :print-before
                  ((break "Function start breakpoint of ~A" ',fname)))))
@@ -182,13 +189,84 @@
     (debugger:frame-var-value frame var)))
 
 (defimplementation disassemble-frame (index)
-  (disassemble (debugger:frame-function (nth-frame index))))
+  (let ((frame (nth-frame index)))
+    (multiple-value-bind (x fun xx xxx pc) (debugger::dyn-fd-analyze frame)
+      (format t "pc: ~d (~s ~s ~s)~%fun: ~a~%" pc x xx xxx fun)
+      (disassemble (debugger:frame-function frame)))))
 
 (defimplementation frame-source-location (index)
-  (let* ((frame (nth-frame index))
-         (expr (debugger:frame-expression frame))
-         (fspec (first expr)))
-    (second (first (fspec-definition-locations fspec)))))
+  (let* ((frame (nth-frame index)))
+    (multiple-value-bind (x fun xx xxx pc) (debugger::dyn-fd-analyze frame)
+      (declare (ignore x xx xxx))
+      (cond (pc
+             #+(version>= 8 2)
+             (pc-source-location fun pc)
+             #-(version>= 8 2)
+             (function-source-location fun))
+            (t ; frames for unbound functions etc end up here
+             (cadr (car (fspec-definition-locations
+                         (car (debugger:frame-expression frame))))))))))
+
+(defun function-source-location (fun)
+  (cadr (car (fspec-definition-locations (xref::object-to-function-name fun)))))
+
+#+(version>= 8 2)
+(defun pc-source-location (fun pc)
+  (let* ((debug-info (excl::function-source-debug-info fun)))
+    (cond ((not debug-info)
+           (function-source-location fun))
+          (t 
+           (let* ((code-loc (find-if (lambda (c)
+                                       (<= (- pc (sys::natural-width))
+                                           (excl::ldb-code-pc c)
+                                           pc))
+                                     debug-info)))
+             (cond ((not code-loc)
+                    (ldb-code-to-src-loc (aref debug-info 0)))
+                   (t
+                    (ldb-code-to-src-loc code-loc))))))))
+
+#+(version>= 8 2)
+(defun ldb-code-to-src-loc (code)
+  (let* ((start (excl::ldb-code-start-char code))
+         (func (excl::ldb-code-func code))
+         (src-file (excl:source-file func)))
+    (cond (start 
+           (buffer-or-file-location src-file start))
+          (t
+           (let* ((debug-info (excl::function-source-debug-info func))
+                  (whole (aref debug-info 0))
+                  (paths (source-paths-of (excl::ldb-code-source whole)
+                                          (excl::ldb-code-source code)))
+                  (path (longest-common-prefix paths))
+                  (start (excl::ldb-code-start-char whole)))
+             (buffer-or-file 
+              src-file 
+              (lambda (file) 
+                (make-location `(:file ,file) 
+                               `(:source-path (0 . ,path) ,start)))
+              (lambda (buffer bstart)
+                (make-location `(:buffer ,buffer)
+                               `(:source-path (0 . ,path)
+                                              ,(+ bstart start))))))))))
+ 
+(defun longest-common-prefix (sequences)
+  (assert sequences)
+  (flet ((common-prefix (s1 s2)
+           (let ((diff-pos (mismatch s1 s2)))
+             (if diff-pos (subseq s1 0 diff-pos) s1))))
+    (reduce #'common-prefix sequences)))
+
+(defun source-paths-of (whole part)
+  (let ((result '()))
+    (labels ((walk (form path)
+               (cond ((eq form part) 
+                      (push (reverse path) result))
+                     ((consp form)
+                      (loop for i from 0 while (consp form) do
+                            (walk (pop form) (cons i path)))))))
+      (walk whole '())
+      (reverse result))))
 
 (defimplementation eval-in-frame (form frame-number)
   (let ((frame (nth-frame frame-number)))
@@ -228,7 +306,6 @@
 (defvar *buffer-start-position*)
 (defvar *buffer-string*)
 (defvar *compile-filename* nil)
-(defvar *temp-file-header-end-position* nil)
 
 (defun compiler-note-p (object)
   (member (type-of object) '(excl::compiler-note compiler::compiler-note)))
@@ -251,7 +328,7 @@
 
 (defun handle-compiler-warning (condition)
   (declare (optimize (debug 3) (speed 0) (space 0)))
-   (cond ((and (not *buffer-name*) 
+  (cond ((and (not *buffer-name*) 
               (compiler-undefined-functions-called-warning-p condition))
          (handle-undefined-functions-warning condition))
         (t
@@ -277,9 +354,12 @@
             (list :offset *buffer-start-position* 0)))
           (loc
            (destructuring-bind (file . pos) loc
-             (make-location
-              (list :file (namestring (truename file)))
-              (list :position (1+ pos)))))
+             (let ((start (cond ((consp pos) ; 8.2 and newer
+                                 (car pos))
+                                (t pos))))
+               (make-location
+                (list :file (namestring (truename file)))
+                (list :position (1+ start))))))
           (t
            (make-error-location "No error location available.")))))
 
@@ -289,23 +369,31 @@
     (if (integerp pos)
         (if *buffer-name*
             (make-location `(:buffer ,*buffer-name*)
-                           `(:offset ,*buffer-start-position*
-                                     ,(- pos *temp-file-header-end-position* 1)))
+                           `(:offset ,*buffer-start-position* ,pos))
             (make-location `(:file ,(namestring (truename file)))
                            `(:position ,pos)))
         (make-error-location "No error location available."))))
 
+;; TODO: report it as a bug to Franz that the condition's plist
+;; slot contains (:loc nil).
 (defun handle-undefined-functions-warning (condition)
   (let ((fargs (slot-value condition 'excl::format-arguments)))
-    (loop for (fname . pos-file) in (car fargs) do
-          (loop for (pos file) in pos-file do
-                (signal-compiler-condition
-                 :original-condition condition
-                 :severity :warning
-                 :message (format nil "Undefined function referenced: ~S" 
-                                  fname)
-                 :location (make-location (list :file file)
-                                          (list :position (1+ pos))))))))
+    (loop for (fname . locs) in (car fargs) do
+          (dolist (loc locs)
+            (multiple-value-bind (pos file) (ecase (length loc)
+                                              (2 (values-list loc))
+                                              (3 (destructuring-bind 
+                                                       (start end file) loc
+                                                   (declare (ignore end))
+                                                   (values start file))))
+              (signal-compiler-condition
+               :original-condition condition
+               :severity :warning
+               :message (format nil "Undefined function referenced: ~S" 
+                                fname)
+               :location (make-location (list :file file)
+                                        (list :position (1+ pos)))))))))
+
 (defimplementation call-with-compilation-hooks (function)
   (handler-bind ((warning       #'handle-compiler-warning)
                  (compiler-note #'handle-compiler-warning)
@@ -313,7 +401,9 @@
     (funcall function)))
 
 (defimplementation swank-compile-file (input-file output-file 
-                                       load-p external-format)
+                                       load-p external-format
+                                       &key policy)
+  (declare (ignore policy))
   (handler-case
       (with-compilation-hooks ()
         (let ((*buffer-name* nil)
@@ -331,11 +421,19 @@
            (funcall fn file tmpname))
       (delete-file tmpname))))
 
-(defun compile-from-temp-file (header string)
+(defvar *temp-file-map* (make-hash-table :test #'equal)
+  "A mapping from tempfile names to Emacs buffer names.")
+
+(defun compile-from-temp-file (string buffer offset file)
   (call-with-temp-file 
    (lambda (stream filename)
-     (write-string header stream)
-     (let ((*temp-file-header-end-position* (file-position stream)))
+     (let ((excl:*load-source-file-info* t)
+           (sys:*source-file-types* '(nil)) ; suppress .lisp extension
+           #+(version>= 8 2)
+           (compiler:save-source-level-debug-info-switch t)
+           #+(version>= 8 2)
+           (excl:*load-source-debug-info* t) ; NOTE: requires lldb
+           )
        (write-string string stream)
        (finish-output stream)
        (multiple-value-bind (binary-filename warnings? failure?)
@@ -346,6 +444,8 @@
              (compile-file filename :load-after-compile t))
          (declare (ignore warnings?))
          (when binary-filename
+           (setf (gethash (pathname stream) *temp-file-map*)
+                 (list buffer offset file))
            (delete-file binary-filename))
          (not failure?))))))
 
@@ -361,42 +461,33 @@
                (if filename 
                    (merge-pathnames (pathname filename))
                    *default-pathname-defaults*)))
-          ;; We store the source buffer in excl::*source-pathname* as a
-          ;; string of the form <buffername>;<start-offset>.  Quite ugly
-          ;; encoding, but the fasl file is corrupted if we use some
-          ;; other datatype.
-          (compile-from-temp-file
-           (format nil "~S~%~S~%" 
-                   `(in-package ,(package-name *package*))
-                   `(eval-when (:compile-toplevel :load-toplevel)
-                      (setq excl::*source-pathname*
-                            ',(format nil "~A;~D" buffer position))))
-           string)))
+          (compile-from-temp-file string buffer position filename)))
     (reader-error () (values nil nil t))))
 
 ;;;; Definition Finding
+
+(defun buffer-or-file (file file-fun buffer-fun)
+  (let* ((probe (gethash file *temp-file-map*)))
+    (cond (probe 
+           (destructuring-bind (buffer start file) probe
+             (declare (ignore file))
+             (funcall buffer-fun buffer start)))
+          (t (funcall file-fun (namestring (truename file)))))))
+
+(defun buffer-or-file-location (file offset)
+  (buffer-or-file file 
+                  (lambda (filename)
+                    (make-location `(:file ,filename)
+                                   `(:position ,(1+ offset))))
+                  (lambda (buffer start)
+                    (make-location `(:buffer ,buffer)
+                                   `(:offset ,start ,offset)))))
 
 (defun fspec-primary-name (fspec)
   (etypecase fspec
     (symbol fspec)
     (list (fspec-primary-name (second fspec)))))
 
-;; If Emacs uses DOS-style eol conventions, \n\r are considered as a
-;; single character, but file-position counts them as two.  Here we do
-;; our own conversion.
-(defun count-cr (file pos)
-  (let* ((bufsize 256)
-         (type '(unsigned-byte 8))
-         (buf (make-array bufsize :element-type type))
-         (cr-count 0))
-  (with-open-file (stream file :direction :input :element-type type)
-    (loop for bytes-read = (read-sequence buf stream) do
-          (incf cr-count (count (char-code #\return) buf 
-                                :end (min pos bytes-read)))
-          (decf pos bytes-read)
-          (when (<= pos 0)
-            (return cr-count))))))
-              
 (defun find-definition-in-file (fspec type file top-level)
   (let* ((part
           (or (scm::find-definition-in-definition-group
@@ -413,44 +504,42 @@
                   (list :function-name (string (fspec-primary-name fspec))))))
     (make-location (list :file (namestring (truename file)))
                    pos)))
-  
-(defun find-definition-in-buffer (filename)
-  (let ((pos (position #\; filename :from-end t)))
-    (make-location
-     (list :buffer (subseq filename 0 pos))
-     (list :offset (parse-integer (subseq filename (1+ pos))) 0))))
 
 (defun find-fspec-location (fspec type file top-level)
   (handler-case
       (etypecase file
         (pathname
-           (find-definition-in-file fspec type file top-level))
+         (let ((probe (gethash file *temp-file-map*)))
+           (cond (probe
+                  (destructuring-bind (buffer offset file) probe
+                    (declare (ignore file))
+                    (make-location `(:buffer ,buffer)
+                                   `(:offset ,offset 0))))
+                 (t
+                  (find-definition-in-file fspec type file top-level)))))
         ((member :top-level)
-           (make-error-location "Defined at toplevel: ~A" (fspec->string fspec)))
-        (string
-           (find-definition-in-buffer file)))
+         (make-error-location "Defined at toplevel: ~A" (fspec->string fspec))))
     (error (e)
       (make-error-location "Error: ~A" e))))
 
 (defun fspec->string (fspec)
-  (etypecase fspec
+  (typecase fspec
     (symbol (let ((*package* (find-package :keyword)))
               (prin1-to-string fspec)))
     (list (format nil "(~A ~A)"
                   (prin1-to-string (first fspec))
                   (let ((*package* (find-package :keyword)))
-                    (prin1-to-string (second fspec)))))))
+                    (prin1-to-string (second fspec)))))
+    (t (princ-to-string fspec))))
 
 (defun fspec-definition-locations (fspec)
   (cond
     ((and (listp fspec)
           (eql (car fspec) :top-level-form))
-     (destructuring-bind (top-level-form file &optional position) fspec 
+     (destructuring-bind (top-level-form file &optional (position 0)) fspec 
        (declare (ignore top-level-form))
-       (list fspec
-             (make-location (list :buffer file) ; FIXME: should use :file
-                            (list :position position)
-                            (list :align t)))))
+       `((,fspec
+          ,(buffer-or-file-location file position)))))
     ((and (listp fspec) (eq (car fspec) :internal))
      (destructuring-bind (_internal next _n) fspec
        (declare (ignore _internal _n))
@@ -469,9 +558,9 @@
             (list fspec
                   (make-error-location "Unknown source location for ~A" 
                                        (fspec->string fspec))))
-           (loop for (fspec type file top-level) in defs 
-                 collect (list (list type fspec)
-                               (find-fspec-location fspec type file top-level))))))))
+           (loop for (fspec type file top-level) in defs collect 
+                 (list (list type fspec)
+                       (find-fspec-location fspec type file top-level))))))))
 
 (defimplementation find-definitions (symbol)
   (fspec-definition-locations symbol))
@@ -672,8 +761,11 @@
   (mp:process-name thread))
 
 (defimplementation thread-status (thread)
-  (format nil "~A ~D" (mp:process-whostate thread)
-          (mp:process-priority thread)))
+  (princ-to-string (mp:process-whostate thread)))
+
+(defimplementation thread-attributes (thread)
+  (list :priority (mp:process-priority thread)
+        :times-resumed (mp:process-times-resumed thread)))
 
 (defimplementation make-lock (&key name)
   (mp:make-process-lock :name name))

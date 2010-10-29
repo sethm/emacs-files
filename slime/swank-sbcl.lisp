@@ -155,11 +155,17 @@
 (defimplementation remove-fd-handlers (socket)
   (sb-sys:invalidate-descriptor (socket-fd socket)))
 
-(defun socket-fd (socket)
+(defimplementation socket-fd (socket)
   (etypecase socket
     (fixnum socket)
     (sb-bsd-sockets:socket (sb-bsd-sockets:socket-file-descriptor socket))
     (file-stream (sb-sys:fd-stream-fd socket))))
+
+(defimplementation command-line-args ()
+  sb-ext:*posix-argv*)
+
+(defimplementation dup (fd)
+  (sb-posix:dup fd))
 
 (defvar *wait-for-input-called*)
 
@@ -558,12 +564,37 @@ compiler state."
 
 (defvar *trap-load-time-warnings* nil)
 
+(defun compiler-policy (qualities)
+  "Return compiler policy qualities present in the QUALITIES alist.
+QUALITIES is an alist with (quality . value)"
+  #+#.(swank-backend:with-symbol 'restrict-compiler-policy 'sb-ext)
+  (loop with policy = (sb-ext:restrict-compiler-policy)
+        for (quality) in qualities
+        collect (cons quality
+                      (or (cdr (assoc quality policy))
+                          0))))
+
+(defun (setf compiler-policy) (policy)
+  (declare (ignorable policy))
+  #+#.(swank-backend:with-symbol 'restrict-compiler-policy 'sb-ext)
+  (loop for (qual . value) in policy
+        do (sb-ext:restrict-compiler-policy qual value)))
+
+(defmacro with-compiler-policy (policy &body body)
+  (let ((current-policy (gensym)))
+    `(let ((,current-policy (compiler-policy ,policy)))
+       (setf (compiler-policy) ,policy)
+       (unwind-protect (progn ,@body)
+         (setf (compiler-policy) ,current-policy)))))
+
 (defimplementation swank-compile-file (input-file output-file 
-                                       load-p external-format)
+                                       load-p external-format
+                                       &key policy)
   (multiple-value-bind (output-file warnings-p failure-p)
-      (with-compilation-hooks ()
-        (compile-file input-file :output-file output-file
-                      :external-format external-format))
+      (with-compiler-policy policy
+        (with-compilation-hooks ()
+          (compile-file input-file :output-file output-file
+                        :external-format external-format)))
     (values output-file warnings-p
             (or failure-p
                 (when load-p
@@ -593,27 +624,12 @@ compiler state."
   "Return a temporary file name to compile strings into."
   (tempnam nil nil))
 
-(defun get-compiler-policy (default-policy)
-  (declare (ignorable default-policy))
-  #+#.(swank-backend:with-symbol 'restrict-compiler-policy 'sb-ext)
-  (remove-duplicates (append default-policy (sb-ext:restrict-compiler-policy))
-                     :key #'car))
-
-(defun set-compiler-policy (policy)
-  (declare (ignorable policy))
-  #+#.(swank-backend:with-symbol 'restrict-compiler-policy 'sb-ext)
-   (loop for (qual . value) in policy
-         do (sb-ext:restrict-compiler-policy qual value)))
-
 (defimplementation swank-compile-string (string &key buffer position filename
                                          policy)
   (let ((*buffer-name* buffer)
         (*buffer-offset* position)
         (*buffer-substring* string)
-        (temp-file-name (temp-file-name))
-        (saved-policy (get-compiler-policy '((debug . 0) (speed . 0)))))
-    (when policy
-      (set-compiler-policy policy))
+        (temp-file-name (temp-file-name)))
     (flet ((load-it (filename)
              (when filename (load filename)))
            (compile-it (cont)
@@ -631,27 +647,15 @@ compiler state."
       (with-open-file (s temp-file-name :direction :output :if-exists :error)
         (write-string string s))
       (unwind-protect
-           (if *trap-load-time-warnings*
-               (compile-it #'load-it)
-               (load-it (compile-it #'identity)))
+           (with-compiler-policy policy
+            (if *trap-load-time-warnings*
+                (compile-it #'load-it)
+                (load-it (compile-it #'identity))))
         (ignore-errors
-          (set-compiler-policy saved-policy)
           (delete-file temp-file-name)
           (delete-file (compile-file-pathname temp-file-name)))))))
 
 ;;;; Definitions
-
-(defmacro converting-errors-to-location (&body body)
-  "Catches error and converts them to an error location."
-  (let ((gblock (gensym "CONVERTING-ERRORS+")))
-    `(block ,gblock
-       (handler-bind ((error
-                       #'(lambda (e)
-                            (if *debug-swank-backend*
-                                nil     ;decline
-                                (return-from ,gblock
-                                  (make-error-location e))))))
-         ,@body))))
 
 (defparameter *definition-types*
   '(:variable defvar
@@ -684,16 +688,25 @@ compiler state."
       (getf *definition-types* type)))
 
 (defun make-dspec (type name source-location)
-  (list* (definition-specifier type name)
-         name
-         (sb-introspect::definition-source-description source-location)))
+  (let ((spec (definition-specifier type name))
+        (desc (sb-introspect::definition-source-description source-location)))
+    (if (eq :define-vop spec)
+        ;; The first part of the VOP description is the name of the template
+        ;; -- which is actually good information and often long. So elide the
+        ;; original name in favor of making the interesting bit more visible.
+        ;;
+        ;; The second part of the VOP description is the associated compiler note, or
+        ;; NIL -- which is quite uninteresting and confuses the eye when reading the actual
+        ;; name which usually has a worthwhile postfix. So drop the note.
+        (list spec (car desc))
+        (list* spec name desc))))
 
 (defimplementation find-definitions (name)
   (loop for type in *definition-types* by #'cddr
         for defsrcs = (sb-introspect:find-definition-sources-by-name name type)
         append (loop for defsrc in defsrcs collect
                      (list (make-dspec type name defsrc)
-                           (converting-errors-to-location
+                           (converting-errors-to-error-location
                              (definition-source-for-emacs defsrc type name))))))
 
 (defimplementation find-source-location (obj)
@@ -717,7 +730,7 @@ compiler state."
               (with-output-to-string (s)
                 (print-unreadable-object (obj s :type t :identity t))))
              (t (princ-to-string obj)))))
-    (converting-errors-to-location
+    (converting-errors-to-error-location
       (let ((defsrc (sb-introspect:find-definition-source obj)))
         (definition-source-for-emacs defsrc
                                      (general-type-of obj)
@@ -730,6 +743,7 @@ compiler state."
       definition-source
     (cond ((getf plist :emacs-buffer) :buffer)
           ((and pathname (or form-path character-offset)) :file)
+          (pathname :file-without-position)
           (t :invalid))))
 
 (defun definition-source-for-emacs (definition-source type name)
@@ -766,6 +780,11 @@ compiler state."
                         ;; 0, buffer positions in Emacs start from 1.
                         `(:position ,(1+ pos))
                         `(:snippet ,snippet))))
+      (:file-without-position
+       (make-location `(:file ,(namestring (translate-logical-pathname pathname)))
+                      '(:position 1)
+                      (when (eql type :function)
+                        `(:snippet ,(format nil "(defun ~a " (symbol-name name))))))
       (:invalid
        (error "DEFINITION-SOURCE of ~A ~A did not contain ~
                meaningful information."
@@ -853,7 +872,7 @@ Return NIL if the symbol is unbound."
 
 (defun source-location-for-xref-data (xref-data)
   (destructuring-bind (name . defsrc) xref-data
-    (list name (converting-errors-to-location
+    (list name (converting-errors-to-error-location
                  (definition-source-for-emacs defsrc 'function name)))))
 
 (defimplementation list-callers (symbol)
@@ -895,7 +914,7 @@ Return NIL if the symbol is unbound."
   "Describe where the function FN was defined.
 Return a list of the form (NAME LOCATION)."
   (let ((name (function-name fn)))
-    (list name (converting-errors-to-location
+    (list name (converting-errors-to-error-location
                  (function-source-location fn name)))))
 
 ;;; macroexpansion
@@ -1142,7 +1161,7 @@ stack."
 ;;; source-path-file-position and friends are in swank-source-path-parser
 
 (defimplementation frame-source-location (index)
-  (converting-errors-to-location
+  (converting-errors-to-error-location
     (code-location-source-location
      (sb-di:frame-code-location (nth-frame index)))))
 
@@ -1265,11 +1284,13 @@ stack."
          (label-value-line* (:value (sb-kernel:value-cell-ref o))))
 	(t
 	 (multiple-value-bind (text label parts) (sb-impl::inspected-parts o)
-           (list* (format nil "~a~%" text)
+           (list* (string-right-trim '(#\Newline) text)
+                  '(:newline)
                   (if label
                       (loop for (l . v) in parts
                             append (label-value-line l v))
-                      (loop for value in parts  for i from 0
+                      (loop for value in parts
+                            for i from 0
                             append (label-value-line i value))))))))
 
 (defmethod emacs-inspect ((o function))
@@ -1339,7 +1360,7 @@ stack."
 ;;;; Multiprocessing
 
 #+(and sb-thread
-       #.(cl:if (cl:find-symbol "THREAD-NAME" "SB-THREAD") '(and) '(or)))
+       #.(swank-backend:with-symbol "THREAD-NAME" "SB-THREAD"))
 (progn
   (defvar *thread-id-counter* 0)
 
@@ -1446,10 +1467,25 @@ stack."
         (setf (mailbox.queue mbox)
               (nconc (mailbox.queue mbox) (list message)))
         (sb-thread:condition-broadcast (mailbox.waitqueue mbox)))))
+  #-sb-lutex
+  (defun condition-timed-wait (waitqueue mutex timeout)
+    (handler-case 
+        (let ((*break-on-signals* nil))
+          (sb-sys:with-deadline (:seconds timeout :override t)
+            (sb-thread:condition-wait waitqueue mutex) t))
+      (sb-ext:timeout ()
+        nil)))
 
+  ;; FIXME: with-timeout doesn't work properly on Darwin
+  #+sb-lutex
+  (defun condition-timed-wait (waitqueue mutex timeout)
+    (declare (ignore timeout))
+    (sb-thread:condition-wait waitqueue mutex))
+  
   (defimplementation receive-if (test &optional timeout)
     (let* ((mbox (mailbox (current-thread)))
-           (mutex (mailbox.mutex mbox)))
+           (mutex (mailbox.mutex mbox))
+           (waitq (mailbox.waitqueue mbox)))
       (assert (or (not timeout) (eq timeout t)))
       (loop
        (check-slime-interrupts)
@@ -1460,24 +1496,13 @@ stack."
              (setf (mailbox.queue mbox) (nconc (ldiff q tail) (cdr tail)))
              (return (car tail))))
          (when (eq timeout t) (return (values nil t)))
-         ;; FIXME: with-timeout doesn't work properly on Darwin
-         #+linux
-         (handler-case 
-             (let ((*break-on-signals* nil))
-               (sb-ext:with-timeout 0.2
-                 (sb-thread:condition-wait (mailbox.waitqueue mbox)
-                                           mutex)))
-           (sb-ext:timeout ()))
-         #-linux  
-         (sb-thread:condition-wait (mailbox.waitqueue mbox)
-                                   mutex)))))
+         (condition-timed-wait waitq mutex 0.2)))))
   )
 
 (defimplementation quit-lisp ()
   #+sb-thread
   (dolist (thread (remove (current-thread) (all-threads)))
-    (ignore-errors (sb-thread:interrupt-thread
-                    thread (lambda () (sb-ext:quit :recklessly-p t)))))
+    (ignore-errors (sb-thread:terminate-thread thread)))
   (sb-ext:quit))
 
 
@@ -1539,14 +1564,103 @@ stack."
 
 #-win32
 (defimplementation save-image (filename &optional restart-function)
-  (let ((pid (sb-posix:fork)))
-    (cond ((= pid 0) 
-           (let ((args `(,filename 
-                         ,@(if restart-function
-                               `((:toplevel ,restart-function))))))
-             (apply #'sb-ext:save-lisp-and-die args)))
-          (t
-           (multiple-value-bind (rpid status) (sb-posix:waitpid pid 0)
-             (assert (= pid rpid))
-             (assert (and (sb-posix:wifexited status)
-                          (zerop (sb-posix:wexitstatus status)))))))))
+  (flet ((restart-sbcl ()
+           (sb-debug::enable-debugger)
+           (setf sb-impl::*descriptor-handlers* nil)
+           (funcall restart-function)))
+    (let ((pid (sb-posix:fork)))
+      (cond ((= pid 0)
+             (sb-debug::disable-debugger)
+             (apply #'sb-ext:save-lisp-and-die filename
+                    (when restart-function
+                      (list :toplevel #'restart-sbcl))))
+            (t
+             (multiple-value-bind (rpid status) (sb-posix:waitpid pid 0)
+               (assert (= pid rpid))
+               (assert (and (sb-posix:wifexited status)
+                            (zerop (sb-posix:wexitstatus status))))))))))
+
+#+unix
+(progn
+  (sb-alien:define-alien-routine ("execv" sys-execv) sb-alien:int 
+    (program sb-alien:c-string)
+    (argv (* sb-alien:c-string)))
+  
+  (defun execv (program args)
+    "Replace current executable with another one."
+    (let ((a-args (sb-alien:make-alien sb-alien:c-string
+                                       (+ 1 (length args)))))
+      (unwind-protect
+           (progn
+             (loop for index from 0 by 1
+                   and item in (append args '(nil))
+                   do (setf (sb-alien:deref a-args index)
+                            item))
+             (when (minusp
+                    (sys-execv program a-args))
+               (sb-posix:syscall-error)))
+        (sb-alien:free-alien a-args))))
+
+  (defun runtime-pathname ()
+    #+#.(swank-backend:with-symbol
+            '*runtime-pathname* 'sb-ext)
+    sb-ext:*runtime-pathname*
+    #-#.(swank-backend:with-symbol
+            '*runtime-pathname* 'sb-ext)
+    (car sb-ext:*posix-argv*))
+
+  (defimplementation exec-image (image-file args)
+    (loop with fd-arg =
+          (loop for arg in args
+                and key = "" then arg
+                when (string-equal key "--swank-fd")
+                return (parse-integer arg))
+          for my-fd from 3 to 1024
+          when (/= my-fd fd-arg)
+          do (ignore-errors (sb-posix:fcntl my-fd sb-posix:f-setfd 1)))
+    (let* ((self-string (pathname-to-filename (runtime-pathname))))
+      (execv
+       self-string
+       (apply 'list self-string "--core" image-file args)))))
+
+(defimplementation make-fd-stream (fd external-format)
+  (sb-sys:make-fd-stream fd :input t :output t
+                         :element-type 'character
+                         :buffering :full
+                         :dual-channel-p t                         
+                         :external-format external-format))
+
+#-win32
+(defimplementation background-save-image (filename &key restart-function
+                                                   completion-function)
+  (flet ((restart-sbcl ()
+           (sb-debug::enable-debugger)
+           (setf sb-impl::*descriptor-handlers* nil)
+           (funcall restart-function)))
+    (multiple-value-bind (pipe-in pipe-out) (sb-posix:pipe)
+      (let ((pid (sb-posix:fork)))
+        (cond ((= pid 0)
+               (sb-posix:close pipe-in)
+               (sb-debug::disable-debugger)
+               (apply #'sb-ext:save-lisp-and-die filename
+                      (when restart-function
+                        (list :toplevel #'restart-sbcl))))
+              (t
+               (sb-posix:close pipe-out)
+               (sb-sys:add-fd-handler
+                pipe-in :input
+                (lambda (fd)
+                  (sb-sys:invalidate-descriptor fd)
+                  (sb-posix:close fd)
+                  (multiple-value-bind (rpid status) (sb-posix:waitpid pid 0)
+                    (assert (= pid rpid))
+                    (assert (sb-posix:wifexited status))
+                    (funcall completion-function
+                             (zerop (sb-posix:wexitstatus status))))))))))))
+
+(defun deinit-log-output ()
+  ;; Can't hang on to an fd-stream from a previous session.
+  (setf (symbol-value (find-symbol "*LOG-OUTPUT*" 'swank))
+        nil))
+
+(pushnew 'deinit-log-output sb-ext:*save-hooks*)

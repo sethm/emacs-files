@@ -12,7 +12,7 @@
 @set EDITION 3.0-alpha
 @set SLIMEVER 3.0-alpha
 @c @set UPDATED @today{}
-@set UPDATED @code{$Date: 2010-02-01 14:51:26 $}
+@set UPDATED @code{$Date: 2010-04-05 18:56:13 $}
 @set TITLE SLIME User Manual
 @settitle @value{TITLE}, version @value{EDITION}
 
@@ -866,8 +866,9 @@ Compile the top-level form at point.  The region blinks shortly to
 give some feedback which part was chosen.
 
 With (positive) prefix argument the form is compiled with maximal
-debug settings (@kbd{C-u C-c C-c}).  With negative prefix argument it is compiled for
-speed (@kbd{M-- C-c C-c}).
+debug settings (@kbd{C-u C-c C-c}). With negative prefix argument it is compiled for
+speed (@kbd{M-- C-c C-c}). If a numeric argument is passed set debug or speed settings
+to it depending on its sign.
 
 The code for the region is executed after compilation.  In principle,
 the command writes the region to a file, compiles that file, and loads
@@ -878,6 +879,11 @@ Compile and load the current buffer's source file.  If the compilation
 step fails, the file is not loaded.  It's not always easy to tell
 whether the compilation failed: occasionally you may end up in the
 debugger during the load step.
+
+With (positive) prefix argument the file is compiled with maximal
+debug settings (@kbd{C-u C-c C-k}). With negative prefix argument it is compiled for
+speed (@kbd{M-- C-c C-k}). If a numeric argument is passed set debug or speed settings
+to it depending on its sign.
 
 @kbditem{C-c M-k, slime-compile-file}
 Compile (but don't load) the current buffer's source file.
@@ -991,7 +997,7 @@ Describe the symbol at point.
 @kbditem{C-c C-d f, slime-describe-function}
 Describe the function at point.
 
-@kbditem{C-c C-d a, slime-apropos}
+@kbditem{C-c C-d A, slime-apropos}
 Perform an apropos search on Lisp symbol names for a regular expression
 match and display their documentation strings. By default the external
 symbols of all packages are searched. With a prefix argument you can choose a
@@ -1204,6 +1210,9 @@ value. If point is on an action then call that action.
 
 @kbditem{d, slime-inspector-describe}
 Describe the slot at point.
+
+@kbditem{e, slime-inspector-eval}
+Evaluate an expression in the context of the inspected object.
 
 @kbditem{v, slime-inspector-toggle-verbose}
 Toggle between verbose and terse mode. Default is determined by
@@ -1480,6 +1489,8 @@ Inspect the condition currently being debugged.
 
 @kbditem{:, slime-interactive-eval}
 Evaluate an expression entered in the minibuffer.
+@kbditem{A, sldb-break-with-system-debugger}
+Attach debugger (e.g. gdb) to the current lisp process.
 
 @end table
 
@@ -2543,11 +2554,20 @@ Show the argument list of the function NAME.
 @cmditem{slime-autodoc-mode}
 Toggles autodoc-mode on or off according to the argument, and
 toggles the mode when invoked without argument.
+@kbditem{C-c C-d a, slime-autodoc-manually}
+Like slime-autodoc, but when called twice,
+or after slime-autodoc was already automatically called, 
+display multiline arglist.
 @end table
 
+@vindex slime-use-autodoc-mode
 If the variable @code{slime-use-autodoc-mode} is set (default), Emacs
 starts a timer, otherwise the information is only displayed after
 pressing SPC.
+
+@vindex slime-autodoc-use-multiline-p
+If @code{slime-autodoc-use-multiline-p} is set to non-nil,
+allow long autodoc messages to resize echo area display.
 
 @node ASDF
 @section ASDF
