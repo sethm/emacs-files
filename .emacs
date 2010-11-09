@@ -31,11 +31,6 @@
 (global-set-key (kbd "C-<up>")    'windmove-up)
 (global-set-key (kbd "C-<down>")  'windmove-down)
 
-;; ;; save a list of open files in ~/.emacs.desktop
-;; ;; save the desktop file automatically if it already exists
-;; (setq desktop-save "~/.emacs.d/emacs.desktop")
-;; (desktop-save-mode 1)
-
 ;; Show (line,column) in the modeline
 (setq line-number-mode t)
 (setq column-number-mode t)
@@ -43,27 +38,9 @@
 ;; Transient mark mode - show hilighting when using the keyboard mark
 (transient-mark-mode t)
 
-;; Tramp needs these to be happy.  Memory is practically FREE now anyway
-
+;; Tramp wants these to be happy.  Memory is practically FREE now anyway
 (setq max-lisp-eval-depth 4000)		; default is 400
 (setq max-specpdl-size 5000)		; default is 1000
-
-;; ;; save a bunch of variables to the desktop file
-;; ;; for lists specify the len of the maximal saved data also
-;; (setq desktop-globals-to-save
-;;      (append '((extended-command-history . 30)
-;;                (file-name-history        . 100)
-;;                (grep-history             . 30)
-;;                (compile-history          . 30)
-;;                (minibuffer-history       . 50)
-;;                (query-replace-history    . 60)
-;;                (read-expression-history  . 60)
-;;                (regexp-history           . 60)
-;;                (regexp-search-ring       . 20)
-;;                (search-ring              . 20)
-;;                (shell-command-history    . 50)
-;;                tags-file-name
-;;                register-alist)))
 
 ;; Turn off annoyances.
 (setq inhibit-startup-message t)
@@ -72,13 +49,6 @@
 ;; Translates ANSI colors in shell.
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
-;; Trim trailing whitespace when saving files
-;; (add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-;;;; Always show line numbers in ruby mode
-;;;; [NOTE: This is really getting buggy, unfortunately. Turned off for now.]
-;; (add-hook 'ruby-mode-hook 'linum-mode)
 
 ;; Fix tabs
 (setq indent-tabs-mode nil)
@@ -94,7 +64,7 @@
 	    (setq dired-omit-files "^\\.[a-z|A-Z]+\\|^\\.?#\\|^\\.$")
 	    (dired-omit-mode 1)))
 
-;; Enable upcase-region function
+;; Enable upcase-region function (why is this disabled by default??)
 (put 'upcase-region 'disabled nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -111,6 +81,8 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/rinari/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/yasnippet/"))
 
+;; Some of these only work with pretty recent emacs versions.  Don't
+;; load them unless we're using a compatible emacs.
 (if (>= emacs-major-version 23)
   (progn
     ;; Espresso (javascript) mode
@@ -130,24 +102,8 @@
     (load "~/.emacs.d/nxhtml/autostart.el")
   ))
 
-;; Graphviz Dot Mode
-(load-file "~/.emacs.d/graphviz-dot-mode.el")
-(add-hook 'graphviz-dot-mode-hook
-	  '(lambda ()
-             (setq c-basic-offset 2)
-             (setq tab-width 2)
-             (setq indent-tabs-mode nil)))
-
 ;; Outline mode
 (add-to-list 'auto-mode-alist '("\\.outline$" . outline-mode))
-
-;; PHP mode
-
-;; Note: cannot do 'require' here, see
-;; http://stackoverflow.com/questions/898063/making-php-mode-compatible-with-emacs-23
-(autoload 'php-mode "php-mode" "Major mode for editing php code." t)
-(add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
-(add-to-list 'auto-mode-alist '("\\.inc$" . php-mode))
 
 ;; yasnippet
 (require 'yasnippet)
@@ -162,19 +118,6 @@
 (require 'rinari)
 (setq rinari-tags-file-name "TAGS")
 
-;; Line Number Mode
-(require 'linum)
-
-;; OCaml mode
-(setq auto-mode-alist
-      (cons '("\\.ml\\w?" . tuareg-mode) auto-mode-alist))
-(autoload 'tuareg-mode "tuareg" "Major mode for editing Caml code" t)
-(autoload 'camldebug "camldebug" "Run the Caml debugger" t)
-
-;; Tramp.
-(setq tramp-default-method "ssh"
-      tramp-default-user "seth"
-      tramp-default-host "dev.glyde.com")
 ;;
 ;; Ruby Mode.
 ;;
@@ -252,7 +195,7 @@
              (setq indent-tabs-mode t)))
 
 ;; SLIME
-(setq inferior-lisp-program "/usr/local/bin/sbcl")
+(setq inferior-lisp-program "/usr/bin/env sbcl")
 (require 'slime)
 (slime-setup '(slime-fancy slime-banner slime-repl))
 
@@ -272,16 +215,8 @@
 ;; Always wrap split windows
 (setq truncate-partial-width-windows nil)
 
-;; Haskell
-(load "~/.emacs.d/haskell-mode/haskell-site-file")
-(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
-;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-;;(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
-(add-to-list 'auto-mode-alist '("\\.hc$" . haskell-mode))
-(add-to-list 'auto-mode-alist '("\\.hs$" . haskell-mode))
-
-;; Backup and auto save
+;; Backup and auto save. I like these to be in a unified location, not
+;; scattered to the wind.
 (if (not (file-exists-p "~/.emacs.d/backups"))
   (make-directory "~/.emacs.d/backups" t))
 (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
