@@ -81,27 +81,6 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/rinari/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/yasnippet/"))
 
-;; Some of these only work with pretty recent emacs versions.  Don't
-;; load them unless we're using a compatible emacs.
-(if (>= emacs-major-version 23)
-  (progn
-    ;; Espresso (javascript) mode
-    (autoload #'espresso-mode "espresso" "Start espresso-mode" t)
-    (add-to-list 'auto-mode-alist '("\\.js$" . espresso-mode))
-    (add-to-list 'auto-mode-alist '("\\.json$" . espresso-mode))
-
-    ;; HTML5 mode for nXhtml
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/html5-el/"))
-    (eval-after-load "rng-loc"
-      '(add-to-list 'rng-schema-locating-files (expand-file-name "~/.emacs.d/html5-el/schemas.xml")))
-    
-    (require 'whattf-dt)
-
-    ;; nXhtml mode
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/nxhtml/"))
-    (load "~/.emacs.d/nxhtml/autostart.el")
-  ))
-
 ;; Outline mode
 (add-to-list 'auto-mode-alist '("\\.outline$" . outline-mode))
 
@@ -144,12 +123,6 @@
           '(lambda () "Treat Java 1.5 @-style annotations as comments."
              (setq c-comment-start-regexp "\\(@\\|/\\(/\\|[*][*]?\\)\\)")
              (modify-syntax-entry ?@ "< b" java-mode-syntax-table)))
-
-;;
-;; Python Mode.
-;;
-(autoload 'python-mode "~/.emacs.d/python-mode"
-  "Mode for editing py source files" t)
 
 ;;
 ;; HAML Mode.
@@ -272,8 +245,6 @@
 	 ("\\.rake$" . ruby-mode)
 	 ("\\.py$" . python-mode)
 	 ("\\.css$" . java-mode)
-;;	 ("\\.rhtml$" . ruby-mode)
-;;	 ("\\.erb$" . ruby-mode)
 	 ("\\.haml$" . haml-mode)
 	 ("\\.emacs$" . emacs-lisp-mode)
 	 ("\\.el$" . emacs-lisp-mode)
