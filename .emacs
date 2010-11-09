@@ -76,8 +76,6 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/slime/contrib/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/cedet/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/ecb/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/tramp/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/tuareg/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/rinari/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/yasnippet/"))
 
