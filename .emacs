@@ -50,10 +50,19 @@
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
+(add-hook 'sh-set-shell-hook
+	  (lambda ()
+	    (setq indent-tabs-mode nil)
+	    (setq tab-width 4)
+	    (setq c-basic-offset 4)
+	    (setq sh-basic-offset 4)))
+
 ;; Fix tabs
 (setq indent-tabs-mode nil)
 (setq ruby-indent-tabs-mode nil)
-(setq inhibit-default-init t)
+(setq c-basic-offset 2)
+(setq tab-width 2)
+(setq indent-tabs-mode nil)
 
 ;; Tell dired to hide dot files and emacs backup files.
 (add-hook 'dired-load-hook
@@ -159,11 +168,11 @@
 (require 'ecb-autoloads)
 
 ;; CSS mode
-(add-hook 'css-mode-hook
-          '(lambda ()
-             (turn-on-lazy-lock)
-             (setq c-basic-offset 4 tab-width 4)
-             (setq indent-tabs-mode t)))
+;; (add-hook 'css-mode-hook
+;;          '(lambda ()
+;;             (turn-on-lazy-lock)
+;;             (setq c-basic-offset 4 tab-width 4)
+;;             (setq indent-tabs-mode t)))
 
 ;; SLIME
 (setq inferior-lisp-program "/usr/bin/env sbcl")
