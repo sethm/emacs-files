@@ -201,8 +201,10 @@
 ;;             (setq indent-tabs-mode t)))
 
 ;; SLIME
-(setq inferior-lisp-program "/usr/local/bin/sbcl")
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
+(if (file-exists-p "~/quicklisp")
+  (progn
+    (setq inferior-lisp-program "/usr/local/bin/sbcl")
+    (load (expand-file-name "~/quicklisp/slime-helper.el"))))
 
 ;; YAML
 (require 'yaml-mode)
