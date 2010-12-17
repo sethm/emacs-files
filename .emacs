@@ -72,8 +72,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/slime/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/slime/contrib/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/cedet/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/ecb/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/rinari/"))
@@ -166,9 +164,8 @@
              (setq indent-tabs-mode t)))
 
 ;; SLIME
-(setq inferior-lisp-program "/usr/bin/env sbcl")
-(require 'slime)
-(slime-setup '(slime-fancy slime-banner slime-repl))
+(setq inferior-lisp-program "/usr/local/bin/sbcl")
+(load (expand-file-name "~/quicklisp/slime-helper.el"))
 
 ;; YAML
 (require 'yaml-mode)
