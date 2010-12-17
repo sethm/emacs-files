@@ -1,7 +1,7 @@
-#name : def ... end
+#name : module ... end
 #contributor : seth morabito <sethm@loomcom.com>
 #group : definitions
 # --
-def ${Foo}
+module ${Foo}
   $0
 end

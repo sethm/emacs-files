@@ -50,10 +50,19 @@
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
+(add-hook 'sh-set-shell-hook
+	  (lambda ()
+	    (setq indent-tabs-mode nil)
+	    (setq tab-width 4)
+	    (setq c-basic-offset 4)
+	    (setq sh-basic-offset 4)))
+
 ;; Fix tabs
 (setq indent-tabs-mode nil)
 (setq ruby-indent-tabs-mode nil)
-(setq inhibit-default-init t)
+(setq c-basic-offset 2)
+(setq tab-width 2)
+(setq indent-tabs-mode nil)
 
 ;; Tell dired to hide dot files and emacs backup files.
 (add-hook 'dired-load-hook
@@ -66,6 +75,34 @@
 
 ;; Enable upcase-region function (why is this disabled by default??)
 (put 'upcase-region 'disabled nil)
+
+;; Font Lock
+(global-font-lock-mode t)
+(display-time-mode t)
+
+;; Enable visual feedback on selections
+(setq transient-mark-mode t)
+
+;; Show the time and date in the bar
+(setq display-time-day-and-date t)
+
+;; Always wrap split windows
+(setq truncate-partial-width-windows nil)
+
+;; Backup and auto save. I like these to be in a unified location, not
+;; scattered to the wind.
+(if (not (file-exists-p "~/.emacs.d/backups"))
+  (make-directory "~/.emacs.d/backups" t))
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+(setq backup-by-copying t)
+(setq auto-save-default t)
+
+;; Keep the oldest 2 versions, and the newest 5 versions. Disk space is cheap!
+(setq kept-old-versions 2)
+(setq kept-new-versions 5)
+
+;; Silently delete old versions, don't interrupt saving and ask if it's OK.
+(setq delete-old-versions t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Set up load paths.
@@ -157,11 +194,11 @@
 (require 'ecb-autoloads)
 
 ;; CSS mode
-(add-hook 'css-mode-hook
-          '(lambda ()
-             (turn-on-lazy-lock)
-             (setq c-basic-offset 4 tab-width 4)
-             (setq indent-tabs-mode t)))
+;; (add-hook 'css-mode-hook
+;;          '(lambda ()
+;;             (turn-on-lazy-lock)
+;;             (setq c-basic-offset 4 tab-width 4)
+;;             (setq indent-tabs-mode t)))
 
 ;; SLIME
 (setq inferior-lisp-program "/usr/local/bin/sbcl")
@@ -170,26 +207,6 @@
 ;; YAML
 (require 'yaml-mode)
 
-;; Font Lock
-(global-font-lock-mode t)
-(display-time-mode t)
-
-;; Enable visual feedback on selections
-(setq transient-mark-mode t)
-
-;; Show the time and date in the bar
-(setq display-time-day-and-date t)
-
-;; Always wrap split windows
-(setq truncate-partial-width-windows nil)
-
-;; Backup and auto save. I like these to be in a unified location, not
-;; scattered to the wind.
-(if (not (file-exists-p "~/.emacs.d/backups"))
-  (make-directory "~/.emacs.d/backups" t))
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
-(setq backup-by-copying t)
-(setq auto-save-default t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; custom-set-variables
