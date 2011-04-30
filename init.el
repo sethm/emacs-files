@@ -119,6 +119,11 @@
 ;; nxhtml
 (load "~/.emacs.d/nxhtml/autostart.el")
 
+;; html5-el
+(eval-after-load "rng-loc"
+  '(add-to-list 'rng-schema-locating-files "~/.emacs.d/html5-el/schemas.xml"))
+(require 'whattf-dt)
+
 ;; Outline mode
 (add-to-list 'auto-mode-alist '("\\.outline$" . outline-mode))
 
