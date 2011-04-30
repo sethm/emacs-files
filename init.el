@@ -113,6 +113,11 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/ecb/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/rinari/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/yasnippet/"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/nxhtml/"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/html5-el/"))
+
+;; nxhtml
+(load "~/.emacs.d/nxhtml/autostart.el")
 
 ;; Outline mode
 (add-to-list 'auto-mode-alist '("\\.outline$" . outline-mode))
