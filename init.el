@@ -130,6 +130,10 @@
   '(add-to-list 'rng-schema-locating-files "~/.emacs.d/html5-el/schemas.xml"))
 (require 'whattf-dt)
 
+;; graphviz dot mode
+(load "~/.emacs.d/graphviz-dot-mode.el")
+(add-to-list 'auto-mode-alist '("\\.dot$" . graphviz-dot-mode))
+
 ;; Outline mode
 (add-to-list 'auto-mode-alist '("\\.outline$" . outline-mode))
 
@@ -240,7 +244,6 @@
  '(ecb-auto-activate t)
  '(ecb-layout-name "left13")
  '(ecb-options-version "2.32")
- '(ecb-source-path (quote ("/seth@dev.glyde.com:/Users/seth/Work/trunk")))
  '(ecb-tip-of-the-day nil)
  '(ecb-vc-enable-support t)
  '(explicit-bash-args (quote ("--noediting" "-i" "-l")))
@@ -314,7 +317,7 @@
 (if (string= window-system "ns")
   (progn
     (normal-erase-is-backspace-mode 1)
-    (set-default-font "-apple-inconsolata-medium-r-normal--17-170-72-72-m-170-utf-8")
+    (set-default-font "-apple-menlo-medium-r-normal--14-140-72-72-m-140-utf-8")
   ))
 
 
