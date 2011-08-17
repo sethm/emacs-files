@@ -117,10 +117,19 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/yasnippet/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/nxhtml/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/html5-el/"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/ljupdate/"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/twittering-mode/"))
 
 ;; color themes (Remove when Emacs 24 comes out)
 (require 'color-theme)
 (require 'color-theme-solarized)
+
+
+;; twittering-mode
+(require 'twittering-mode)
+
+;; ljupdate
+(require 'ljupdate)
 
 ;; nxhtml
 (load "~/.emacs.d/nxhtml/autostart.el")
@@ -249,6 +258,8 @@
  '(explicit-bash-args (quote ("--noediting" "-i" "-l")))
  '(graphviz-dot-indent-width 2)
  '(javascript-indent-level 2)
+ '(lj-cache-login-information t)
+ '(lj-fill-function (quote ignore))
  '(menu-bar-mode t)
  '(shell-completion-execonly t)
  '(tab-stop-list (quote (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60)))
@@ -299,6 +310,8 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(mode-line ((t (:foreground "cyan" :inverse-video t))))
+ '(mode-line-inactive ((default (:inherit mode-line)) (nil (:foreground "white"))))
  '(mumamo-background-chunk-major ((t nil)))
  '(mumamo-background-chunk-submode1 ((((class color) (min-colors 8)) nil)))
  '(mumamo-background-chunk-submode2 ((((class color) (min-colors 8)) nil)))
