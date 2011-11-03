@@ -310,8 +310,6 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(mode-line ((t (:foreground "cyan" :inverse-video t))))
- '(mode-line-inactive ((default (:inherit mode-line)) (nil (:foreground "white"))))
  '(mumamo-background-chunk-major ((t nil)))
  '(mumamo-background-chunk-submode1 ((((class color) (min-colors 8)) nil)))
  '(mumamo-background-chunk-submode2 ((((class color) (min-colors 8)) nil)))
