@@ -317,7 +317,7 @@
 (if (string= window-system "ns")
   (progn
     (normal-erase-is-backspace-mode 1)
-    (set-default-font "-apple-menlo-medium-r-normal--14-140-72-72-m-140-utf-8")
+    (set-default-font "-apple-menlo-medium-r-normal--12-140-72-72-m-120-utf-8")
   ))
 
 
