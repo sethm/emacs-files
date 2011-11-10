@@ -305,17 +305,6 @@
 ;; custom-set-faces
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(mumamo-background-chunk-major ((t nil)))
- '(mumamo-background-chunk-submode1 ((((class color) (min-colors 8)) nil)))
- '(mumamo-background-chunk-submode2 ((((class color) (min-colors 8)) nil)))
- '(mumamo-background-chunk-submode3 ((((class color) (min-colors 8)) nil)))
- '(mumamo-background-chunk-submode4 ((((class color) (min-colors 8)) nil))))
-
 ;; Only set mode-line face if running in a terminal
 (if (eq window-system nil)
     (progn
@@ -327,8 +316,23 @@
 ;; Window system is Mac OS X ("Emacs for OS X")
 (if (string= window-system "ns")
   (progn
+    (custom-set-faces
+     '(default ((t (:inherit nil
+		    :stipple nil
+		    :background "White"
+		    :foreground "Black"
+		    :inverse-video nil
+		    :box nil
+		    :strike-through nil
+		    :overline nil
+		    :underline nil
+		    :slant normal
+		    :weight normal
+		    :height 140
+		    :width normal
+		    :foundry "apple"
+		    :family "Menlo")))))
     (normal-erase-is-backspace-mode 1)
-    (set-default-font "-apple-menlo-medium-r-normal--12-140-72-72-m-120-utf-8")
   ))
 
 
