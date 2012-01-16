@@ -120,6 +120,11 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/ljupdate/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/twittering-mode/"))
 
+;; autopair
+(require 'autopair)
+(add-hook 'lisp-mode-common-hook #'(lambda () (autopair-mode)))
+(add-hook 'c-mode-common-hook #'(lambda () (autopair-mode)))
+
 ;; color themes (Remove when Emacs 24 comes out)
 (require 'color-theme)
 (require 'color-theme-solarized)
@@ -310,6 +315,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil :background "White" :foreground "Black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Menlo"))))
  '(mumamo-background-chunk-major ((t nil)))
  '(mumamo-background-chunk-submode1 ((((class color) (min-colors 8)) nil)))
  '(mumamo-background-chunk-submode2 ((((class color) (min-colors 8)) nil)))
