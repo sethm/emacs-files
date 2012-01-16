@@ -310,7 +310,6 @@
 ;; custom-set-faces
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-<<<<<<< HEAD
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -323,8 +322,6 @@
  '(mumamo-background-chunk-submode3 ((((class color) (min-colors 8)) nil)))
  '(mumamo-background-chunk-submode4 ((((class color) (min-colors 8)) nil))))
 
-=======
->>>>>>> a12b7293f98d2add6829f165f5a38372de75e511
 ;; Only set mode-line face if running in a terminal
 (if (eq window-system nil)
     (progn
