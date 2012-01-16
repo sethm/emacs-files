@@ -257,7 +257,7 @@
  '(ecb-vc-enable-support t)
  '(explicit-bash-args (quote ("--noediting" "-i" "-l")))
  '(graphviz-dot-indent-width 2)
- '(javascript-indent-level 2)
+ '(js-indent-level 2)
  '(lj-cache-login-information t)
  '(lj-fill-function (quote ignore))
  '(menu-bar-mode t)
