@@ -160,6 +160,14 @@
 (require 'ido)
 (ido-mode t)
 
+;; JS mode
+(add-hook 'js-mode-hook
+	  '(lambda ()
+             (setq c-basic-offset 4)
+             (setq tab-width 4)
+             (setq indent-tabs-mode nil)))
+
+
 ;; Rinari
 (require 'rinari)
 (setq rinari-tags-file-name "TAGS")
@@ -262,7 +270,7 @@
  '(ecb-vc-enable-support t)
  '(explicit-bash-args (quote ("--noediting" "-i" "-l")))
  '(graphviz-dot-indent-width 2)
- '(js-indent-level 2)
+ '(js-indent-level 4)
  '(lj-cache-login-information t)
  '(lj-fill-function (quote ignore))
  '(menu-bar-mode t)
