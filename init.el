@@ -14,22 +14,46 @@
 ;;;; Configure window movement keys.
 ;;
 ;; OS X as the client
-(global-set-key (read-kbd-macro "M-[ 5 D") 'windmove-left)
-(global-set-key (read-kbd-macro "M-[ 5 C") 'windmove-right)
-(global-set-key (read-kbd-macro "M-[ 5 A") 'windmove-up)
-(global-set-key (read-kbd-macro "M-[ 5 B") 'windmove-down)
+(global-set-key (read-kbd-macro "M-[ 5 D") 'quiet-windmove-left)
+(global-set-key (read-kbd-macro "M-[ 5 C") 'quiet-windmove-right)
+(global-set-key (read-kbd-macro "M-[ 5 A") 'quiet-windmove-up)
+(global-set-key (read-kbd-macro "M-[ 5 B") 'quiet-windmove-down)
 ;;
 ;; Linux as the client
-(global-set-key (read-kbd-macro "M-[ 1 ; 5 D") 'windmove-left)
-(global-set-key (read-kbd-macro "M-[ 1 ; 5 C") 'windmove-right)
-(global-set-key (read-kbd-macro "M-[ 1 ; 5 A") 'windmove-up)
-(global-set-key (read-kbd-macro "M-[ 1 ; 5 B") 'windmove-down)
+(global-set-key (read-kbd-macro "M-[ 1 ; 5 D") 'quiet-windmove-left)
+(global-set-key (read-kbd-macro "M-[ 1 ; 5 C") 'quiet-windmove-right)
+(global-set-key (read-kbd-macro "M-[ 1 ; 5 A") 'quiet-windmove-up)
+(global-set-key (read-kbd-macro "M-[ 1 ; 5 B") 'quiet-windmove-down)
 ;;
 ;; Linux GTK as the client
-(global-set-key (kbd "C-<left>")  'windmove-left)
-(global-set-key (kbd "C-<right>") 'windmove-right)
-(global-set-key (kbd "C-<up>")    'windmove-up)
-(global-set-key (kbd "C-<down>")  'windmove-down)
+(global-set-key (kbd "C-<left>")  'quiet-windmove-left)
+(global-set-key (kbd "C-<right>") 'quiet-windmove-right)
+(global-set-key (kbd "C-<up>")    'quiet-windmove-up)
+(global-set-key (kbd "C-<down>")  'quiet-windmove-down)
+
+;; Make emacs shut up its "No window <foo> from selected window"
+;; errors when accidentally trying to move to a non-existent window.
+(defun quiet-windmove (direction)
+  ;; Catch all errors and silently return nil.
+  (condition-case nil
+      (cond ((eq direction 'left)
+	     (windmove-left))
+	    ((eq direction 'right)
+	     (windmove-right))
+	    ((eq direction 'up)
+	     (windmove-up))
+	    ((eq direction 'down)
+	     (windmove-down))
+	    nil)
+    (error nil)))
+  
+
+;; These are required to be (interactive)
+(defun quiet-windmove-left () (interactive) (quiet-windmove 'left))
+(defun quiet-windmove-right () (interactive) (quiet-windmove 'right))
+(defun quiet-windmove-up () (interactive) (quiet-windmove 'up))
+(defun quiet-windmove-down () (interactive) (quiet-windmove 'down))
+  
 
 ;; Show (line,column) in the modeline
 (setq line-number-mode t)
@@ -151,6 +175,9 @@
 ;; Outline mode
 (add-to-list 'auto-mode-alist '("\\.outline$" . outline-mode))
 
+;; psvn
+(require 'psvn)
+
 ;; yasnippet
 (require 'yasnippet)
 (yas/initialize)
@@ -262,7 +289,6 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(cssm-indent-level 4)
- '(default-frame-alist (quote ((menu-bar-lines . 1) (background-mode . light))))
  '(ecb-auto-activate t)
  '(ecb-layout-name "left13")
  '(ecb-options-version "2.32")
@@ -323,7 +349,6 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "White" :foreground "Black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Menlo"))))
  '(mumamo-background-chunk-major ((t nil)))
  '(mumamo-background-chunk-submode1 ((((class color) (min-colors 8)) nil)))
  '(mumamo-background-chunk-submode2 ((((class color) (min-colors 8)) nil)))
