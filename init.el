@@ -143,6 +143,10 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/html5-el/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/ljupdate/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/twittering-mode/"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/magit-1.1.1/"))
+
+;; magit - git integration
+(require 'magit)
 
 ;; autopair
 (require 'autopair)
@@ -232,6 +236,11 @@
 (autoload 'haml-mode "~/.emacs.d/haml-mode"
   "Mode for editing haml templates" t)
 
+(add-hook 'haml-mode-hook
+	  '(lambda ()
+	     (setq indent-tabs-mode nil)
+	     (define-key haml-mode-map "\C-m" 'newline-and-indent)))
+
 ;; CEDET
 (load-file "~/.emacs.d/cedet/common/cedet.el")
 (require 'cedet)
@@ -263,11 +272,12 @@
 (require 'ecb-autoloads)
 
 ;; CSS mode
-;; (add-hook 'css-mode-hook
-;;          '(lambda ()
+(add-hook 'css-mode-hook
+          '(lambda ()
 ;;             (turn-on-lazy-lock)
-;;             (setq c-basic-offset 4 tab-width 4)
-;;             (setq indent-tabs-mode t)))
+             (setq c-basic-offset 2 tab-width 2)
+	     (setq css-indent-offset 2)
+             (setq indent-tabs-mode t)))
 
 ;; SLIME
 (if (file-exists-p "~/quicklisp")
@@ -288,7 +298,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(cssm-indent-level 4)
+ '(cssm-indent-level 2)
  '(ecb-auto-activate t)
  '(ecb-layout-name "left13")
  '(ecb-options-version "2.32")
@@ -327,7 +337,8 @@
 	 ("Rakefile$" . ruby-mode)
 	 ("\\.rake$" . ruby-mode)
 	 ("\\.py$" . python-mode)
-	 ("\\.css$" . java-mode)
+	 ("\\.css$" . css-mode)
+	 ("\\.scss$" . css-mode)
 	 ("\\.haml$" . haml-mode)
 	 ("\\.emacs$" . emacs-lisp-mode)
 	 ("\\.el$" . emacs-lisp-mode)
