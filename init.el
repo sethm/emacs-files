@@ -144,6 +144,10 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/ljupdate/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/twittering-mode/"))
 
+
+;; Coffeescript mode
+(require 'coffee-mode)
+
 ;; autopair
 (require 'autopair)
 (add-hook 'lisp-mode-common-hook #'(lambda () (autopair-mode)))
@@ -324,6 +328,7 @@
 	 ("\\.txt$" . text-mode)
 	 ("\\.rb$" . ruby-mode)
 	 ("\\.tl$" . ruby-mode)
+   ("\\.coffee$" . javascript-mode)
 	 ("Rakefile$" . ruby-mode)
 	 ("\\.rake$" . ruby-mode)
 	 ("\\.py$" . python-mode)
