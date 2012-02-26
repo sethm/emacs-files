@@ -144,10 +144,15 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/ljupdate/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/twittering-mode/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/magit-1.1.1/"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/jade-mode/"))
 
 ;; magit - git integration
 (require 'magit)
 
+;; Jade mode
+(require 'sws-mode)
+(require 'stylus-mode)
+(require 'jade-mode)
 
 ;; Coffeescript mode
 (require 'coffee-mode)
@@ -338,7 +343,8 @@
 	 ("\\.txt$" . text-mode)
 	 ("\\.rb$" . ruby-mode)
 	 ("\\.tl$" . ruby-mode)
-   ("\\.coffee$" . coffee-mode)
+	 ("\\.jade$" . jade-mode)
+	 ("\\.coffee$" . coffee-mode)
 	 ("Rakefile$" . ruby-mode)
 	 ("\\.rake$" . ruby-mode)
 	 ("\\.py$" . python-mode)
