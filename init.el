@@ -338,7 +338,7 @@
 	 ("\\.txt$" . text-mode)
 	 ("\\.rb$" . ruby-mode)
 	 ("\\.tl$" . ruby-mode)
-   ("\\.coffee$" . javascript-mode)
+   ("\\.coffee$" . coffee-mode)
 	 ("Rakefile$" . ruby-mode)
 	 ("\\.rake$" . ruby-mode)
 	 ("\\.py$" . python-mode)
