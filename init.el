@@ -134,7 +134,6 @@
 
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/color-theme/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/emacs-color-theme-solarized/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/cedet/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/ecb/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/rinari/"))
@@ -151,8 +150,13 @@
 
 ;; Jade mode
 (require 'sws-mode)
-(require 'stylus-mode)
 (require 'jade-mode)
+
+(add-hook 'jade-mode-hook
+	  (lambda ()
+	    (setq indent-tabs-mode nil)
+	    (setq tab-width 2)))
+
 
 ;; Coffeescript mode
 (require 'coffee-mode)
@@ -164,8 +168,8 @@
 
 ;; color themes (Remove when Emacs 24 comes out)
 (require 'color-theme)
-(require 'color-theme-solarized)
-
+(color-theme-initialize)
+(color-theme-tm)
 
 ;; twittering-mode
 (require 'twittering-mode)
@@ -344,6 +348,7 @@
 	 ("\\.rb$" . ruby-mode)
 	 ("\\.tl$" . ruby-mode)
 	 ("\\.jade$" . jade-mode)
+	 ("\\.styl$" . sws-mode)
 	 ("\\.coffee$" . coffee-mode)
 	 ("Rakefile$" . ruby-mode)
 	 ("\\.rake$" . ruby-mode)
