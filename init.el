@@ -185,6 +185,12 @@
   '(add-to-list 'rng-schema-locating-files "~/.emacs.d/html5-el/schemas.xml"))
 (require 'whattf-dt)
 
+(add-hook 'nxhtml-mode 
+    '(lambda ()
+             (setq c-basic-offset 2)
+             (setq tab-width 2)
+             (setq indent-tabs-mode nil)))
+
 ;; graphviz dot mode
 (load "~/.emacs.d/graphviz-dot-mode.el")
 (add-to-list 'auto-mode-alist '("\\.dot$" . graphviz-dot-mode))
@@ -405,7 +411,7 @@
 		    :underline nil
 		    :slant normal
 		    :weight normal
-		    :height 140
+		    :height 120
 		    :width normal
 		    :foundry "apple"
 		    :family "Menlo")))))
