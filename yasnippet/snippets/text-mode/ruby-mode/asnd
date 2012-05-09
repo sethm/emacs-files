@@ -1,0 +1,7 @@
+#name : assert_no_difference
+#contributor : seth morabito <sethm@loomcom.com>
+#group : tests
+# --
+assert_no_difference "${pattern}" do
+  $0
+end
