@@ -46,7 +46,6 @@
 	     (windmove-down))
 	    nil)
     (error nil)))
-  
 
 ;; These are required to be (interactive)
 (defun quiet-windmove-left () (interactive) (quiet-windmove 'left))
@@ -69,6 +68,18 @@
 ;; Turn off annoyances.
 (setq inhibit-startup-message t)
 (setq inhibit-splash-screen t)
+
+;; Mumamo makes emacs 23.3 and higher complain about obsolete
+;; variables.  This is a sneaky workaround.
+(when (and (equal emacs-major-version 23)
+           (> emacs-minor-version 2))
+  (eval-after-load "bytecomp"
+    '(add-to-list 'byte-compile-not-obsolete-vars
+                  'font-lock-beginning-of-syntax-function))
+  ;; tramp-compat.el clobbers this variable!
+  (eval-after-load "tramp-compat"
+    '(add-to-list 'byte-compile-not-obsolete-vars
+                  'font-lock-beginning-of-syntax-function)))  
 
 ;; Translates ANSI colors in shell.
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
