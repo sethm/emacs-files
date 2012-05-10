@@ -340,6 +340,7 @@
  '(lj-cache-login-information t)
  '(lj-fill-function (quote ignore))
  '(menu-bar-mode t)
+ '(tool-bar-mode nil)
  '(shell-completion-execonly t)
  '(tab-stop-list (quote (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60)))
  '(version-control t))
