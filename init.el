@@ -155,6 +155,15 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/twittering-mode/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/magit-1.1.1/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/jade-mode/"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/spice-mode/"))
+
+;; spice mode
+(autoload 'spice-mode "spice-mode" "Spice/Layla Editing Mode" t)
+(add-to-list 'auto-mode-alist '("\\.cir$" . spice-mode))
+(add-to-list 'auto-mode-alist '("\\.ckt$" . spice-mode))
+(add-to-list 'auto-mode-alist '("\\.inp$" . spice-mode))
+(add-to-list 'auto-mode-alist '("\\.pdir$" . spice-mode))
+(add-to-list 'auto-mode-alist '("\\.spout$" . spice-mode))
 
 ;; magit - git integration
 (require 'magit)
