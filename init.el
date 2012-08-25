@@ -141,6 +141,48 @@
 (setq delete-old-versions t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; New for Emacs 24 - ELPA package support
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;(if (>= 24 emacs-major-version)
+;;    (progn
+
+      (require 'package)
+      (setq package-archives (cons '("tromey" . "http://tromey.com/elpa/") package-archives))
+      (package-initialize)
+      (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get"))
+      (require 'el-get)
+      
+      (setq el-get-sources
+	    '((:name ruby-mode 
+		     :type elpa
+		     :load "ruby-mode.el")
+	      (:name inf-ruby  :type elpa)
+	      (:name ruby-compilation :type elpa)
+	      (:name css-mode :type elpa)
+	      (:name textmate
+		     :type git
+		     :url "git://github.com/defunkt/textmate.el"
+		     :load "textmate.el")
+	      (:name rvm
+		     :type git
+		     :url "http://github.com/djwhitt/rvm.el.git"
+		     :load "rvm.el"
+		     :compile ("rvm.el")
+		     :after (progn (rvm-use-default)))
+	      (:name rhtml
+		     :type git
+		     :url "https://github.com/eschulte/rhtml.git"
+		     :features rhtml-mode)
+	      (:name yaml-mode 
+		     :type git
+		     :url "http://github.com/yoshiki/yaml-mode.git"
+		     :features yaml-mode)))
+
+      (el-get 'sync)
+
+;; ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Set up load paths.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -179,9 +221,10 @@
 (add-hook 'c-mode-common-hook #'(lambda () (autopair-mode)))
 
 ;; color themes (Remove when Emacs 24 comes out)
-(require 'color-theme)
-(color-theme-initialize)
-(color-theme-tm)
+(when (equal 23 emacs-major-version)
+  (require 'color-theme)
+  (color-theme-initialize)
+  (color-theme-tm))
 
 ;; twittering-mode
 (require 'twittering-mode)
@@ -408,25 +451,27 @@
        '(mode-line-inactive ((default (:inherit mode-line)) (nil (:foreground "white"))))
        )))
 
-;; Window system is Mac OS X ("Emacs for OS X")
+;; Window system is Mac OS X ("Emacs for OS X"),
 (if (string= window-system "ns")
   (progn
-    (custom-set-faces
-     '(default ((t (:inherit nil
-		    :stipple nil
-		    :background "White"
-		    :foreground "Black"
-		    :inverse-video nil
-		    :box nil
-		    :strike-through nil
-		    :overline nil
-		    :underline nil
-		    :slant normal
-		    :weight normal
-		    :height 120
-		    :width normal
-		    :foundry "apple"
-		    :family "Menlo")))))
+    (set-frame-font "Menlo-18")
+    (load-theme 'tango)
+    ;; (custom-set-faces
+    ;;  '(default ((t (:inherit nil
+    ;; 		    :stipple nil
+    ;; 		    :background "White"
+    ;; 		    :foreground "Black"
+    ;; 		    :inverse-video nil
+    ;; 		    :box nil
+    ;; 		    :strike-through nil
+    ;; 		    :overline nil
+    ;; 		    :underline nil
+    ;; 		    :slant normal
+    ;; 		    :weight normal
+    ;; 		    :height 140
+    ;; 		    :width normal
+    ;; 		    :foundry "apple"
+    ;; 		    :family "Menlo")))))
     (normal-erase-is-backspace-mode 1)
   ))
 
