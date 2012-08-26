@@ -85,7 +85,6 @@
 
 ;; Fix tabs
 (setq indent-tabs-mode nil)
-(setq ruby-indent-tabs-mode nil)
 (setq c-basic-offset 2)
 (setq tab-width 2)
 
@@ -129,285 +128,22 @@
 ;; Silently delete old versions, don't interrupt saving and ask if it's OK.
 (setq delete-old-versions t)
 
-(if (>= 24 emacs-major-version)
-    
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; New for Emacs 24 - ELPA package support
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    (progn
-
-      ;;
-      ;; Define hooks for packages to be loaded by el-get
-      ;;
-      (defun ruby-mode-hook ()
-        (autoload 'ruby-mode, "ruby-mode" nil t)
-        (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
-        (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
-        (add-to-list 'auto-mode-alist '("Rakefile" . ruby-mode))
-        (add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
-        (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
-        (add-to-list 'auto-mode-alist '("\\.ru\\'" . ruby-mode))
-        (add-hook 'ruby-mode-hook '(lambda ()
-                                     (setq ruby-deep-arglist t)
-                                     (setq ruby-deep-indent-paren nil)
-                                     (setq c-tab-always-indent nil)
-                                     (require 'inf-ruby)
-                                     (require 'ruby-compilation))))
-
-      (defun rhtml-mode-hook ()
-        (autoload 'rhtml-mode "rhtml-mode" nil t)
-        (add-to-list 'auto-mode-alist '("\\.erb\\'" . rhtml-mode))
-        (add-to-list 'auto-mode-alist '("\\.rjs\\'" . rhtml-mode))
-        (add-hook 'rhtml-mode '(lambda ()
-                                 (define-key rhtml-mode-map (kbd "M-s") 'save-buffer))))
-
-      (defun yaml-mode-hook ()
-        (autoload 'yaml-mode "yaml-mode" nil t)
-        (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-        (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode)))
-
-      (defun css-mode-hook ()
-        (autoload 'css-mode "css-mode" nil t)
-        (add-hook 'css-mode-hook '(lambda ()
-                                    (setq css-indent-level 2)
-                                    (setq css-indent-offset 2))))
-
-      ;;
-      ;; el-get packages
-      ;;
-      (require 'package)
-      (setq package-archives (cons '("tromey" . "http://tromey.com/elpa/") package-archives))
-      (package-initialize)
-      (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get"))
-      (require 'el-get)
-      (setq el-get-user-package-directory (expand-file-name "~/.emacs.d/el-get-init-files/"))
-      (setq el-get-sources
-            '((:name ruby-mode 
-                     :type elpa
-                     :load "ruby-mode.el"
-                     :after (progn (ruby-mode-hook)))
-              (:name inf-ruby  :type elpa)
-              (:name ruby-compilation :type elpa)
-              (:name css-mode
-                     :type elpa
-                     :after (progn (css-mode-hook)))
-              (:name textmate
-                     :type git
-                     :url "git://github.com/defunkt/textmate.el"
-                     :load "textmate.el")
-              (:name rvm
-                     :type git
-                     :url "http://github.com/djwhitt/rvm.el.git"
-                     :load "rvm.el"
-                     :compile ("rvm.el")
-                     :after (progn (rvm-use-default)))
-              (:name rhtml
-                     :type git
-                     :url "https://github.com/eschulte/rhtml.git"
-                     :features rhtml-mode
-                     :after (progn (rhtml-mode-hook)))))
-      (el-get 'sync))
-
-  
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; For Emacs 23 and lower... old style.
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (progn
-
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; Set up load paths.
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/color-theme/"))
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/cedet/"))
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/ecb/"))
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/yasnippet/"))
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/nxhtml/"))
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/html5-el/"))
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/ljupdate/"))
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/twittering-mode/"))
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/magit-1.1.1/"))
-    (add-to-list 'load-path (expand-file-name "~/.emacs.d/jade-mode/"))
-
-    ;; magit - git integration
-    (require 'magit)
-
-    ;; Jade mode
-    (require 'sws-mode)
-    (require 'jade-mode)
-
-    (add-hook 'jade-mode-hook
-              (lambda ()
-                (setq tab-width 2)))
-
-    ;; Coffeescript mode
-    (require 'coffee-mode)
-
-    ;; autopair
-    (require 'autopair)
-    (add-hook 'lisp-mode-common-hook #'(lambda () (autopair-mode)))
-    (add-hook 'c-mode-common-hook #'(lambda () (autopair-mode)))
-
-    ;; color themes (Remove when Emacs 24 comes out)
-    (require 'color-theme)
-    (color-theme-initialize)
-    (color-theme-tm)
-
-    ;; twittering-mode
-    (require 'twittering-mode)
-
-    ;; ljupdate
-    (require 'ljupdate)
-
-    ;; nxhtml
-    (load "~/.emacs.d/nxhtml/autostart.el")
-
-    ;; html5-el
-    (eval-after-load "rng-loc"
-      '(add-to-list 'rng-schema-locating-files "~/.emacs.d/html5-el/schemas.xml"))
-    (require 'whattf-dt)
-
-    (add-hook 'nxhtml-mode 
-              '(lambda ()
-                 (setq c-basic-offset 2)
-                 (setq tab-width 2)))
-
-    ;; graphviz dot mode
-    (load "~/.emacs.d/graphviz-dot-mode.el")
-    (add-to-list 'auto-mode-alist '("\\.dot$" . graphviz-dot-mode))
-
-    ;; Outline mode
-    (add-to-list 'auto-mode-alist '("\\.outline$" . outline-mode))
-
-    ;; psvn
-    (require 'psvn)
-
-    ;; yasnippet
-    (require 'yasnippet)
-
-    (yas/initialize)
-    (yas/load-directory "~/.emacs.d/yasnippet/snippets")
-
-    ;; IDO (Interactively DO mode)
-    (require 'ido)
-    (ido-mode t)
-
-    ;; JS mode
-    (add-hook 'js-mode-hook
-              '(lambda ()
-                 (setq c-basic-offset 4)
-                 (setq tab-width 4)))
-
-
-    ;;
-    ;; Ruby Mode.
-    ;;
-    (autoload 'ruby-mode "~/.emacs.d/ruby-mode"
-      "Mode for editing ruby source files" t)
-
-    (add-hook 'ruby-mode-hook
-              '(lambda ()
-                 (setq c-basic-offset 2)
-                 (setq tab-width 2)))
-
-    ;;
-    ;; Java mode
-    ;;
-    (add-hook 'java-mode-hook
-              '(lambda ()
-                 (setq c-basic-offset 2)
-                 (setq tab-width 2)))
-
-    ;; handle @annotations in Java mode.
-    (add-hook 'java-mode-hook
-              '(lambda () "Treat Java 1.5 @-style annotations as comments."
-                 (setq c-comment-start-regexp "\\(@\\|/\\(/\\|[*][*]?\\)\\)")
-                 (modify-syntax-entry ?@ "< b" java-mode-syntax-table)))
-
-    ;;
-    ;; HAML Mode.
-    ;;
-    (autoload 'haml-mode "~/.emacs.d/haml-mode"
-      "Mode for editing haml templates" t)
-
-    (add-hook 'haml-mode-hook
-              '(lambda ()
-                 (define-key haml-mode-map "\C-m" 'newline-and-indent)))
-
-    ;; CEDET
-    (load-file "~/.emacs.d/cedet/common/cedet.el")
-    (require 'cedet)
-
-    ;; Enabling various SEMANTIC minor modes.  See semantic/INSTALL for more ideas.
-    ;; Select one of the following:
-
-    ;; * This enables the database and idle reparse engines
-    ;;(semantic-load-enable-minimum-features)
-
-    ;; * This enables some tools useful for coding, such as summary mode
-    ;;   imenu support, and the semantic navigator
-    ;; (semantic-load-enable-code-helpers)
-
-    ;; * This enables even more coding tools such as the nascent intellisense mode
-    ;;   decoration mode, and stickyfunc mode (plus regular code helpers)
-    ;; (semantic-load-enable-guady-code-helpers)
-
-    ;; * This turns on which-func support (Plus all other code helpers)
-    (semantic-load-enable-excessive-code-helpers)
-    (setq semanticdb-default-save-directory "~/.semantic.cache")
-
-    ;; This turns on modes that aid in grammar writing and semantic tool
-    ;; development.  It does not enable any other features such as code
-    ;; helpers above.
-    ;; (semantic-load-enable-semantic-debugging-helpers)
-
-    ;; Emacs Code Browser
-    (require 'ecb-autoloads)
-
-    ;; CSS mode
-    (add-hook 'css-mode-hook
-              '(lambda ()
-                 ;;             (turn-on-lazy-lock)
-                 (setq c-basic-offset 2 tab-width 2)
-                 (setq css-indent-offset 2)))
-
-    ;; SLIME
-    (if (file-exists-p "~/quicklisp")
-        (progn
-          (setq inferior-lisp-program "/usr/local/bin/sbcl")
-          (load (expand-file-name "~/quicklisp/slime-helper.el"))))
-
-    ;; YAML
-    (require 'yaml-mode)))
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; custom-set-variables
+;; New for Emacs 24 - ELPA package support
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(cssm-indent-level 2)
- '(ecb-auto-activate t)
- '(ecb-layout-name "left13")
- '(ecb-options-version "2.32")
- '(ecb-tip-of-the-day nil)
- '(ecb-vc-enable-support t)
- '(explicit-bash-args (quote ("--noediting" "-i" "-l")))
- '(graphviz-dot-indent-width 2)
- '(js-indent-level 4)
- '(lj-cache-login-information t)
- '(lj-fill-function (quote ignore))
- '(menu-bar-mode t)
- '(shell-completion-execonly t)
- '(tab-stop-list (quote (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60)))
- '(version-control t))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get"))
+(setq el-get-user-package-directory (expand-file-name "~/.emacs.d/el-get-init-files/"))
 
+(unless (require 'el-get nil t)
+  (url-retrieve
+   "https://raw.github.com/dimitri/el-get/master/el-get-install.el"
+   (lambda (s)
+     (let (el-get-master-branch)
+       (goto-char (point-max))
+       (eval-print-last-sexp)))))
+
+(el-get 'sync)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key definitions
@@ -416,7 +152,6 @@
 (define-key global-map "\C-xj" 'java-mode)
 (global-set-key "\C-xl" 'goto-line)
 (global-set-key "\C-cl" 'linum-mode)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto-mode-alist
@@ -437,21 +172,6 @@
          ("\\.lisp$" . lisp-mode)
          ("\\.java$" . java-mode)) auto-mode-alist))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; custom-set-faces
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(mumamo-background-chunk-major ((t nil)))
- '(mumamo-background-chunk-submode1 ((((class color) (min-colors 8)) nil)))
- '(mumamo-background-chunk-submode2 ((((class color) (min-colors 8)) nil)))
- '(mumamo-background-chunk-submode3 ((((class color) (min-colors 8)) nil)))
- '(mumamo-background-chunk-submode4 ((((class color) (min-colors 8)) nil))))
-
 ;; Only set mode-line face if running in a terminal
 (if (eq window-system nil)
     (progn
@@ -463,27 +183,9 @@
 ;; Window system is Mac OS X ("Emacs for OS X"),
 (if (string= window-system "ns")
     (progn
-      (set-frame-font "Menlo-18")
+      (set-frame-font "Menlo-14")
       (load-theme 'tango)
-      ;; (custom-set-faces
-      ;;  '(default ((t (:inherit nil
-      ;; 		    :stipple nil
-      ;; 		    :background "White"
-      ;; 		    :foreground "Black"
-      ;; 		    :inverse-video nil
-      ;; 		    :box nil
-      ;; 		    :strike-through nil
-      ;; 		    :overline nil
-      ;; 		    :underline nil
-      ;; 		    :slant normal
-      ;; 		    :weight normal
-      ;; 		    :height 140
-      ;; 		    :width normal
-      ;; 		    :foundry "apple"
-      ;; 		    :family "Menlo")))))
-      (normal-erase-is-backspace-mode 1)
-      ))
-
+      (normal-erase-is-backspace-mode 1)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions
@@ -491,18 +193,15 @@
 
 (defun catalog ()
   (interactive)
-  (find-file "/seth@dev-sb01.glyde.com:~/Work/catalog/")
-  )
+  (find-file "/seth@dev-sb01.glyde.com:~/Work/catalog/"))
 
 (defun trunk ()
   (interactive)
-  (find-file "/seth@dev-sb01.glyde.com:~/Work/trunk/")
-  )
+  (find-file "/seth@dev-sb01.glyde.com:~/Work/trunk/"))
 
 (defun branch ()
   (interactive)
-  (find-file "/seth@dev-sb01.glyde.com:~/Work/branch/")
-  )
+  (find-file "/seth@dev-sb01.glyde.com:~/Work/branch/"))
 
 (defun insert-clisp-project ()
   "Insert a template (with DEFPACKAGE and IN-PACKAGE forms) into
