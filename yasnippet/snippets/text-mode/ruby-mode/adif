@@ -1,7 +1,0 @@
-#name : assert_difference
-#contributor : seth morabito <sethm@loomcom.com>
-#group : tests
-# --
-assert_difference "${pattern}", ${1} do
-  $0
-end

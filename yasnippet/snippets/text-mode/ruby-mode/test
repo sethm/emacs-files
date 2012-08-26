@@ -1,7 +1,0 @@
-#name : test "foo" do ... end
-#contributor : seth morabito <sethm@loomcom.com>
-#group : test
-# --
-test "${name}" do
-  $0
-end

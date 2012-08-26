@@ -1,6 +1,0 @@
-#name : each do |...| ... end
-#group : collections
-# --
-each do |${e}|
-  $0
-end

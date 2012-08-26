@@ -1,7 +1,0 @@
-#name : def ... end
-#contributor : seth morabito <sethm@loomcom.com>
-#group : definitions
-# --
-def ${foo}
-  $0
-end
