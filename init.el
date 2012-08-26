@@ -1,15 +1,7 @@
-;; .emacs
-
-
-;; defaults write org.gnu.Emacs Emacs.font "-*-bitstream vera sans mono-medium-r-normal--14-*-*-*-*-*-mac-roman"
-;; defaults write org.gnu.Emacs Emacs.font "-apple-monaco-medium-r-normal--14-*-*-*-*-*-mac-roman"
-
-;; (setq mac-allow-anti-aliasing nil)  ;; turn off anti-aliasing
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Misc. startup options.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;
 
 ;;;; Configure window movement keys.
 ;;
@@ -37,14 +29,14 @@
   ;; Catch all errors and silently return nil.
   (condition-case nil
       (cond ((eq direction 'left)
-	     (windmove-left))
-	    ((eq direction 'right)
-	     (windmove-right))
-	    ((eq direction 'up)
-	     (windmove-up))
-	    ((eq direction 'down)
-	     (windmove-down))
-	    nil)
+             (windmove-left))
+            ((eq direction 'right)
+             (windmove-right))
+            ((eq direction 'up)
+             (windmove-up))
+            ((eq direction 'down)
+             (windmove-down))
+            nil)
     (error nil)))
 
 ;; These are required to be (interactive)
@@ -52,7 +44,6 @@
 (defun quiet-windmove-right () (interactive) (quiet-windmove 'right))
 (defun quiet-windmove-up () (interactive) (quiet-windmove 'up))
 (defun quiet-windmove-down () (interactive) (quiet-windmove 'down))
-  
 
 ;; Show (line,column) in the modeline
 (setq line-number-mode t)
@@ -87,27 +78,25 @@
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
 (add-hook 'sh-set-shell-hook
-	  (lambda ()
-	    (setq indent-tabs-mode nil)
-	    (setq tab-width 4)
-	    (setq c-basic-offset 4)
-	    (setq sh-basic-offset 4)))
+          (lambda ()
+            (setq tab-width 4)
+            (setq c-basic-offset 4)
+            (setq sh-basic-offset 4)))
 
 ;; Fix tabs
 (setq indent-tabs-mode nil)
 (setq ruby-indent-tabs-mode nil)
 (setq c-basic-offset 2)
 (setq tab-width 2)
-(setq indent-tabs-mode nil)
 
 ;; Tell dired to hide dot files and emacs backup files.
 (add-hook 'dired-load-hook
-	  (lambda ()
-	    (load "dired-x")))
+          (lambda ()
+            (load "dired-x")))
 (add-hook 'dired-mode-hook
-	  (lambda ()
-	    (setq dired-omit-files "^\\.[a-z|A-Z]+\\|^\\.?#\\|^\\.$")
-	    (dired-omit-mode 1)))
+          (lambda ()
+            (setq dired-omit-files "^\\.[a-z|A-Z]+\\|^\\.?#\\|^\\.$")
+            (dired-omit-mode 1)))
 
 ;; Enable upcase-region function (why is this disabled by default??)
 (put 'upcase-region 'disabled nil)
@@ -128,7 +117,7 @@
 ;; Backup and auto save. I like these to be in a unified location, not
 ;; scattered to the wind.
 (if (not (file-exists-p "~/.emacs.d/backups"))
-  (make-directory "~/.emacs.d/backups" t))
+    (make-directory "~/.emacs.d/backups" t))
 (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 (setq backup-by-copying t)
 (setq auto-save-default t)
@@ -140,227 +129,258 @@
 ;; Silently delete old versions, don't interrupt saving and ask if it's OK.
 (setq delete-old-versions t)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; New for Emacs 24 - ELPA package support
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;(if (>= 24 emacs-major-version)
-;;    (progn
+(if (>= 24 emacs-major-version)
+    
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; New for Emacs 24 - ELPA package support
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    (progn
 
+      ;;
+      ;; Define hooks for packages to be loaded by el-get
+      ;;
+      (defun ruby-mode-hook ()
+        (autoload 'ruby-mode, "ruby-mode" nil t)
+        (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
+        (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
+        (add-to-list 'auto-mode-alist '("Rakefile" . ruby-mode))
+        (add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
+        (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
+        (add-to-list 'auto-mode-alist '("\\.ru\\'" . ruby-mode))
+        (add-hook 'ruby-mode-hook '(lambda ()
+                                     (setq ruby-deep-arglist t)
+                                     (setq ruby-deep-indent-paren nil)
+                                     (setq c-tab-always-indent nil)
+                                     (require 'inf-ruby)
+                                     (require 'ruby-compilation))))
+
+      (defun rhtml-mode-hook ()
+        (autoload 'rhtml-mode "rhtml-mode" nil t)
+        (add-to-list 'auto-mode-alist '("\\.erb\\'" . rhtml-mode))
+        (add-to-list 'auto-mode-alist '("\\.rjs\\'" . rhtml-mode))
+        (add-hook 'rhtml-mode '(lambda ()
+                                 (define-key rhtml-mode-map (kbd "M-s") 'save-buffer))))
+
+      (defun yaml-mode-hook ()
+        (autoload 'yaml-mode "yaml-mode" nil t)
+        (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+        (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode)))
+
+      (defun css-mode-hook ()
+        (autoload 'css-mode "css-mode" nil t)
+        (add-hook 'css-mode-hook '(lambda ()
+                                    (setq css-indent-level 2)
+                                    (setq css-indent-offset 2))))
+
+      ;;
+      ;; el-get packages
+      ;;
       (require 'package)
       (setq package-archives (cons '("tromey" . "http://tromey.com/elpa/") package-archives))
       (package-initialize)
       (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get"))
       (require 'el-get)
-      
+      (setq el-get-user-package-directory (expand-file-name "~/.emacs.d/el-get-init-files/"))
       (setq el-get-sources
-	    '((:name ruby-mode 
-		     :type elpa
-		     :load "ruby-mode.el")
-	      (:name inf-ruby  :type elpa)
-	      (:name ruby-compilation :type elpa)
-	      (:name css-mode :type elpa)
-	      (:name textmate
-		     :type git
-		     :url "git://github.com/defunkt/textmate.el"
-		     :load "textmate.el")
-	      (:name rvm
-		     :type git
-		     :url "http://github.com/djwhitt/rvm.el.git"
-		     :load "rvm.el"
-		     :compile ("rvm.el")
-		     :after (progn (rvm-use-default)))
-	      (:name rhtml
-		     :type git
-		     :url "https://github.com/eschulte/rhtml.git"
-		     :features rhtml-mode)
-	      (:name yaml-mode 
-		     :type git
-		     :url "http://github.com/yoshiki/yaml-mode.git"
-		     :features yaml-mode)))
+            '((:name ruby-mode 
+                     :type elpa
+                     :load "ruby-mode.el"
+                     :after (progn (ruby-mode-hook)))
+              (:name inf-ruby  :type elpa)
+              (:name ruby-compilation :type elpa)
+              (:name css-mode
+                     :type elpa
+                     :after (progn (css-mode-hook)))
+              (:name textmate
+                     :type git
+                     :url "git://github.com/defunkt/textmate.el"
+                     :load "textmate.el")
+              (:name rvm
+                     :type git
+                     :url "http://github.com/djwhitt/rvm.el.git"
+                     :load "rvm.el"
+                     :compile ("rvm.el")
+                     :after (progn (rvm-use-default)))
+              (:name rhtml
+                     :type git
+                     :url "https://github.com/eschulte/rhtml.git"
+                     :features rhtml-mode
+                     :after (progn (rhtml-mode-hook)))))
+      (el-get 'sync))
 
-      (el-get 'sync)
-
-;; ))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Set up load paths.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/color-theme/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/cedet/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/ecb/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/rinari/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/yasnippet/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/nxhtml/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/html5-el/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/ljupdate/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/twittering-mode/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/magit-1.1.1/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/jade-mode/"))
-
-;; magit - git integration
-(require 'magit)
-
-;; Jade mode
-(require 'sws-mode)
-(require 'jade-mode)
-
-(add-hook 'jade-mode-hook
-	  (lambda ()
-	    (setq indent-tabs-mode nil)
-	    (setq tab-width 2)))
-
-
-;; Coffeescript mode
-(require 'coffee-mode)
-
-;; autopair
-(require 'autopair)
-(add-hook 'lisp-mode-common-hook #'(lambda () (autopair-mode)))
-(add-hook 'c-mode-common-hook #'(lambda () (autopair-mode)))
-
-;; color themes (Remove when Emacs 24 comes out)
-(when (equal 23 emacs-major-version)
-  (require 'color-theme)
-  (color-theme-initialize)
-  (color-theme-tm))
-
-;; twittering-mode
-(require 'twittering-mode)
-
-;; ljupdate
-(require 'ljupdate)
-
-;; nxhtml
-(load "~/.emacs.d/nxhtml/autostart.el")
-
-;; html5-el
-(eval-after-load "rng-loc"
-  '(add-to-list 'rng-schema-locating-files "~/.emacs.d/html5-el/schemas.xml"))
-(require 'whattf-dt)
-
-(add-hook 'nxhtml-mode 
-    '(lambda ()
-             (setq c-basic-offset 2)
-             (setq tab-width 2)
-             (setq indent-tabs-mode nil)))
-
-;; graphviz dot mode
-(load "~/.emacs.d/graphviz-dot-mode.el")
-(add-to-list 'auto-mode-alist '("\\.dot$" . graphviz-dot-mode))
-
-;; Outline mode
-(add-to-list 'auto-mode-alist '("\\.outline$" . outline-mode))
-
-;; psvn
-(require 'psvn)
-
-;; yasnippet
-(require 'yasnippet)
-(yas/initialize)
-(yas/load-directory "~/.emacs.d/yasnippet/snippets")
-
-;; IDO (Interactively DO mode)
-(require 'ido)
-(ido-mode t)
-
-;; JS mode
-(add-hook 'js-mode-hook
-	  '(lambda ()
-             (setq c-basic-offset 4)
-             (setq tab-width 4)
-             (setq indent-tabs-mode nil)))
-
-
-;; Rinari
-(require 'rinari)
-(setq rinari-tags-file-name "TAGS")
-
-;;
-;; Ruby Mode.
-;;
-(autoload 'ruby-mode "~/.emacs.d/ruby-mode"
-  "Mode for editing ruby source files" t)
-
-(add-hook 'ruby-mode-hook
-	  '(lambda ()
-             (setq c-basic-offset 2)
-             (setq tab-width 2)
-             (setq indent-tabs-mode nil)))
-
-;;
-;; Java mode
-;;
-(add-hook 'java-mode-hook
-          '(lambda ()
-             (setq c-basic-offset 2)
-             (setq tab-width 2)
-             (setq indent-tabs-mode nil)))
-
-;; handle @annotations in Java mode.
-(add-hook 'java-mode-hook
-          '(lambda () "Treat Java 1.5 @-style annotations as comments."
-             (setq c-comment-start-regexp "\\(@\\|/\\(/\\|[*][*]?\\)\\)")
-             (modify-syntax-entry ?@ "< b" java-mode-syntax-table)))
-
-;;
-;; HAML Mode.
-;;
-(autoload 'haml-mode "~/.emacs.d/haml-mode"
-  "Mode for editing haml templates" t)
-
-(add-hook 'haml-mode-hook
-	  '(lambda ()
-	     (setq indent-tabs-mode nil)
-	     (define-key haml-mode-map "\C-m" 'newline-and-indent)))
-
-;; CEDET
-(load-file "~/.emacs.d/cedet/common/cedet.el")
-(require 'cedet)
-
-;; Enabling various SEMANTIC minor modes.  See semantic/INSTALL for more ideas.
-;; Select one of the following:
-
-;; * This enables the database and idle reparse engines
-;;(semantic-load-enable-minimum-features)
-
-;; * This enables some tools useful for coding, such as summary mode
-;;   imenu support, and the semantic navigator
-;; (semantic-load-enable-code-helpers)
-
-;; * This enables even more coding tools such as the nascent intellisense mode
-;;   decoration mode, and stickyfunc mode (plus regular code helpers)
-;; (semantic-load-enable-guady-code-helpers)
-
-;; * This turns on which-func support (Plus all other code helpers)
-(semantic-load-enable-excessive-code-helpers)
-(setq semanticdb-default-save-directory "~/.semantic.cache")
-
-;; This turns on modes that aid in grammar writing and semantic tool
-;; development.  It does not enable any other features such as code
-;; helpers above.
-;; (semantic-load-enable-semantic-debugging-helpers)
-
-;; Emacs Code Browser
-(require 'ecb-autoloads)
-
-;; CSS mode
-(add-hook 'css-mode-hook
-          '(lambda ()
-;;             (turn-on-lazy-lock)
-             (setq c-basic-offset 2 tab-width 2)
-	     (setq css-indent-offset 2)
-             (setq indent-tabs-mode t)))
-
-;; SLIME
-(if (file-exists-p "~/quicklisp")
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; For Emacs 23 and lower... old style.
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (progn
-    (setq inferior-lisp-program "/usr/local/bin/sbcl")
-    (load (expand-file-name "~/quicklisp/slime-helper.el"))))
 
-;; YAML
-(require 'yaml-mode)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; Set up load paths.
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/color-theme/"))
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/cedet/"))
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/ecb/"))
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/yasnippet/"))
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/nxhtml/"))
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/html5-el/"))
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/ljupdate/"))
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/twittering-mode/"))
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/magit-1.1.1/"))
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/jade-mode/"))
+
+    ;; magit - git integration
+    (require 'magit)
+
+    ;; Jade mode
+    (require 'sws-mode)
+    (require 'jade-mode)
+
+    (add-hook 'jade-mode-hook
+              (lambda ()
+                (setq tab-width 2)))
+
+    ;; Coffeescript mode
+    (require 'coffee-mode)
+
+    ;; autopair
+    (require 'autopair)
+    (add-hook 'lisp-mode-common-hook #'(lambda () (autopair-mode)))
+    (add-hook 'c-mode-common-hook #'(lambda () (autopair-mode)))
+
+    ;; color themes (Remove when Emacs 24 comes out)
+    (require 'color-theme)
+    (color-theme-initialize)
+    (color-theme-tm)
+
+    ;; twittering-mode
+    (require 'twittering-mode)
+
+    ;; ljupdate
+    (require 'ljupdate)
+
+    ;; nxhtml
+    (load "~/.emacs.d/nxhtml/autostart.el")
+
+    ;; html5-el
+    (eval-after-load "rng-loc"
+      '(add-to-list 'rng-schema-locating-files "~/.emacs.d/html5-el/schemas.xml"))
+    (require 'whattf-dt)
+
+    (add-hook 'nxhtml-mode 
+              '(lambda ()
+                 (setq c-basic-offset 2)
+                 (setq tab-width 2)))
+
+    ;; graphviz dot mode
+    (load "~/.emacs.d/graphviz-dot-mode.el")
+    (add-to-list 'auto-mode-alist '("\\.dot$" . graphviz-dot-mode))
+
+    ;; Outline mode
+    (add-to-list 'auto-mode-alist '("\\.outline$" . outline-mode))
+
+    ;; psvn
+    (require 'psvn)
+
+    ;; yasnippet
+    (require 'yasnippet)
+
+    (yas/initialize)
+    (yas/load-directory "~/.emacs.d/yasnippet/snippets")
+
+    ;; IDO (Interactively DO mode)
+    (require 'ido)
+    (ido-mode t)
+
+    ;; JS mode
+    (add-hook 'js-mode-hook
+              '(lambda ()
+                 (setq c-basic-offset 4)
+                 (setq tab-width 4)))
+
+
+    ;;
+    ;; Ruby Mode.
+    ;;
+    (autoload 'ruby-mode "~/.emacs.d/ruby-mode"
+      "Mode for editing ruby source files" t)
+
+    (add-hook 'ruby-mode-hook
+              '(lambda ()
+                 (setq c-basic-offset 2)
+                 (setq tab-width 2)))
+
+    ;;
+    ;; Java mode
+    ;;
+    (add-hook 'java-mode-hook
+              '(lambda ()
+                 (setq c-basic-offset 2)
+                 (setq tab-width 2)))
+
+    ;; handle @annotations in Java mode.
+    (add-hook 'java-mode-hook
+              '(lambda () "Treat Java 1.5 @-style annotations as comments."
+                 (setq c-comment-start-regexp "\\(@\\|/\\(/\\|[*][*]?\\)\\)")
+                 (modify-syntax-entry ?@ "< b" java-mode-syntax-table)))
+
+    ;;
+    ;; HAML Mode.
+    ;;
+    (autoload 'haml-mode "~/.emacs.d/haml-mode"
+      "Mode for editing haml templates" t)
+
+    (add-hook 'haml-mode-hook
+              '(lambda ()
+                 (define-key haml-mode-map "\C-m" 'newline-and-indent)))
+
+    ;; CEDET
+    (load-file "~/.emacs.d/cedet/common/cedet.el")
+    (require 'cedet)
+
+    ;; Enabling various SEMANTIC minor modes.  See semantic/INSTALL for more ideas.
+    ;; Select one of the following:
+
+    ;; * This enables the database and idle reparse engines
+    ;;(semantic-load-enable-minimum-features)
+
+    ;; * This enables some tools useful for coding, such as summary mode
+    ;;   imenu support, and the semantic navigator
+    ;; (semantic-load-enable-code-helpers)
+
+    ;; * This enables even more coding tools such as the nascent intellisense mode
+    ;;   decoration mode, and stickyfunc mode (plus regular code helpers)
+    ;; (semantic-load-enable-guady-code-helpers)
+
+    ;; * This turns on which-func support (Plus all other code helpers)
+    (semantic-load-enable-excessive-code-helpers)
+    (setq semanticdb-default-save-directory "~/.semantic.cache")
+
+    ;; This turns on modes that aid in grammar writing and semantic tool
+    ;; development.  It does not enable any other features such as code
+    ;; helpers above.
+    ;; (semantic-load-enable-semantic-debugging-helpers)
+
+    ;; Emacs Code Browser
+    (require 'ecb-autoloads)
+
+    ;; CSS mode
+    (add-hook 'css-mode-hook
+              '(lambda ()
+                 ;;             (turn-on-lazy-lock)
+                 (setq c-basic-offset 2 tab-width 2)
+                 (setq css-indent-offset 2)))
+
+    ;; SLIME
+    (if (file-exists-p "~/quicklisp")
+        (progn
+          (setq inferior-lisp-program "/usr/local/bin/sbcl")
+          (load (expand-file-name "~/quicklisp/slime-helper.el"))))
+
+    ;; YAML
+    (require 'yaml-mode)))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -368,10 +388,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(cssm-indent-level 2)
  '(ecb-auto-activate t)
  '(ecb-layout-name "left13")
@@ -405,38 +425,27 @@
 (setq auto-mode-alist
       (append
        '(("\\.text$" . text-mode)
-	 ("\\.txt$" . text-mode)
-	 ("\\.rb$" . ruby-mode)
-	 ("\\.tl$" . ruby-mode)
-	 ("\\.jade$" . jade-mode)
-	 ("\\.styl$" . sws-mode)
-	 ("\\.coffee$" . coffee-mode)
-	 ("Rakefile$" . ruby-mode)
-	 ("\\.rake$" . ruby-mode)
-	 ("\\.py$" . python-mode)
-	 ("\\.css$" . css-mode)
-	 ("\\.scss$" . css-mode)
-	 ("\\.haml$" . haml-mode)
-	 ("\\.emacs$" . emacs-lisp-mode)
-	 ("\\.el$" . emacs-lisp-mode)
-	 ("\\.pl$" . perl-mode)
-	 ("\\.pm$" . perl-mode)
-	 ("\\.c$" . c-mode)
-	 ("\\.h$" . c-mode)
-	 ("\\.yml$" . yaml-mode)
-	 ("\\.lisp$" . lisp-mode)
-	 ("\\.ru$" . ruby-mode)
-	 ("\\.java$" . java-mode)) auto-mode-alist))
+         ("\\.txt$" . text-mode)
+         ("\\.tl$" . ruby-mode)
+         ("\\.py$" . python-mode)
+         ("\\.emacs$" . emacs-lisp-mode)
+         ("\\.el$" . emacs-lisp-mode)
+         ("\\.pl$" . perl-mode)
+         ("\\.pm$" . perl-mode)
+         ("\\.c$" . c-mode)
+         ("\\.h$" . c-mode)
+         ("\\.lisp$" . lisp-mode)
+         ("\\.java$" . java-mode)) auto-mode-alist))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; custom-set-faces
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(mumamo-background-chunk-major ((t nil)))
  '(mumamo-background-chunk-submode1 ((((class color) (min-colors 8)) nil)))
  '(mumamo-background-chunk-submode2 ((((class color) (min-colors 8)) nil)))
@@ -453,27 +462,27 @@
 
 ;; Window system is Mac OS X ("Emacs for OS X"),
 (if (string= window-system "ns")
-  (progn
-    (set-frame-font "Menlo-18")
-    (load-theme 'tango)
-    ;; (custom-set-faces
-    ;;  '(default ((t (:inherit nil
-    ;; 		    :stipple nil
-    ;; 		    :background "White"
-    ;; 		    :foreground "Black"
-    ;; 		    :inverse-video nil
-    ;; 		    :box nil
-    ;; 		    :strike-through nil
-    ;; 		    :overline nil
-    ;; 		    :underline nil
-    ;; 		    :slant normal
-    ;; 		    :weight normal
-    ;; 		    :height 140
-    ;; 		    :width normal
-    ;; 		    :foundry "apple"
-    ;; 		    :family "Menlo")))))
-    (normal-erase-is-backspace-mode 1)
-  ))
+    (progn
+      (set-frame-font "Menlo-18")
+      (load-theme 'tango)
+      ;; (custom-set-faces
+      ;;  '(default ((t (:inherit nil
+      ;; 		    :stipple nil
+      ;; 		    :background "White"
+      ;; 		    :foreground "Black"
+      ;; 		    :inverse-video nil
+      ;; 		    :box nil
+      ;; 		    :strike-through nil
+      ;; 		    :overline nil
+      ;; 		    :underline nil
+      ;; 		    :slant normal
+      ;; 		    :weight normal
+      ;; 		    :height 140
+      ;; 		    :width normal
+      ;; 		    :foundry "apple"
+      ;; 		    :family "Menlo")))))
+      (normal-erase-is-backspace-mode 1)
+      ))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -512,7 +521,7 @@
   (interactive)
   (goto-char 0)
   (let* ((file (file-name-nondirectory (buffer-file-name)))
-	 (title (file-name-sans-extension file)))
+         (title (file-name-sans-extension file)))
     (insert "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n")
     (insert "      \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n")
     (insert "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n")
