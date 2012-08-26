@@ -182,6 +182,10 @@
 (autoload 'textmate-mode "textmate" nil t)
 (textmate-mode)
 
+;; yasnippet
+(require 'yasnippet)
+(yas-global-mode 1)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
