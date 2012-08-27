@@ -138,7 +138,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
-(setq el-get-user-package-directory "~/.emacs.d/el-get/package-init")
+(setq el-get-user-package-directory "~/.emacs.d/el-get-package-init/")
 
 (unless (require 'el-get nil t)
   (url-retrieve
@@ -146,6 +146,19 @@
    (lambda (s)
      (goto-char (point-max))
      (eval-print-last-sexp))))
+
+(setq
+  el-get-sources
+  '(el-get
+    css-mode
+    haml-mode
+    inf-ruby
+    rhtml
+    ruby-compilation
+    ruby-mode
+    rvm
+    textmate
+    yaml-mode))
 
 (el-get 'sync)
 
