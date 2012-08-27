@@ -149,7 +149,10 @@
         rhtml-mode
         rvm
         textmate
-        yaml-mode))
+        yaml-mode
+	magit
+	magithub
+	dsvn))
 
 ;; If el-get is not installed, pull it down, install it, and then synchronize
 ;; all configured packages from el-get-sources
