@@ -202,7 +202,7 @@
 (if (string= window-system "ns")
     (progn
       (set-frame-font "Menlo-14")
-      (load-theme 'tango)
+      (load-theme 'tango-dark)
       (normal-erase-is-backspace-mode 1)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
