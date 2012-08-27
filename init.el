@@ -128,63 +128,22 @@
 ;; Silently delete old versions, don't interrupt saving and ask if it's OK.
 (setq delete-old-versions t)
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Modules
+;; el-get
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/haml-mode/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/rhtml/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/rvm.el/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/textmate.el/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/yaml-mode/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/yasnippet/"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/inf-ruby/"))
+(add-to-list 'load-path "~/.emacs.d/el-get")
 
-;; Ruby Mode
-(autoload 'ruby-mode "ruby-mode" nil t)
-(add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
-(add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
-(add-to-list 'auto-mode-alist '("Rakefile" . ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.ru\\'" . ruby-mode))
-(add-hook 'ruby-mode-hook '(lambda ()
-                             (setq ruby-deep-arglist t)
-                             (setq ruby-deep-indent-paren nil)
-                             (setq c-tab-always-indent nil)
-                             (require 'inf-ruby)
-                             (require 'ruby-compilation)))
+(unless (require 'el-get nil t)
+  (url-retrieve
+   "https://raw.github.com/dimitri/el-get/master/el-get-install.el"
+   (lambda (s)
+     (let (el-get-master-branch)
+       (goto-char (point-max))
+       (eval-print-last-sexp)))))
 
-;; rhtml Mode
-(autoload 'rhtml-mode "rhtml-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.erb\\'" . rhtml-mode))
-(add-to-list 'auto-mode-alist '("\\.rjs\\'" . rhtml-mode))
-(add-hook 'rhtml-mode '(lambda ()
-                         (define-key rhtml-mode-map (kbd "M-s") 'save-buffer)))
-
-;; yaml mode
-(autoload 'yaml-mode "yaml-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
-
-;; css mode
-(autoload 'css-mode "css-mode" nil t)
-(add-hook 'css-mode-hook '(lambda ()
-                            (setq css-indent-level 2)
-                            (setq css-indent-offset 2)))
-
-;; haml mode
-(autoload 'haml-mode "haml-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.haml\\'" . haml-mode))
-
-;; textmate
-(autoload 'textmate-mode "textmate" nil t)
-(textmate-mode)
-
-;; yasnippet
-(require 'yasnippet)
-(yas-global-mode 1)
+(el-get 'sync)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key definitions
