@@ -140,6 +140,20 @@
 
 (setq el-get-user-package-directory "~/.emacs.d/el-get-package-init/")
 
+(setq my-el-get-packages
+      '(ruby-mode
+        ruby-compilation
+        css-mode
+        haml-mode
+        inf-ruby
+        rhtml-mode
+        rvm
+        textmate
+        yaml-mode))
+
+;; If el-get is not installed, pull it down, install it, and then synchronize
+;; all configured packages from el-get-sources
+
 (unless (require 'el-get nil t)
   (url-retrieve
    "https://raw.github.com/dimitri/el-get/master/el-get-install.el"
@@ -147,20 +161,7 @@
      (goto-char (point-max))
      (eval-print-last-sexp))))
 
-(setq
-  el-get-sources
-  '(el-get
-    css-mode
-    haml-mode
-    inf-ruby
-    rhtml
-    ruby-compilation
-    ruby-mode
-    rvm
-    textmate
-    yaml-mode))
-
-(el-get 'sync)
+(el-get 'sync my-el-get-packages)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key definitions
