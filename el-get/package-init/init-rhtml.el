@@ -1,0 +1,1 @@
+;; RHTML mode
