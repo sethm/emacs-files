@@ -152,7 +152,8 @@
         yaml-mode
 	magit
 	magithub
-	dsvn))
+	dsvn
+	scss-mode))
 
 ;; If el-get is not installed, pull it down, install it, and then synchronize
 ;; all configured packages from el-get-sources
@@ -199,14 +200,18 @@
       (custom-set-faces
        '(mode-line ((t (:foreground "cyan" :inverse-video t))))
        '(mode-line-inactive ((default (:inherit mode-line)) (nil (:foreground "white"))))
-       )))
+       ))
 
-;; Window system is Mac OS X ("Emacs for OS X"),
-(if (string= window-system "ns")
-    (progn
-      (set-frame-font "Menlo-14")
-      (load-theme 'tango-dark)
-      (normal-erase-is-backspace-mode 1)))
+  ;; Otherwise, we're running in a windowed environment
+  (progn
+    ;; Window system is Mac OS X ("Emacs for OS X"), use Menlo
+    (if (string= window-system "ns")
+	(set-frame-font "Menlo-14")
+      ;; Otherwise, use Inconsolata
+      (set-frame-font "Inconsolata-14"))
+
+    (load-theme 'tango-dark)
+    (normal-erase-is-backspace-mode 1)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions
