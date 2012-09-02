@@ -251,3 +251,28 @@
     (insert "  <body>\n")
     (insert "  </body>\n")
     (insert "</html>\n")))
+
+(defun insert-html5 ()
+  "Insert an HTML5 template."
+  (interactive)
+  (goto-char 0)
+  (let* ((file (file-name-nondirectory (buffer-file-name)))
+         (title (file-name-sans-extension file)))
+    (insert "<!doctype html>\n")
+    (insert "<html lang=\"en\">\n")
+    (insert "<head>\n")
+    (insert "  <meta charset=\"utf-8\">\n")
+    (insert "  <title>The HTML5 Herald</title>\n")
+    (insert "  <meta name=\"description\" content=\"The HTML5 Herald\">\n")
+    (insert "  <meta name=\"author\" content=\"SitePoint\">\n")
+    (insert "  <link rel=\"stylesheet\" href=\"css/styles.css?v=1.0\">\n")
+    (insert "  <!--[if lt IE 9]>\n")
+    (insert "  <script src=\"http://html5shiv.googlecode.com/svn/trunk/html5.js\"></script>\n")
+    (insert "  <![endif]--> \n")
+    (insert "</head>\n")
+    (insert "<body>\n")
+    (insert "  <script src=\"js/scripts.js\"></script>\n")
+    (insert "</body>\n")
+    (insert "</html>\n")))
+
+  
