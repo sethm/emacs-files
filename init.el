@@ -145,6 +145,7 @@
         ruby-compilation
         css-mode
         haml-mode
+	coffee-mode
         inf-ruby
         rhtml-mode
         rvm
@@ -166,6 +167,21 @@
      (eval-print-last-sexp))))
 
 (el-get 'sync my-el-get-packages)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Slime
+;;
+;; Slime is an exception to el-get, because I use 'quicklisp' to
+;; manage my slime dependencies
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(if (and (file-exists-p "~/quicklisp/slime-helper.el")
+	 (file-exists-p "/usr/local/bin/sbcl"))
+    (progn
+      (load (expand-file-name "~/quicklisp/slime-helper.el"))
+      (setq inferior-lisp-program "/usr/local/bin/sbcl")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key definitions
