@@ -59,7 +59,8 @@
 ;; Turn off annoyances.
 (setq inhibit-startup-message t)
 (setq inhibit-splash-screen t)
-(tool-bar-mode -1)
+(if (not (eq window-system nil))
+    (tool-bar-mode -1))
 
 ;; Mumamo makes emacs 23.3 and higher complain about obsolete
 ;; variables.  This is a sneaky workaround.
@@ -142,19 +143,27 @@
 
 (setq my-el-get-packages
       '(ruby-mode
-        ruby-compilation
-        css-mode
-        haml-mode
+	ruby-compilation
+	css-mode
+	haml-mode
 	coffee-mode
-        inf-ruby
-        rhtml-mode
-        rvm
-        textmate
-        yaml-mode
-	magit
-	magithub
+	inf-ruby
+	rhtml-mode
+	rvm
+	textmate
+	yaml-mode
 	dsvn
 	scss-mode))
+
+;; A hack to work around a specific installation at my day job,
+;; where we run emacs 23.2 (can't be upgraded, at least not by me)
+;; and don't have headers to compile magit
+
+(if (>= emacs-major-version 24)
+    (append
+     '(magit
+       magit-hub)
+     my-el-get-packages))
 
 ;; If el-get is not installed, pull it down, install it, and then synchronize
 ;; all configured packages from el-get-sources
