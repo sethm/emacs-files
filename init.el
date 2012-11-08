@@ -23,6 +23,15 @@
 (global-set-key (kbd "C-<up>")    'quiet-windmove-up)
 (global-set-key (kbd "C-<down>")  'quiet-windmove-down)
 
+;; A hack. My beloved Kinesis Advantage keyboard at work has started
+;; freaking out and sending the wrong keys for F3 and F4. I need
+;; these. I can't live without kmacro-start-macro-or-insert-counter
+;; and kmacro-end-or-call-macro. So I have no choice but to provide
+;; alternate mappings until I get my keyboard fixed.
+
+(global-set-key (kbd "C-c (") 'kmacro-start-macro-or-insert-counter)
+(global-set-key (kbd "C-c )") 'kmacro-end-or-call-macro)
+
 ;; Make emacs shut up its "No window <foo> from selected window"
 ;; errors when accidentally trying to move to a non-existent window.
 (defun quiet-windmove (direction)
