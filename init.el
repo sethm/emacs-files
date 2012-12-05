@@ -138,6 +138,13 @@
 ;; Silently delete old versions, don't interrupt saving and ask if it's OK.
 (setq delete-old-versions t)
 
+;; Tell emacs where to find custom themes.
+(setq custom-theme-directory "~/.emacs.d/themes/")
+
+;; NB: This is NOT SAFE IN GENERAL, custom themes can run arbitrary
+;; code. But since I control my own 'themes' directory, I'm going to
+;; run with scissors and make all custom themes safe by default.
+(setq custom-safe-themes t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; el-get
@@ -244,7 +251,7 @@
       ;; Otherwise, use Inconsolata
       (set-frame-font "Inconsolata-14"))
 
-    (load-theme 'tango-dark)
+    (load-theme 'loomcom)
     (normal-erase-is-backspace-mode 1)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -313,5 +320,3 @@
     (insert "  <script src=\"js/scripts.js\"></script>\n")
     (insert "</body>\n")
     (insert "</html>\n")))
-
-  
