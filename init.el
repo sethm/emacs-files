@@ -225,6 +225,7 @@
          ("\\.pm$" . perl-mode)
          ("\\.c$" . c-mode)
          ("\\.h$" . c-mode)
+         ("\\.outline$" . outline-mode)
          ("\\.lisp$" . lisp-mode)
          ("\\.java$" . java-mode)) auto-mode-alist))
 
