@@ -146,6 +146,13 @@
 ;; run with scissors and make all custom themes safe by default.
 (setq custom-safe-themes t)
 
+;; GAS mode settings
+(add-hook 'gas-mode-hook '(lambda ()
+			    (setq tab-width 10)
+			    (setq gas-opcode-column 10)
+			    (setq gas-argument-column 20)
+			    (setq gas-comment-column 30)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; el-get
 ;;
@@ -153,6 +160,7 @@
 ;; when needed.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
 (setq el-get-user-package-directory "~/.emacs.d/el-get-package-init/")
@@ -192,6 +200,14 @@
      (eval-print-last-sexp))))
 
 (el-get 'sync my-el-get-packages)
+
+;;
+;; gas-mode is not supported by el-get, so it must be loaded manually.
+;; 
+(require 'gas-mode)
+(add-to-list 'auto-mode-alist '("\\.S\\'" . gas-mode))
+(add-to-list 'auto-mode-alist '("\\.asm\\'" . gas-mode))
+(add-to-list 'auto-mode-alist '("\\.a65\\'" . gas-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
