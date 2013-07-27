@@ -48,6 +48,9 @@
             nil)
     (error nil)))
 
+(require 'package)
+(package-initialize)
+
 ;; These are required to be (interactive)
 (defun quiet-windmove-left () (interactive) (quiet-windmove 'left))
 (defun quiet-windmove-right () (interactive) (quiet-windmove 'right))
@@ -92,6 +95,12 @@
             (setq tab-width 4)
             (setq c-basic-offset 4)
             (setq sh-basic-offset 4)))
+
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (setq indent-tabs-mode 4)
+	    (setq tab-width 4)
+            (setq c-basic-offset 4)))
 
 ;; Fix tabs
 (setq indent-tabs-mode nil)
@@ -148,10 +157,10 @@
 
 ;; GAS mode settings
 (add-hook 'gas-mode-hook '(lambda ()
-			    (setq tab-width 10)
-			    (setq gas-opcode-column 10)
-			    (setq gas-argument-column 20)
-			    (setq gas-comment-column 30)))
+			    (setq tab-width 8)
+			    (setq gas-opcode-column 16)
+			    (setq gas-argument-column 24)
+			    (setq gas-comment-column 40)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; el-get
@@ -165,41 +174,51 @@
 
 (setq el-get-user-package-directory "~/.emacs.d/el-get-package-init/")
 
-(setq my-el-get-packages
-      '(ruby-mode
-	ruby-compilation
-	css-mode
-	haml-mode
-	coffee-mode
-	inf-ruby
-	rhtml-mode
-	rvm
-	textmate
-	yaml-mode
-	dsvn
-	scss-mode))
-
-;; A hack to work around a specific installation at my day job,
-;; where we run emacs 23.2 (can't be upgraded, at least not by me)
-;; and don't have headers to compile magit
-
-(if (>= emacs-major-version 24)
-    (append
-     '(magit
-       magit-hub)
-     my-el-get-packages))
-
 ;; If el-get is not installed, pull it down, install it, and then synchronize
 ;; all configured packages from el-get-sources
 
-(unless (require 'el-get nil t)
-  (url-retrieve
-   "https://raw.github.com/dimitri/el-get/master/el-get-install.el"
-   (lambda (s)
-     (goto-char (point-max))
-     (eval-print-last-sexp))))
+(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
-(el-get 'sync my-el-get-packages)
+;; Request a specific source for yasnippet
+(setq el-get-sources
+      '((:name yasnippet
+	       :website "https://github.com/capitaomorte/yasnippet.git"
+	       :description "YASnippet is a template system for Emacs."
+	       :type github
+	       :pkgname "capitaomorte/yasnippet"
+	       :features "yasnippet"
+	       :compile "yasnippet.el")))
+
+(unless (require 'el-get nil 'noerror)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
+    (let (el-get-master-branch)
+      (goto-char (point-max))
+      (eval-print-last-sexp))))
+(el-get 'sync)
+
+;; List of packages to auto-install
+
+(setq my-packages
+      '(el-get
+	yasnippet
+        ruby-compilation
+        ruby-mode
+        css-mode
+        haml-mode
+        coffee-mode
+        inf-ruby
+        rhtml-mode
+        rvm
+        textmate
+        yaml-mode
+        dsvn
+        scss-mode
+	magit
+	magithub))
+
+(el-get 'sync my-packages)
 
 ;;
 ;; gas-mode is not supported by el-get, so it must be loaded manually.
