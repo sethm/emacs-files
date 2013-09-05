@@ -163,6 +163,14 @@
 			    (setq gas-comment-column 40)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Path Stuff
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq path "/usr/local/bin:/bin:/sbin:/usr/bin:/usr/sbin")
+(setenv "PATH" path)
+
+(add-to-list 'exec-path "/usr/local/bin")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; el-get
 ;;
 ;; machine I copy my emacs config to will bootsrap its own el-get packages
@@ -216,7 +224,8 @@
         dsvn
         scss-mode
 	magit
-	magithub))
+	magithub
+	twittering-mode))
 
 (el-get 'sync my-packages)
 
@@ -227,6 +236,17 @@
 (add-to-list 'auto-mode-alist '("\\.S\\'" . gas-mode))
 (add-to-list 'auto-mode-alist '("\\.asm\\'" . gas-mode))
 (add-to-list 'auto-mode-alist '("\\.a65\\'" . gas-mode))
+
+;;
+;; EasyPG
+;;
+(require 'epa-file)
+(epa-file-enable)
+
+;;
+;; twittering-mode
+;;
+(setq twittering-use-master-password t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
