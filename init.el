@@ -94,6 +94,7 @@
             (setq sh-basic-offset 4)))
 
 ;; Fix tabs
+(setq-default indent-tabs-mode nil)
 (setq indent-tabs-mode nil)
 (setq c-basic-offset 2)
 (setq tab-width 2)
@@ -153,6 +154,9 @@
 			    (setq gas-argument-column 20)
 			    (setq gas-comment-column 30)))
 
+(add-to-list 'exec-path "/usr/local/share/npm/bin/")
+(add-to-list 'exec-path "/usr/local/bin")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; el-get
 ;;
@@ -166,9 +170,7 @@
 (setq el-get-user-package-directory "~/.emacs.d/el-get-package-init/")
 
 (setq my-el-get-packages
-      '(ruby-mode
-	ruby-compilation
-	css-mode
+      '(css-mode
 	haml-mode
 	coffee-mode
 	inf-ruby
