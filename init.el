@@ -227,8 +227,9 @@
         yaml-mode
         dsvn
         scss-mode
-	magit
-	magithub
+        git-commit-mode
+        magit
+        magithub
 	twittering-mode))
 
 (el-get 'sync my-packages)
