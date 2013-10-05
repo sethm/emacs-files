@@ -98,7 +98,8 @@
 
 (add-hook 'python-mode-hook
 	  (lambda ()
-	    (setq indent-tabs-mode 4)
+	    (setq indent-tabs-mode nil)
+            (setq python-indent 4)
 	    (setq tab-width 4)
             (setq c-basic-offset 4)))
 
