@@ -98,15 +98,29 @@
 
 (add-hook 'python-mode-hook
 	  (lambda ()
-	    (setq indent-tabs-mode 4)
+	    (setq indent-tabs-mode nil)
 	    (setq tab-width 4)
+            (setq python-indent 4)
             (setq c-basic-offset 4)))
+
+(add-hook 'ruby-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode nil)
+            (setq tab-width 2)
+            (setq ruby-indent 2)
+            (setq c-basic-offset 2)))
+
+(add-hook 'java-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode nil)
+            (setq tab-width 4)
+            (setq java-indent 4)
+            (setq c-basic-offset 4)))
+
 
 ;; Fix tabs
 (setq-default indent-tabs-mode nil)
 (setq indent-tabs-mode nil)
-(setq c-basic-offset 2)
-(setq tab-width 2)
 
 ;; Tell dired to hide dot files and emacs backup files.
 (add-hook 'dired-load-hook
