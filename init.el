@@ -110,6 +110,12 @@
             (setq ruby-indent 2)
             (setq c-basic-offset 2)))
 
+;; The Go style guide says tabs, so tabs it is.
+(add-hook 'go-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode t)
+            (setq tab-width 4)))
+
 (add-hook 'java-mode-hook
           (lambda ()
             (setq indent-tabs-mode nil)
@@ -244,6 +250,7 @@
         git-commit-mode
         magit
         magithub
+        go-mode
 	twittering-mode))
 
 (el-get 'sync my-packages)
