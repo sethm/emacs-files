@@ -48,9 +48,6 @@
             nil)
     (error nil)))
 
-(require 'package)
-(package-initialize)
-
 ;; These are required to be (interactive)
 (defun quiet-windmove-left () (interactive) (quiet-windmove 'left))
 (defun quiet-windmove-right () (interactive) (quiet-windmove 'right))
@@ -190,15 +187,31 @@
 (setenv "PATH" path)
 
 (add-to-list 'exec-path "/usr/local/bin")
-
 (add-to-list 'exec-path "/usr/local/share/npm/bin/")
 (add-to-list 'exec-path "/usr/local/bin")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CEDET
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(global-ede-mode 1)
+(semantic-mode 1)
+(global-semantic-decoration-mode 1)
+(global-semantic-stickyfunc-mode 1)
+
+;; If I'm on my work machine, set up my additional includes.
+
+(let ((work-root (expand-file-name "~/Work")))
+  (if (file-exists-p work-root)
+      (progn
+        (semantic-add-system-include (format "%s/%s" work-root "common/head/lib/nom/include/") 'c++-mode)
+        (semantic-add-system-include (format "%s/%s" work-root "libnomxx/head/") 'c++-mode)
+        (semantic-add-system-include (format "%s/%s" work-root "boost/1.51.0.0.4/target/include/") 'c++-mode))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; el-get
 ;;
-;; machine I copy my emacs config to will bootsrap its own el-get packages
-;; when needed.
+;; Any machine I copy my emacs config to will bootsrap its own el-get
+;; packages when needed.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-to-list 'load-path "~/.emacs.d")
