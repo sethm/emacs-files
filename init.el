@@ -59,7 +59,7 @@
 (setq column-number-mode t)
 
 ;; Highlight matching parens
-(setq show-paren-mode t)
+(show-paren-mode t)
 
 ;; Transient mark mode - show hilighting when using the keyboard mark
 (transient-mark-mode t)
