@@ -58,6 +58,9 @@
 (setq line-number-mode t)
 (setq column-number-mode t)
 
+;; Highlight matching parens
+(setq show-paren-mode t)
+
 ;; Transient mark mode - show hilighting when using the keyboard mark
 (transient-mark-mode t)
 
@@ -70,18 +73,6 @@
 (setq inhibit-splash-screen t)
 (if (not (eq window-system nil))
     (tool-bar-mode -1))
-
-;; Mumamo makes emacs 23.3 and higher complain about obsolete
-;; variables.  This is a sneaky workaround.
-(when (and (equal emacs-major-version 23)
-           (> emacs-minor-version 2))
-  (eval-after-load "bytecomp"
-    '(add-to-list 'byte-compile-not-obsolete-vars
-                  'font-lock-beginning-of-syntax-function))
-  ;; tramp-compat.el clobbers this variable!
-  (eval-after-load "tramp-compat"
-    '(add-to-list 'byte-compile-not-obsolete-vars
-                  'font-lock-beginning-of-syntax-function)))  
 
 ;; Translates ANSI colors in shell.
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
@@ -197,6 +188,7 @@
 (semantic-mode 1)
 (global-semantic-decoration-mode 1)
 (global-semantic-stickyfunc-mode 1)
+(global-semantic-idle-summary-mode 1)
 
 ;; If I'm on my work machine, set up my additional includes.
 
@@ -205,7 +197,7 @@
       (progn
         (semantic-add-system-include (format "%s/%s" work-root "common/head/lib/nom/include/") 'c++-mode)
         (semantic-add-system-include (format "%s/%s" work-root "libnomxx/head/") 'c++-mode)
-        (semantic-add-system-include (format "%s/%s" work-root "boost/1.51.0.0.4/target/include/") 'c++-mode))))
+        (semantic-add-system-include (format "%s/%s" work-root "boost/1.51.0.0.4/boost_1_51_0") 'c++-mode))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; el-get
