@@ -58,6 +58,12 @@
 (setq line-number-mode t)
 (setq column-number-mode t)
 
+;; Turn off the annoying (to me) bell and visible bell.
+(setq ring-bell-function 'ignore)
+
+;; To just turn off visible bell but leave audible bell:
+;;(setq visible-bell nil)
+
 ;; Transient mark mode - show hilighting when using the keyboard mark
 (transient-mark-mode t)
 
@@ -183,12 +189,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Path Stuff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(setq path "/usr/local/bin:/bin:/sbin:/usr/bin:/usr/sbin")
-(setenv "PATH" path)
 
-(add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path "/usr/local/share/npm/bin/")
-(add-to-list 'exec-path "/usr/local/bin")
+(defun set-exec-path-from-shell-PATH ()
+  (let ((path-from-shell (shell-command-to-string "$SHELL -i -c 'echo $PATH'")))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
+
+(when window-system (set-exec-path-from-shell-PATH))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CEDET
@@ -245,7 +252,7 @@
 
 ;; List of packages to auto-install
 
-(setq my-packages
+(setq my-elget-packages
       '(el-get
 	yasnippet
         ruby-compilation
@@ -266,7 +273,7 @@
         go-mode
 	twittering-mode))
 
-(el-get 'sync my-packages)
+(el-get 'sync my-elget-packages)
 
 ;;
 ;; gas-mode is not supported by el-get, so it must be loaded manually.
@@ -286,6 +293,27 @@
 ;; twittering-mode
 ;;
 (setq twittering-use-master-password t)
+
+;;
+;; Emacs built-in package management and the Marmalade repo.
+;;
+
+(require 'package)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
+
+(defvar my-packages '(starter-kit
+                      starter-kit-lisp
+                      starter-kit-bindings
+                      starter-kit-eshell
+                      clojure-mode
+                      clojure-test-mode
+                      cider))
+
+(dolist (p my-packages)
+  (when (not (package-installed-p p))
+    (package-install p)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
