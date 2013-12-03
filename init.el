@@ -84,52 +84,46 @@
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
+(setq-default java-indent 4)
+(setq-default tab-width 4)
+(setq-default c-basic-offset 4)
+(setq-default indent-tabs-mode nil)
+
+(add-hook 'c++-mode
+          '(lambda ()
+             (setq tab-width 4)
+             (setq c-basic-offset 4)
+             (setq indent-tabs-mode nil)))
+
 (add-hook 'sh-set-shell-hook
-          (lambda ()
-            (setq tab-width 4)
-            (setq c-basic-offset 4)
-            (setq sh-basic-offset 4)))
+          '(lambda ()
+             (setq sh-basic-offset 4)))
 
 (add-hook 'python-mode-hook
-	  (lambda ()
-	    (setq indent-tabs-mode nil)
-	    (setq tab-width 4)
-            (setq python-indent 4)
-            (setq c-basic-offset 4)))
+	  '(lambda ()
+             (setq python-indent 4)))
 
 (add-hook 'ruby-mode-hook
           (lambda ()
-            (setq indent-tabs-mode nil)
             (setq tab-width 2)
             (setq ruby-indent 2)
             (setq c-basic-offset 2)))
 
 ;; The Go style guide says tabs, so tabs it is.
 (add-hook 'go-mode-hook
-          (lambda ()
-            (setq indent-tabs-mode t)
-            (setq tab-width 4)))
-
-(add-hook 'java-mode-hook
-          (lambda ()
-            (setq indent-tabs-mode nil)
-            (setq tab-width 4)
-            (setq java-indent 4)
-            (setq c-basic-offset 4)))
-
-
-;; Fix tabs
-(setq-default indent-tabs-mode nil)
-(setq indent-tabs-mode nil)
+          '(lambda ()
+             (setq indent-tabs-mode t)
+             (setq tab-width 4)))
 
 ;; Tell dired to hide dot files and emacs backup files.
 (add-hook 'dired-load-hook
-          (lambda ()
-            (load "dired-x")))
+          '(lambda ()
+             (load "dired-x")))
+
 (add-hook 'dired-mode-hook
-          (lambda ()
-            (setq dired-omit-files "^\\.[a-z|A-Z]+\\|^\\.?#\\|^\\.$")
-            (dired-omit-mode 1)))
+          '(lambda ()
+             (setq dired-omit-files "^\\.[a-z|A-Z]+\\|^\\.?#\\|^\\.$")
+             (dired-omit-mode 1)))
 
 ;; Enable upcase-region function (why is this disabled by default??)
 (put 'upcase-region 'disabled nil)
@@ -169,13 +163,6 @@
 ;; code. But since I control my own 'themes' directory, I'm going to
 ;; run with scissors and make all custom themes safe by default.
 (setq custom-safe-themes t)
-
-;; GAS mode settings
-(add-hook 'gas-mode-hook '(lambda ()
-			    (setq tab-width 8)
-			    (setq gas-opcode-column 16)
-			    (setq gas-argument-column 24)
-			    (setq gas-comment-column 40)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Path Stuff
@@ -246,7 +233,7 @@
 
 (setq my-elget-packages
       '(el-get
-	yasnippet
+        yasnippet
         ruby-compilation
         ruby-mode
         css-mode
@@ -263,7 +250,7 @@
         magit
         magithub
         go-mode
-	twittering-mode))
+        twittering-mode))
 
 (el-get 'sync my-elget-packages)
 
@@ -306,21 +293,6 @@
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Slime
-;;
-;; Slime is an exception to el-get, because I use 'quicklisp' to
-;; manage my slime dependencies
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(if (and (file-exists-p "~/quicklisp/slime-helper.el")
-	 (file-exists-p "/usr/local/bin/sbcl"))
-    (progn
-      (load (expand-file-name "~/quicklisp/slime-helper.el"))
-      (setq inferior-lisp-program "/usr/local/bin/sbcl")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key definitions
