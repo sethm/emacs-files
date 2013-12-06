@@ -285,9 +285,9 @@
   (progn
     ;; Window system is Mac OS X ("Emacs for OS X"), use Menlo
     (if (string= window-system "ns")
-	(set-frame-font "Menlo-14")
+	(set-frame-font "Menlo-12")
       ;; Otherwise, use Inconsolata
-      (set-frame-font "Inconsolata-14"))
+      (set-frame-font "Inconsolata-12"))
 
     (load-theme 'loomcom)
     (normal-erase-is-backspace-mode 1)))
