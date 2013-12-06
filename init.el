@@ -193,70 +193,8 @@
         (semantic-add-system-include (format "%s/%s" work-root "libnomxx/head/") 'c++-mode)
         (semantic-add-system-include (format "%s/%s" work-root "boost/1.51.0.0.4/boost_1_51_0") 'c++-mode))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; el-get
-;;
-;; Any machine I copy my emacs config to will bootsrap its own el-get
-;; packages when needed.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (add-to-list 'load-path "~/.emacs.d")
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
-(setq el-get-user-package-directory "~/.emacs.d/el-get-package-init/")
-
-;; If el-get is not installed, pull it down, install it, and then synchronize
-;; all configured packages from el-get-sources
-
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-
-;; Request a specific source for yasnippet
-(setq el-get-sources
-      '((:name yasnippet
-	       :website "https://github.com/capitaomorte/yasnippet.git"
-	       :description "YASnippet is a template system for Emacs."
-	       :type github
-	       :pkgname "capitaomorte/yasnippet"
-	       :features "yasnippet"
-	       :compile "yasnippet.el")))
-
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
-    (let (el-get-master-branch)
-      (goto-char (point-max))
-      (eval-print-last-sexp))))
-(el-get 'sync)
-
-;; List of packages to auto-install
-
-(setq my-elget-packages
-      '(el-get
-        yasnippet
-        ruby-compilation
-        ruby-mode
-        css-mode
-        haml-mode
-        coffee-mode
-        inf-ruby
-        rhtml-mode
-        rvm
-        textmate
-        yaml-mode
-        dsvn
-        scss-mode
-        git-commit-mode
-        magit
-        magithub
-        go-mode
-        twittering-mode))
-
-(el-get 'sync my-elget-packages)
-
-;;
-;; gas-mode is not supported by el-get, so it must be loaded manually.
-;; 
 (require 'gas-mode)
 (add-to-list 'auto-mode-alist '("\\.S\\'" . gas-mode))
 (add-to-list 'auto-mode-alist '("\\.asm\\'" . gas-mode))
@@ -286,6 +224,19 @@
                       starter-kit-lisp
                       starter-kit-bindings
                       starter-kit-eshell
+                      haml-mode
+                      ruby-mode
+                      rinari
+                      dsvn
+                      magit
+                      magithub
+                      rvm
+                      textmate
+                      scss-mode
+                      git-commit
+                      go-mode
+                      twittering-mode
+                      yasnippet
                       clojure-mode
                       clojure-test-mode
                       cider))
