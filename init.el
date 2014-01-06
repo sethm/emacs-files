@@ -237,6 +237,8 @@
                       go-mode
                       twittering-mode
                       yasnippet
+                      discover
+                      elnode
                       clojure-mode
                       clojure-test-mode
                       cider))
