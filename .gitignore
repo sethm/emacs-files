@@ -6,4 +6,4 @@ semanticdb
 .smex-items
 places
 elpa
-c-paths.el
+c-includes.el

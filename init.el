@@ -188,19 +188,11 @@
 (global-semantic-stickyfunc-mode 1)
 (global-semantic-idle-summary-mode 1)
 
-;; If I'm on my work machine, set up my additional includes.
-
-(let ((work-root (expand-file-name "~/Work")))
-  (if (file-exists-p work-root)
-      (progn
-        (semantic-add-system-include (format "%s/%s" work-root "common/head/lib/nom/include/") 'c++-mode)
-        (semantic-add-system-include (format "%s/%s" work-root "libnomxx/head/") 'c++-mode)
-        (semantic-add-system-include (format "%s/%s" work-root "re2/head/target/include/") 'c++-mode)
-        (semantic-add-system-include (format "%s/%s" work-root "multicore/head/lib/nomi/include/") 'c++-mode)
-        (semantic-add-system-include (format "%s/%s" work-root "google-url/head/src") 'c++-mode)
-        (semantic-add-system-include (format "%s/%s" work-root "boost/1.51.0.0.4/boost_1_51_0" 'c++-mode)))))
-
 (add-to-list 'load-path "~/.emacs.d")
+
+;; If I'm on my work machine, set up my additional includes.
+(if (file-exists-p (expand-file-name "~/.emacs.d/c-includes.el"))
+    (load "c-includes"))
 
 (require 'gas-mode)
 (add-to-list 'auto-mode-alist '("\\.S\\'" . gas-mode))
