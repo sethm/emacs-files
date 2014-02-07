@@ -159,6 +159,10 @@
 ;; Tell emacs where to find custom themes.
 (setq custom-theme-directory "~/.emacs.d/themes/")
 
+;; Always auto-revert buffers if they are un-edited, and the file changes
+;; on disk.
+(global-auto-revert-mode t)
+
 ;; NB: This is NOT SAFE IN GENERAL, custom themes can run arbitrary
 ;; code. But since I control my own 'themes' directory, I'm going to
 ;; run with scissors and make all custom themes safe by default.
@@ -191,7 +195,10 @@
       (progn
         (semantic-add-system-include (format "%s/%s" work-root "common/head/lib/nom/include/") 'c++-mode)
         (semantic-add-system-include (format "%s/%s" work-root "libnomxx/head/") 'c++-mode)
-        (semantic-add-system-include (format "%s/%s" work-root "boost/1.51.0.0.4/boost_1_51_0") 'c++-mode))))
+        (semantic-add-system-include (format "%s/%s" work-root "re2/head/target/include/") 'c++-mode)
+        (semantic-add-system-include (format "%s/%s" work-root "multicore/head/lib/nomi/include/") 'c++-mode)
+        (semantic-add-system-include (format "%s/%s" work-root "google-url/head/src") 'c++-mode)
+        (semantic-add-system-include (format "%s/%s" work-root "boost/1.51.0.0.4/boost_1_51_0" 'c++-mode)))))
 
 (add-to-list 'load-path "~/.emacs.d")
 
@@ -291,7 +298,7 @@
   (progn
     ;; Window system is Mac OS X ("Emacs for OS X"), use Menlo
     (if (string= window-system "ns")
-	(set-frame-font "Menlo-12")
+        (add-to-list 'default-frame-alist '(font . "Menlo-12"))
       ;; Otherwise, use Inconsolata
       (set-frame-font "Inconsolata-12"))
 
