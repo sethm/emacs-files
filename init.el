@@ -200,6 +200,10 @@
 (add-to-list 'auto-mode-alist '("\\.asm\\'" . gas-mode))
 (add-to-list 'auto-mode-alist '("\\.a65\\'" . gas-mode))
 
+;; SCons
+(add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
+(add-to-list 'auto-mode-alist '("SConscript" . python-mode))
+
 ;;
 ;; EasyPG
 ;;
@@ -298,18 +302,6 @@
 ;; Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun catalog ()
-  (interactive)
-  (find-file "/seth@dev-sb01.glyde.com:~/Work/catalog/"))
-
-(defun trunk ()
-  (interactive)
-  (find-file "/seth@dev-sb01.glyde.com:~/Work/trunk/"))
-
-(defun branch ()
-  (interactive)
-  (find-file "/seth@dev-sb01.glyde.com:~/Work/branch/"))
-
 (defun insert-clisp-project ()
   "Insert a template (with DEFPACKAGE and IN-PACKAGE forms) into
   the current buffer."
@@ -366,10 +358,11 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(find-grep-options "-q -I")
+ '(menu-bar-mode t)
  '(require-final-newline nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Source Code Pro")))))
