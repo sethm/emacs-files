@@ -242,6 +242,7 @@
                       yasnippet
                       discover
                       elnode
+                      pg
                       clojure-mode
                       clojure-test-mode
                       cider))
@@ -361,6 +362,7 @@
  '(org-custom-properties (quote ("DATE")))
  '(org-fontify-whole-heading-line t)
  '(org-hide-leading-stars nil)
+ '(org-src-fontify-natively t)
  '(org-startup-folded nil)
  '(require-final-newline nil))
 (custom-set-faces
@@ -369,4 +371,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(org-date ((t (:inherit default :foreground "Cyan" :underline t))))
- '(org-level-1 ((t (:inherit outline-1 :background "dark gray" :foreground "black" :box (:line-width 2 :color "grey75" :style released-button) :height 1.2)))))
+ '(org-level-1 ((t (:inherit outline-1 :background "dark gray" :foreground "black" :box (:line-width 2 :color "grey75" :style released-button) :height 1.2))))
+ '(org-level-2 ((t (:inherit outline-2 :underline t)))))
