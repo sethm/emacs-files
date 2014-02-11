@@ -302,6 +302,30 @@
 ;; Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;
+;; Stupid convenience functions to increase or decrease the default
+;; font face height at runtime, without saving it.
+;;
+;; Note that C-+ and C-- do already change the face size of the
+;; _current window only_, not all windows in all frames. That's
+;; why I added these
+;;
+
+(defun change-default-face-size (dir-func delta)
+  (set-face-attribute 'default nil :height
+                      (funcall dir-func (face-attribute 'default :height) delta)))
+
+(defun embiggen-default-face ()
+  (interactive)
+  (change-default-face-size '+ 10))
+
+(defun ensmallen-default-face ()
+  (interactive)
+  (change-default-face-size '- 10))
+
+(global-set-key (kbd "C-+")  'embiggen-default-face)
+(global-set-key (kbd "C--")  'ensmallen-default-face)
+
 (defun insert-clisp-project ()
   "Insert a template (with DEFPACKAGE and IN-PACKAGE forms) into
   the current buffer."
