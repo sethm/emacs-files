@@ -188,10 +188,11 @@
 (global-semantic-stickyfunc-mode 1)
 (global-semantic-idle-summary-mode 1)
 
-(add-to-list 'load-path "~/.emacs.d")
+(add-to-list 'load-path "~/.emacs.d/local")
+(add-to-list 'load-path "~/.emacs.d/misc")
 
 ;; If I'm on my work machine, set up my additional includes.
-(if (file-exists-p (expand-file-name "~/.emacs.d/c-includes.el"))
+(if (file-exists-p (expand-file-name "~/.emacs.d/local/c-includes.el"))
     (load "c-includes"))
 
 (require 'gas-mode)
