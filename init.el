@@ -89,6 +89,7 @@
 (setq-default c-basic-offset 4)
 (setq-default indent-tabs-mode nil)
 
+
 (add-hook 'c++-mode
           '(lambda ()
              (setq tab-width 4)
@@ -382,6 +383,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(c-offsets-alist (quote ((innamespace . [0]))))
  '(find-grep-options "-q -I")
  '(menu-bar-mode t)
  '(org-custom-properties (quote ("DATE")))
