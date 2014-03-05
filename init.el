@@ -206,12 +206,6 @@
 (add-to-list 'auto-mode-alist '("SConscript" . python-mode))
 
 ;;
-;; EasyPG
-;;
-(require 'epa-file)
-(epa-file-enable)
-
-;;
 ;; twittering-mode
 ;;
 (setq twittering-use-master-password t)
@@ -229,6 +223,8 @@
                       starter-kit-lisp
                       starter-kit-bindings
                       starter-kit-eshell
+                      starter-kit-ruby
+                      starter-kit-js
                       haml-mode
                       ruby-mode
                       rinari
