@@ -225,6 +225,7 @@
                       starter-kit-eshell
                       starter-kit-ruby
                       starter-kit-js
+                      coffee-mode
                       haml-mode
                       ruby-mode
                       rinari
