@@ -276,6 +276,9 @@
 (global-set-key "\C-xl" 'goto-line)
 (global-set-key "\C-cl" 'linum-mode)
 
+;; Always enable 'discover' mode.
+(discover-mode)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto-mode-alist
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
