@@ -237,6 +237,10 @@
                       starter-kit-ruby
                       starter-kit-js
                       coffee-mode
+                      auto-complete
+                      ac-nrepl
+                      clojure-cheatsheet
+                      clojure-snippets
                       haml-mode
                       ruby-mode
                       request
@@ -278,6 +282,12 @@
 
 ;; Always enable 'discover' mode.
 (discover-mode)
+
+;; Auto-complete goodness
+(global-auto-complete-mode)
+(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
+(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
+(add-hook 'clojure-nrepl-mode-hook 'ac-nrepl-setup)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto-mode-alist
