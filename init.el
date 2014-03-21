@@ -195,13 +195,18 @@
 (when window-system (set-exec-path-from-shell-PATH))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; CEDET
+;; Mode Stuff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (global-ede-mode 1)
 (semantic-mode 1)
 (global-semantic-decoration-mode 1)
 (global-semantic-stickyfunc-mode 1)
 (global-semantic-idle-summary-mode 1)
+
+;; I can't believe semantic-ia-fast-jump doesn't have a default key
+;; binding. It's the single most useful part of semantic-mode!
+(define-key semantic-mode-map (kbd "C-c , >") 'semantic-ia-fast-jump)
 
 (add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/misc")
