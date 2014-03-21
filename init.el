@@ -246,6 +246,7 @@
                       clojure-snippets
                       haml-mode
                       ruby-mode
+                      markdown-mode
                       request
                       json
                       rinari
@@ -269,11 +270,6 @@
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
-
-;; The nerdiest thing I've ever done. I'm so sorry.
-(require 'btc-ticker)
-(setq btc-ticker-api-poll-interval 20)
-(btc-ticker-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key definitions
