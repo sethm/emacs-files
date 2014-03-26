@@ -198,11 +198,75 @@
 ;; Mode Stuff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;
+;; Emacs built-in package management and the Marmalade repo.
+;;
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(package-initialize)
+
+(defvar my-packages '(ac-nrepl
+                      auto-complete
+                      cider
+                      clojure-cheatsheet
+                      clojure-mode
+                      clojure-snippets
+                      clojure-test-mode
+                      coffee-mode
+                      discover
+                      dsvn
+                      elnode
+                      git-commit
+                      go-mode
+                      haml-mode
+                      json
+                      magit
+                      markdown-mode
+                      multi-term
+                      pg
+                      request
+                      rinari
+                      ruby-mode
+                      rvm
+                      scss-mode
+                      starter-kit
+                      starter-kit-bindings
+                      starter-kit-eshell
+                      starter-kit-js
+                      starter-kit-lisp
+                      starter-kit-ruby
+                      textmate
+                      twittering-mode
+                      yasnippet))
+
+(dolist (p my-packages)
+  (when (not (package-installed-p p))
+    (package-install p)))
+
+
 (global-ede-mode 1)
 (semantic-mode 1)
 (global-semantic-decoration-mode 1)
 (global-semantic-stickyfunc-mode 1)
 (global-semantic-idle-summary-mode 1)
+
+;; Multi-Term mode
+
+(setq multi-term-program
+      (cond ((file-exists-p "/bin/bash") "/bin/bash")
+            ((file-exists-p "/usr/local/bin/bash") "/usr/local/bin/bash")))
+
+(setq explicit-shell-file-name
+      (cond ((file-exists-p "/bin/bash") "/bin/bash")
+            ((file-exists-p "/usr/local/bin/bash") "/usr/local/bin/bash")))
+
+(if explicit-shell-file-name
+    (progn
+      (setq explicit-bash-args '("--noediting" "--login" "-i"))
+      (setenv "SHELL" shell-file-name)
+      (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
 
 ;; I can't believe semantic-ia-fast-jump doesn't have a default key
 ;; binding. It's the single most useful part of semantic-mode!
@@ -211,9 +275,17 @@
 (add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/misc")
 
-;; If I'm on my work machine, set up my additional includes.
+;; Load C includes (defined on a per-environment basis, in my "local"
+;; subdirectory)
+
 (if (file-exists-p (expand-file-name "~/.emacs.d/local/c-includes.el"))
     (load "c-includes"))
+
+;; Apple LLDB-aware Grand Unified Debugger
+
+(require 'gud)
+
+;; GAS
 
 (require 'gas-mode)
 (add-to-list 'auto-mode-alist '("\\.S\\'" . gas-mode))
@@ -229,52 +301,6 @@
 ;;
 (setq twittering-use-master-password t)
 
-;;
-;; Emacs built-in package management and the Marmalade repo.
-;;
-
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(package-initialize)
-
-(defvar my-packages '(starter-kit
-                      starter-kit-lisp
-                      starter-kit-bindings
-                      starter-kit-eshell
-                      starter-kit-ruby
-                      starter-kit-js
-                      coffee-mode
-                      auto-complete
-                      ac-nrepl
-                      clojure-cheatsheet
-                      clojure-snippets
-                      haml-mode
-                      ruby-mode
-                      markdown-mode
-                      request
-                      json
-                      rinari
-                      dsvn
-                      magit
-                      magithub
-                      rvm
-                      textmate
-                      scss-mode
-                      git-commit
-                      go-mode
-                      twittering-mode
-                      yasnippet
-                      discover
-                      elnode
-                      pg
-                      clojure-mode
-                      clojure-test-mode
-                      cider))
-
-(dolist (p my-packages)
-  (when (not (package-installed-p p))
-    (package-install p)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key definitions
