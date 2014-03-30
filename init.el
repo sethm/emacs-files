@@ -245,6 +245,8 @@
   (when (not (package-installed-p p))
     (package-install p)))
 
+;; This is a super annoying feature, sometimes. Turn it off
+(setq ido-use-filename-at-point nil)
 
 (global-ede-mode 1)
 (semantic-mode 1)
