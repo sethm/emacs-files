@@ -277,12 +277,6 @@
 (add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/misc")
 
-;; Load C includes (defined on a per-environment basis, in my "local"
-;; subdirectory)
-
-(if (file-exists-p (expand-file-name "~/.emacs.d/local/c-includes.el"))
-    (load "c-includes"))
-
 ;; Apple LLDB-aware Grand Unified Debugger
 
 (require 'gud)
@@ -359,6 +353,12 @@
 
     (load-theme 'loomcom)
     (normal-erase-is-backspace-mode 1)))
+
+;; Load C includes (defined on a per-environment basis, in my "local"
+;; subdirectory)
+
+(if (file-exists-p (expand-file-name "~/.emacs.d/local/c-includes.el"))
+    (load "c-includes"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions
