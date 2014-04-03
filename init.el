@@ -23,15 +23,6 @@
 (global-set-key (kbd "C-<up>")    'quiet-windmove-up)
 (global-set-key (kbd "C-<down>")  'quiet-windmove-down)
 
-;; A hack. My beloved Kinesis Advantage keyboard at work has started
-;; freaking out and sending the wrong keys for F3 and F4. I need
-;; these. I can't live without kmacro-start-macro-or-insert-counter
-;; and kmacro-end-or-call-macro. So I have no choice but to provide
-;; alternate mappings until I get my keyboard fixed.
-
-(global-set-key (kbd "C-c (") 'kmacro-start-macro-or-insert-counter)
-(global-set-key (kbd "C-c )") 'kmacro-end-or-call-macro)
-
 ;; Make emacs shut up its "No window <foo> from selected window"
 ;; errors when accidentally trying to move to a non-existent window.
 (defun quiet-windmove (direction)
@@ -253,6 +244,27 @@
 (global-semantic-decoration-mode 1)
 (global-semantic-stickyfunc-mode 1)
 (global-semantic-idle-summary-mode 1)
+
+;; paredit-mode tries to snag C-<left> and C-<right> when editing
+;; LISP. It maps the same to C-S-<left> and C-S-<right>, so just keep
+;; those but kill off the ones I like to use.
+
+(define-key paredit-mode-map (kbd "C-<left>") nil)
+(define-key paredit-mode-map (kbd "C-<right>") nil)
+(define-key paredit-mode-map (kbd "C-S-<left>") 'paredit-forward-barf-sexp)
+(define-key paredit-mode-map (kbd "C-S-<right>") 'paredit-forward-slurp-sexp)
+
+;; But then we have the same problem as above. When running in a
+;; terminal, we need to capture weird escape sequences for C-S-<left>
+;; and C-S-<right>. Oh bother.
+
+;; OS X as the client
+(global-set-key (read-kbd-macro "S-M-[ 5 D") 'paredit-forward-barf-sexp)
+(global-set-key (read-kbd-macro "S-M-[ 5 C") 'paredit-forward-slurp-sexp)
+
+;; Linux as the client
+(global-set-key (read-kbd-macro "S-M-[ 1 ; 5 D") 'paredit-forward-barf-sexp)
+(global-set-key (read-kbd-macro "S-M-[ 1 ; 5 C") 'paredit-forward-slurp-sexp)
 
 ;; Multi-Term mode
 
