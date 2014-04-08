@@ -10,6 +10,10 @@
 (global-set-key (read-kbd-macro "M-[ 5 C") 'quiet-windmove-right)
 (global-set-key (read-kbd-macro "M-[ 5 A") 'quiet-windmove-up)
 (global-set-key (read-kbd-macro "M-[ 5 B") 'quiet-windmove-down)
+(global-set-key (read-kbd-macro "M-[ D") 'quiet-windmove-left)
+(global-set-key (read-kbd-macro "M-[ C") 'quiet-windmove-right)
+(global-set-key (read-kbd-macro "M-[ A") 'quiet-windmove-up)
+(global-set-key (read-kbd-macro "M-[ B") 'quiet-windmove-down)
 ;;
 ;; Linux as the client
 (global-set-key (read-kbd-macro "M-[ 1 ; 5 D") 'quiet-windmove-left)
@@ -172,6 +176,10 @@
       desktop-files-not-to-save   "^$" ;reload tramp paths
       desktop-load-locked-desktop nil)
 
+
+;; I'm kind of a dummy, and I need this :B
+(setq confirm-kill-emacs 'yes-or-no-p)
+
 (desktop-save-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -217,6 +225,7 @@
                       markdown-mode
                       multi-term
                       pg
+                      rainbow-delimiters
                       request
                       rinari
                       ruby-mode
@@ -288,6 +297,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/misc")
+(add-to-list 'load-path "~/.emacs.d/mu4e")
 
 ;; Apple LLDB-aware Grand Unified Debugger
 
@@ -304,11 +314,16 @@
 (add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
 (add-to-list 'auto-mode-alist '("SConscript" . python-mode))
 
-;;
+
 ;; twittering-mode
-;;
 (setq twittering-use-master-password t)
 
+;; mu4e
+(require 'mu4e)
+
+;; Gnus and Mail are in a local directory, not checked in.
+(if (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el"))
+    (load "mail-and-news"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key definitions
