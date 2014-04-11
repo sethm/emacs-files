@@ -270,6 +270,8 @@
 ;; OS X as the client
 (global-set-key (read-kbd-macro "S-M-[ 5 D") 'paredit-forward-barf-sexp)
 (global-set-key (read-kbd-macro "S-M-[ 5 C") 'paredit-forward-slurp-sexp)
+(global-set-key (read-kbd-macro "S-M-[ D") 'paredit-forward-barf-sexp)
+(global-set-key (read-kbd-macro "S-M-[ C") 'paredit-forward-slurp-sexp)
 
 ;; Linux as the client
 (global-set-key (read-kbd-macro "S-M-[ 1 ; 5 D") 'paredit-forward-barf-sexp)
