@@ -258,24 +258,26 @@
 ;; LISP. It maps the same to C-S-<left> and C-S-<right>, so just keep
 ;; those but kill off the ones I like to use.
 
-(define-key paredit-mode-map (kbd "C-<left>") nil)
-(define-key paredit-mode-map (kbd "C-<right>") nil)
-(define-key paredit-mode-map (kbd "C-S-<left>") 'paredit-forward-barf-sexp)
-(define-key paredit-mode-map (kbd "C-S-<right>") 'paredit-forward-slurp-sexp)
+(eval-after-load "paredit"
+  '(progn
+     (define-key paredit-mode-map (kbd "C-<left>") nil)
+     (define-key paredit-mode-map (kbd "C-<right>") nil)
+     (define-key paredit-mode-map (kbd "C-S-<left>") 'paredit-forward-barf-sexp)
+     (define-key paredit-mode-map (kbd "C-S-<right>") 'paredit-forward-slurp-sexp)
 
-;; But then we have the same problem as above. When running in a
-;; terminal, we need to capture weird escape sequences for C-S-<left>
-;; and C-S-<right>. Oh bother.
+     ;; But then we have the same problem as above. When running in a
+     ;; terminal, we need to capture weird escape sequences for C-S-<left>
+     ;; and C-S-<right>. Oh bother.
 
-;; OS X as the client
-(global-set-key (read-kbd-macro "S-M-[ 5 D") 'paredit-forward-barf-sexp)
-(global-set-key (read-kbd-macro "S-M-[ 5 C") 'paredit-forward-slurp-sexp)
-(global-set-key (read-kbd-macro "S-M-[ D") 'paredit-forward-barf-sexp)
-(global-set-key (read-kbd-macro "S-M-[ C") 'paredit-forward-slurp-sexp)
+     ;; OS X as the client
+     (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 D") 'paredit-forward-barf-sexp)
+     (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 C") 'paredit-forward-slurp-sexp)
+     (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 d") 'paredit-forward-barf-sexp)
+     (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 c") 'paredit-forward-slurp-sexp)
 
-;; Linux as the client
-(global-set-key (read-kbd-macro "S-M-[ 1 ; 5 D") 'paredit-forward-barf-sexp)
-(global-set-key (read-kbd-macro "S-M-[ 1 ; 5 C") 'paredit-forward-slurp-sexp)
+     ;; Linux as the client
+     (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 D") 'paredit-forward-barf-sexp)
+     (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C") 'paredit-forward-slurp-sexp)))
 
 ;; Multi-Term mode
 
