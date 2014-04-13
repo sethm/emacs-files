@@ -219,6 +219,7 @@
                       elnode
                       git-commit
                       go-mode
+                      graphviz-dot-mode
                       haml-mode
                       json
                       magit
