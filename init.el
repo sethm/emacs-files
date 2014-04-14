@@ -303,12 +303,6 @@
 (add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/misc")
 
-;; Don't ask. Machine differences.
-(cond ((file-exists-p "/opt/share/emacs/site-lisp/mu4e")
-       (add-to-list 'load-path "/opt/share/emacs/site-lisp/mu4e"))
-      ((file-exists-p "/usr/local/share/emacs/site-lisp/mu4e")
-       (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")))
-
 ;; Apple LLDB-aware Grand Unified Debugger
 
 (require 'gud)
@@ -328,8 +322,18 @@
 ;; twittering-mode
 (setq twittering-use-master-password t)
 
-;; mu4e
-(require 'mu4e)
+;; mu4e (Don't ask. Machine differences.)
+(setq mu4e-load-path nil)
+
+(cond ((file-exists-p "/opt/share/emacs/site-lisp/mu4e")
+       (setq mu4e-load-path "/opt/share/emacs/site-lisp/mu4e"))
+      ((file-exists-p "/usr/local/share/emacs/site-lisp/mu4e")
+       (setq mu4e-load-path "/usr/local/share/emacs/site-lisp/mu4e")))
+
+(if mu4e-load-path
+    (progn
+      (add-to-list 'load-path mu4e-load-path)
+      (require 'mu4e)))
 
 ;; Gnus and Mail are in a local directory, not checked in.
 (if (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el"))
