@@ -302,7 +302,12 @@
 
 (add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/misc")
-(add-to-list 'load-path "~/.emacs.d/mu4e")
+
+;; Don't ask. Machine differences.
+(cond ((file-exists-p "/opt/share/emacs/site-lisp/mu4e")
+       (add-to-list 'load-path "/opt/share/emacs/site-lisp/mu4e"))
+      ((file-exists-p "/usr/local/share/emacs/site-lisp/mu4e")
+       (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")))
 
 ;; Apple LLDB-aware Grand Unified Debugger
 
