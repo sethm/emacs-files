@@ -846,7 +846,7 @@ It is passed through FILTER before we look at it."
 
 (defun gud-gdb-goto-stackframe (text token indent)
   "Goto the stackframe described by TEXT, TOKEN, and INDENT."
-  (speedbar-with-attached-buffer
+  (dframe-with-attached-buffer
    (gud-basic-call (concat "server frame " (nth 1 token)))
    (sit-for 1)))
 
