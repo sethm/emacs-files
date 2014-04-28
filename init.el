@@ -197,6 +197,9 @@
 ;; Mode Stuff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(add-to-list 'load-path "~/.emacs.d/local")
+(add-to-list 'load-path "~/.emacs.d/misc")
+
 ;;
 ;; Emacs built-in package management and the Marmalade repo.
 ;;
@@ -300,19 +303,16 @@
 ;; binding. It's the single most useful part of semantic-mode!
 (define-key semantic-mode-map (kbd "C-c , >") 'semantic-ia-fast-jump)
 
-(add-to-list 'load-path "~/.emacs.d/local")
-(add-to-list 'load-path "~/.emacs.d/misc")
+(require 'mud)
 
 ;; Apple LLDB-aware Grand Unified Debugger
 
 (require 'gud)
 
-;; GAS
-
-(require 'gas-mode)
-(add-to-list 'auto-mode-alist '("\\.S\\'" . gas-mode))
-(add-to-list 'auto-mode-alist '("\\.asm\\'" . gas-mode))
-(add-to-list 'auto-mode-alist '("\\.a65\\'" . gas-mode))
+(require 'nasm-mode)
+(add-to-list 'auto-mode-alist '("\\.S\\'" . nasm-mode))
+(add-to-list 'auto-mode-alist '("\\.asm\\'" . nasm-mode))
+(add-to-list 'auto-mode-alist '("\\.a65\\'" . nasm-mode))
 
 ;; SCons
 (add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
