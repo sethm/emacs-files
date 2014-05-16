@@ -109,7 +109,7 @@
 (add-hook 'go-mode-hook
           '(lambda ()
              (setq indent-tabs-mode t)
-             (setq tab-width 4)))
+             (setq tab-width 8)))
 
 ;; Tell dired to hide dot files and emacs backup files.
 (add-hook 'dired-load-hook
@@ -243,6 +243,7 @@
                       starter-kit-ruby
                       textmate
                       twittering-mode
+                      verilog-mode
                       yasnippet))
 
 (dolist (p my-packages)
@@ -313,6 +314,10 @@
 (add-to-list 'auto-mode-alist '("\\.S\\'" . nasm-mode))
 (add-to-list 'auto-mode-alist '("\\.asm\\'" . nasm-mode))
 (add-to-list 'auto-mode-alist '("\\.a65\\'" . nasm-mode))
+
+;; Verilog mode
+(setq verilog-auto-lineup nil
+      verilog-auto-newline nil)
 
 ;; SCons
 (add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
