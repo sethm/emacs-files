@@ -84,9 +84,9 @@
 (setq-default c-basic-offset 4)
 (setq-default indent-tabs-mode nil)
 
-
-(add-hook 'c++-mode
+(add-hook 'c-mode-common-hook
           '(lambda ()
+             (local-set-key  (kbd "C-c o") 'ff-find-other-file)
              (setq tab-width 4)
              (setq c-basic-offset 4)
              (setq indent-tabs-mode nil)))
