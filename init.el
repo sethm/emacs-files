@@ -165,7 +165,7 @@
 (setq custom-safe-themes t)
 
 ;; Delete trailing whitespace on saves
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+; (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; Save desktop state.
 (setq desktop-dirname             "~/.emacs.d/local/"
