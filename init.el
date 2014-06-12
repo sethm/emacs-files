@@ -224,12 +224,14 @@
                       git-commit
                       go-mode
                       graphviz-dot-mode
+                      groovy-mode
                       haml-mode
                       json
                       magit
                       markdown-mode
                       multi-term
                       pg
+                      quack
                       rainbow-delimiters
                       request
                       rinari
@@ -306,6 +308,8 @@
 (define-key semantic-mode-map (kbd "C-c , >") 'semantic-ia-fast-jump)
 
 (require 'mud)
+
+(require 'quack)
 
 ;; Apple LLDB-aware Grand Unified Debugger
 
