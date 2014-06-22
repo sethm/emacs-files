@@ -187,6 +187,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun set-exec-path-from-shell-PATH ()
+  (interactive)
   (let ((path-from-shell (shell-command-to-string "$SHELL -i -c 'echo $PATH'")))
     (setenv "PATH" path-from-shell)
     (setq exec-path (split-string path-from-shell path-separator))))
@@ -492,17 +493,8 @@
  '(c-offsets-alist (quote ((innamespace . [0]))))
  '(find-grep-options "-q -I")
  '(menu-bar-mode t)
- '(org-custom-properties (quote ("DATE")))
  '(org-fontify-whole-heading-line t)
  '(org-hide-leading-stars nil)
  '(org-src-fontify-natively t)
  '(org-startup-folded nil)
  '(require-final-newline nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-date ((t (:inherit default :foreground "Cyan" :underline t))))
- '(org-level-1 ((t (:inherit outline-1 :background "dark gray" :foreground "black" :box (:line-width 2 :color "grey75" :style released-button) :height 1.2))))
- '(org-level-2 ((t (:inherit outline-2 :underline t)))))
