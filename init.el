@@ -238,6 +238,7 @@
                       ruby-mode
                       rvm
                       scss-mode
+                      slime
                       starter-kit
                       starter-kit-bindings
                       starter-kit-eshell
