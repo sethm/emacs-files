@@ -91,6 +91,11 @@
              (setq c-basic-offset 4)
              (setq indent-tabs-mode nil)))
 
+(add-hook 'asm6502-mode-hook
+          '(lambda ()
+             (setq tab-width 8)
+             (setq indent-tabs-mode t)))
+
 (add-hook 'sh-set-shell-hook
           '(lambda ()
              (setq sh-basic-offset 4)))
@@ -230,6 +235,7 @@
                       magit
                       markdown-mode
                       multi-term
+                      nrepl
                       pg
                       quack
                       rainbow-delimiters
@@ -316,10 +322,9 @@
 
 (require 'gud)
 
-(require 'nasm-mode)
-(add-to-list 'auto-mode-alist '("\\.S\\'" . nasm-mode))
-(add-to-list 'auto-mode-alist '("\\.asm\\'" . nasm-mode))
-(add-to-list 'auto-mode-alist '("\\.a65\\'" . nasm-mode))
+(require 'asm6502-mode)
+(add-to-list 'auto-mode-alist '("\\.asm\\'" . asm6502-mode))
+(add-to-list 'auto-mode-alist '("\\.a65\\'" . asm6502-mode))
 
 ;; Verilog mode
 (setq verilog-auto-lineup nil
