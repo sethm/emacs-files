@@ -91,7 +91,12 @@
              (setq c-basic-offset 4)
              (setq indent-tabs-mode nil)))
 
-(add-hook 'asm6502-mode-hook
+(add-hook 'ca65-mode-hook
+          '(lambda ()
+             (setq tab-width 8)
+             (setq indent-tabs-mode t)))
+
+(add-hook 'asm-mode-hook
           '(lambda ()
              (setq tab-width 8)
              (setq indent-tabs-mode t)))
@@ -322,9 +327,9 @@
 
 (require 'gud)
 
-(require 'asm6502-mode)
-(add-to-list 'auto-mode-alist '("\\.asm\\'" . asm6502-mode))
-(add-to-list 'auto-mode-alist '("\\.a65\\'" . asm6502-mode))
+(require 'ca65-mode)
+(add-to-list 'auto-mode-alist '("\\.asm\\'" . ca65-mode))
+(add-to-list 'auto-mode-alist '("\\.a65\\'" . ca65-mode))
 
 ;; Verilog mode
 (setq verilog-auto-lineup nil
