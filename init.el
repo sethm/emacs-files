@@ -232,6 +232,7 @@
                       dsvn
                       elnode
                       git-commit
+                      git-timemachine
                       go-mode
                       graphviz-dot-mode
                       groovy-mode
