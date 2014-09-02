@@ -106,11 +106,11 @@
              (setq sh-basic-offset 4)))
 
 (add-hook 'python-mode-hook
-	  '(lambda ()
+          '(lambda ()
              (setq python-indent 4)))
 
 (add-hook 'ruby-mode-hook
-          (lambda ()
+          '(lambda ()
             (setq tab-width 2)
             (setq ruby-indent 2)
             (setq c-basic-offset 2)))
