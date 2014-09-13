@@ -119,7 +119,7 @@
 (add-hook 'go-mode-hook
           '(lambda ()
              (setq indent-tabs-mode t)
-             (setq tab-width 8)))
+             (setq tab-width 4)))
 
 ;; Tell dired to hide dot files and emacs backup files.
 (add-hook 'dired-load-hook
