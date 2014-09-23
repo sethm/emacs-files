@@ -237,6 +237,7 @@
                       graphviz-dot-mode
                       groovy-mode
                       haml-mode
+                      haskell-mode
                       json
                       magit
                       markdown-mode
