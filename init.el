@@ -242,6 +242,7 @@
                       magit
                       markdown-mode
                       multi-term
+                      multiple-cursors
                       nrepl
                       pg
                       quack
@@ -320,6 +321,12 @@
 ;; I can't believe semantic-ia-fast-jump doesn't have a default key
 ;; binding. It's the single most useful part of semantic-mode!
 (define-key semantic-mode-map (kbd "C-c , >") 'semantic-ia-fast-jump)
+
+;; Multiple-Cursors mode
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 (require 'mud)
 
