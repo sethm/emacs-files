@@ -332,6 +332,9 @@
 
 (require 'quack)
 
+;; Haskell mode hook
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+
 ;; Apple LLDB-aware Grand Unified Debugger
 
 (require 'gud)
