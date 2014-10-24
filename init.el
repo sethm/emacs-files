@@ -252,7 +252,6 @@
                       ruby-mode
                       rvm
                       scss-mode
-                      slime
                       starter-kit
                       starter-kit-bindings
                       starter-kit-eshell
@@ -328,16 +327,19 @@
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
-(require 'mud)
+;; Slime! I let Quicklisp handle slime for me.
 
+(if (file-exists-p (expand-file-name "~/quicklisp/slime-helper.el"))
+    (progn
+      (load (expand-file-name "~/quicklisp/slime-helper.el"))
+      ;; Replace "sbcl" with the path to your implementation
+      (setq inferior-lisp-program "sbcl")))
+
+(require 'mud)
 (require 'quack)
 
 ;; Haskell mode hook
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-
-;; Apple LLDB-aware Grand Unified Debugger
-
-(require 'gud)
 
 (require 'ca65-mode)
 (add-to-list 'auto-mode-alist '("\\.asm\\'" . ca65-mode))
