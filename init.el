@@ -231,6 +231,7 @@
                       discover
                       dsvn
                       elnode
+                      geiser
                       git-commit
                       git-timemachine
                       go-mode
