@@ -244,7 +244,6 @@
                       markdown-mode
                       multi-term
                       multiple-cursors
-                      nrepl
                       pg
                       quack
                       rainbow-delimiters
