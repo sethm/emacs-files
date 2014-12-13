@@ -234,6 +234,7 @@
                       geiser
                       git-commit
                       git-timemachine
+                      git-gutter
                       go-mode
                       graphviz-dot-mode
                       groovy-mode
@@ -275,6 +276,8 @@
 (global-semantic-decoration-mode 1)
 (global-semantic-stickyfunc-mode 1)
 (global-semantic-idle-summary-mode 1)
+
+(global-git-gutter-mode +1)
 
 ;; paredit-mode tries to snag C-<left> and C-<right> when editing
 ;; LISP. It maps the same to C-S-<left> and C-S-<right>, so just keep
