@@ -304,6 +304,15 @@
      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 D") 'paredit-forward-barf-sexp)
      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C") 'paredit-forward-slurp-sexp)))
 
+;; yasnipets
+
+(setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"                 ;; personal snippets
+        "~/.emacs.d/elpa/yasnippet-20141223.303/snippets/"))
+
+(require 'yasnippet)
+(yas-global-mode 1)
+
 ;; Multi-Term mode
 
 (setq multi-term-program
@@ -530,3 +539,9 @@
  '(org-src-fontify-natively t)
  '(org-startup-folded nil)
  '(require-final-newline nil))
+
+(defun 3b2-publish ()
+  (interactive)
+  (org-html-export-as-html)
+  (write-file "/seth@retronet.net:~/public_html/3b2.html")
+  (kill-buffer))
