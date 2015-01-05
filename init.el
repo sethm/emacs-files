@@ -526,6 +526,14 @@
     (insert "  <script src=\"js/scripts.js\"></script>\n")
     (insert "</body>\n")
     (insert "</html>\n")))
+
+(defun 3b2-publish ()
+  (interactive)
+  (org-html-export-as-html)
+  (write-file "/seth@retronet.net:~/public_html/3b2.html")
+  (kill-buffer))
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -540,8 +548,9 @@
  '(org-startup-folded nil)
  '(require-final-newline nil))
 
-(defun 3b2-publish ()
-  (interactive)
-  (org-html-export-as-html)
-  (write-file "/seth@retronet.net:~/public_html/3b2.html")
-  (kill-buffer))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-level-1 ((t (:inherit outline-1 :underline t :height 1.2)))))
