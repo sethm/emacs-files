@@ -553,4 +553,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-block-begin-line ((t (:inherit org-meta-line :height 0.5))) t)
+ '(org-block-end-line ((t (:inherit org-meta-line :height 0.5))) t)
  '(org-level-1 ((t (:inherit outline-1 :underline t :height 1.2)))))
