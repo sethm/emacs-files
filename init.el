@@ -251,6 +251,7 @@
                       request
                       rinari
                       ruby-mode
+                      rust-mode
                       rvm
                       scss-mode
                       starter-kit
