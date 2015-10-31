@@ -1,0 +1,7 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : <table> ... </table>
+#group : table
+# --
+<table>
+    $0
+</table>

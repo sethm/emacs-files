@@ -211,6 +211,8 @@
 (add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/misc")
 
+(require 'telegram-mode)
+
 ;;
 ;; Emacs built-in package management and the Marmalade repo.
 ;;
@@ -260,6 +262,7 @@
                       starter-kit-js
                       starter-kit-lisp
                       starter-kit-ruby
+                      toml-mode
                       textmate
                       twittering-mode
                       verilog-mode
