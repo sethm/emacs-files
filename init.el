@@ -548,6 +548,7 @@
  '(menu-bar-mode t)
  '(org-fontify-whole-heading-line t)
  '(org-hide-leading-stars nil)
+ '(org-pretty-entities t)
  '(org-src-fontify-natively t)
  '(org-startup-folded nil)
  '(require-final-newline nil))
@@ -557,6 +558,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-block-begin-line ((t (:inherit org-meta-line :height 0.5))) t)
- '(org-block-end-line ((t (:inherit org-meta-line :height 0.5))) t)
- '(org-level-1 ((t (:inherit outline-1 :underline t :height 1.2)))))
+ '(org-block-begin-line ((t (:inherit org-meta-line :underline t :slant italic :height 0.75))) t)
+ '(org-block-end-line ((t (:inherit org-meta-line :overline t :slant italic :height 0.75))) t)
+ '(org-checkbox ((t (:inherit bold))))
+ '(org-level-1 ((t (:inherit outline-1 :underline t :height 1.2))))
+ '(org-level-2 ((t (:inherit (outline-2 default) :underline t)))))
