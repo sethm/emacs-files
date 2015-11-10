@@ -211,24 +211,22 @@
 (add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/misc")
 
-(require 'telegram-mode)
-
 ;;
 ;; Emacs built-in package management and the Marmalade repo.
 ;;
 
+
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.org/packages/")
+                         ("org" . "http://orgmode.org/elpa/")))
+
 (package-initialize)
 
 (defvar my-packages '(ac-nrepl
                       auto-complete
                       cider
-                      clojure-cheatsheet
-                      clojure-mode
-                      clojure-snippets
-                      clojure-test-mode
                       coffee-mode
                       discover
                       dsvn
