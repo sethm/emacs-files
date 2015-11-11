@@ -262,6 +262,7 @@
                       starter-kit-ruby
                       toml-mode
                       textmate
+                      toml-mode
                       twittering-mode
                       verilog-mode
                       yasnippet))
