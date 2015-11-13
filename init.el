@@ -466,20 +466,18 @@
 ;; why I added these
 ;;
 
-(defun change-face-sizes (dir-func delta)
+(defun change-face-size (dir-func delta)
   (progn
     (set-face-attribute 'default nil :height
-                        (funcall dir-func (face-attribute 'default :height) delta))
-    (set-face-attribute '(message "FORMATSTRING" &optional ARGS)ode-line nil :height
-                        (funcall dir-func (face-attribute 'mode-line :height) delta))))
+                        (funcall dir-func (face-attribute 'default :height) delta))))
 
 (defun embiggen-default-face ()
   (interactive)
-  (change-face-sizes '+ 10))
+  (change-face-size '+ 10))
 
 (defun ensmallen-default-face ()
   (interactive)
-  (change-face-sizes '- 10))
+  (change-face-size '- 10))
 
 (global-set-key (kbd "C-+")  'embiggen-default-face)
 (global-set-key (kbd "C--")  'ensmallen-default-face)
