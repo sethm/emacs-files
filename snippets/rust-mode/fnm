@@ -1,0 +1,8 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : fn foo(&self) { }
+#group : fn
+#expand-env: ((yas-indent-line 'fixed))
+# --
+fn ${1:foo}(&self$2) {
+    $0
+}

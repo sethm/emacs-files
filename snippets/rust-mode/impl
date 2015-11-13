@@ -1,0 +1,7 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : impl Foo { ... }
+#group : impl
+# --
+impl ${1:Foo} {
+     $0
+}

@@ -1,0 +1,7 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : fn main() { ... }
+#group : fn
+# --
+fn main() {
+   $0
+}

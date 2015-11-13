@@ -308,13 +308,13 @@
      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C") 'paredit-forward-slurp-sexp)))
 
 ;; yasnipets
-
-(setq yas-snippet-dirs
-      '("~/.emacs.d/snippets"                 ;; personal snippets
-        "~/.emacs.d/elpa/yasnippet-20141223.303/snippets/"))
-
+(add-to-list 'auto-mode-alist "~/.emacs.d/snippets")
 (require 'yasnippet)
 (yas-global-mode 1)
+
+;; Rust-mode
+(add-hook 'rust-mode-hook 'electric-pair-mode)
+
 
 ;; Multi-Term mode
 

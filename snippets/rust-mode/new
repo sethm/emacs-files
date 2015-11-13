@@ -1,0 +1,8 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : fn new() -> Foo { }
+#group : fn
+#expand-env: ((yas-indent-line 'fixed))
+# --
+fn new($1) -> ${2:Foo} {
+    ${3:Foo}
+}
