@@ -215,7 +215,6 @@
 ;; Emacs built-in package management and the Marmalade repo.
 ;;
 
-
 (require 'package)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
@@ -246,6 +245,7 @@
                       multi-term
                       multiple-cursors
                       pg
+                      powerline
                       quack
                       rainbow-delimiters
                       request
@@ -308,12 +308,15 @@
      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C") 'paredit-forward-slurp-sexp)))
 
 ;; yasnipets
-(add-to-list 'auto-mode-alist "~/.emacs.d/snippets")
+(add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
 (require 'yasnippet)
 (yas-global-mode 1)
 
 ;; Rust-mode
 (add-hook 'rust-mode-hook 'electric-pair-mode)
+
+;; Powerline
+(powerline-default-theme)
 
 
 ;; Multi-Term mode
@@ -466,7 +469,9 @@
 
 (defun change-default-face-size (dir-func delta)
   (set-face-attribute 'default nil :height
-                      (funcall dir-func (face-attribute 'default :height) delta)))
+                      (funcall dir-func (face-attribute 'default :height) delta))
+  (set-face-attribute 'mode-line nil :height
+                      (funcall dir-func (face-attribute 'mode-line :height) delta)))
 
 (defun embiggen-default-face ()
   (interactive)
