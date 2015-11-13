@@ -177,20 +177,19 @@
 ;; Delete trailing whitespace on saves
 ; (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;; Save desktop state.
-(setq desktop-dirname             "~/.emacs.d/local/"
-      desktop-base-file-name      "emacs.desktop"
-      desktop-base-lock-name      "lock"
-      desktop-path                (list desktop-dirname)
-      desktop-save                t
-      desktop-files-not-to-save   "^$" ;reload tramp paths
-      desktop-load-locked-desktop nil)
-
+;; ;; Save desktop state.
+;; (setq desktop-dirname             "~/.emacs.d/local/"
+;;       desktop-base-file-name      "emacs.desktop"
+;;       desktop-base-lock-name      "lock"
+;;       desktop-path                (list desktop-dirname)
+;;       desktop-save                t
+;;       desktop-files-not-to-save   "^$" ;reload tramp paths
+;;       desktop-load-locked-desktop nil)
+;;
+;; (desktop-save-mode 1)
 
 ;; I'm kind of a dummy, and I need this :B
 (setq confirm-kill-emacs 'yes-or-no-p)
-
-(desktop-save-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Path Stuff
@@ -467,19 +466,20 @@
 ;; why I added these
 ;;
 
-(defun change-default-face-size (dir-func delta)
-  (set-face-attribute 'default nil :height
-                      (funcall dir-func (face-attribute 'default :height) delta))
-  (set-face-attribute 'mode-line nil :height
-                      (funcall dir-func (face-attribute 'mode-line :height) delta)))
+(defun change-face-sizes (dir-func delta)
+  (progn
+    (set-face-attribute 'default nil :height
+                        (funcall dir-func (face-attribute 'default :height) delta))
+    (set-face-attribute '(message "FORMATSTRING" &optional ARGS)ode-line nil :height
+                        (funcall dir-func (face-attribute 'mode-line :height) delta))))
 
 (defun embiggen-default-face ()
   (interactive)
-  (change-default-face-size '+ 10))
+  (change-face-sizes '+ 10))
 
 (defun ensmallen-default-face ()
   (interactive)
-  (change-default-face-size '- 10))
+  (change-face-sizes '- 10))
 
 (global-set-key (kbd "C-+")  'embiggen-default-face)
 (global-set-key (kbd "C--")  'ensmallen-default-face)
