@@ -317,6 +317,10 @@
 ;; Powerline
 (powerline-default-theme)
 
+;; YOW! A can of ASPARAGUS, 73 pigeons, some LIVE ammo, and a FROZEN
+;; DAQUIRI!!
+(require 'yow)
+(setq yow-file "~/.emacs.d/misc/yow.txt.gz")
 
 ;; Multi-Term mode
 
