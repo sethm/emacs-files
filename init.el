@@ -322,6 +322,8 @@
 (require 'yow)
 (setq yow-file "~/.emacs.d/misc/yow.txt.gz")
 
+(require 'fireplace)
+
 ;; Multi-Term mode
 
 (setq multi-term-program
