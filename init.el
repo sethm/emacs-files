@@ -356,7 +356,10 @@
     (progn
       (load (expand-file-name "~/quicklisp/slime-helper.el"))
       ;; Replace "sbcl" with the path to your implementation
-      (setq inferior-lisp-program "sbcl")))
+      (setq inferior-lisp-program "sbcl")
+      (require 'slime)
+      (slime-setup '(slime-fancy slime-tramp slime-asdf))
+      (slime-require :swank-listener-hooks)))
 
 (require 'mud)
 (require 'quack)
