@@ -243,6 +243,7 @@
                       markdown-mode
                       multi-term
                       multiple-cursors
+                      org-bullets
                       pg
                       powerline
                       quack
@@ -310,6 +311,9 @@
 (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
 (require 'yasnippet)
 (yas-global-mode 1)
+
+;; Org mode should have nice bullets.
+(add-hook 'org-mode-hook 'org-bullets-mode)
 
 ;; Rust-mode
 (add-hook 'rust-mode-hook 'electric-pair-mode)
@@ -454,6 +458,7 @@
       (set-frame-font "Inconsolata-12"))
 
     (load-theme 'loomcom)
+    (load-theme 'org-beautify)
     (normal-erase-is-backspace-mode 1)))
 
 ;; Load C includes (defined on a per-environment basis, in my "local"
@@ -569,9 +574,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "unknown" :family "Inconsolata"))))
- '(org-block-begin-line ((t (:inherit org-meta-line :underline t :slant italic :height 0.75))) t)
- '(org-block-end-line ((t (:inherit org-meta-line :overline t :slant italic :height 0.75))) t)
- '(org-checkbox ((t (:inherit bold))))
- '(org-level-1 ((t (:inherit outline-1 :underline t :height 1.2))))
- '(org-level-2 ((t (:inherit (outline-2 default) :underline t)))))
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "unknown" :family "Inconsolata")))))

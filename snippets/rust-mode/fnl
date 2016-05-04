@@ -3,6 +3,6 @@
 #group : fn
 #expand-env: ((yas-indent-line 'fixed))
 # --
-fn ${1:foo}() -> ${2:Bar} {
+fn ${1:foo}($2) -> ${3:Bar} {
     $0
 }
