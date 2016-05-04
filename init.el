@@ -192,18 +192,6 @@
 (setq confirm-kill-emacs 'yes-or-no-p)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Path Stuff
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun set-exec-path-from-shell-PATH ()
-  (interactive)
-  (let ((path-from-shell (shell-command-to-string "$SHELL -i -c 'echo $PATH'")))
-    (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
-
-(when window-system (set-exec-path-from-shell-PATH))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Mode Stuff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -229,6 +217,7 @@
                       discover
                       dsvn
                       elnode
+                      exec-path-from-shell
                       geiser
                       git-commit
                       git-timemachine
@@ -307,6 +296,10 @@
      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 D") 'paredit-forward-barf-sexp)
      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C") 'paredit-forward-slurp-sexp)))
 
+;; Make sure PATH environment variable works in Mac
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+
 ;; yasnipets
 (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
 (require 'yasnippet)
@@ -314,6 +307,11 @@
 
 ;; Org mode should have nice bullets.
 (add-hook 'org-mode-hook 'org-bullets-mode)
+(add-hook 'org-mode-hook (lambda () (load-theme 'org-beautify t)))
+
+(font-lock-add-keywords 'org-mode
+                        '(("^ +\\([-*]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 ;; Rust-mode
 (add-hook 'rust-mode-hook 'electric-pair-mode)
@@ -447,19 +445,7 @@
       (custom-set-faces
        '(mode-line ((t (:foreground "cyan" :inverse-video t))))
        '(mode-line-inactive ((default (:inherit mode-line)) (nil (:foreground "white"))))
-       ))
-
-  ;; Otherwise, we're running in a windowed environment
-  (progn
-    ;; Window system is Mac OS X ("Emacs for OS X"), use Menlo
-    (if (string= window-system "ns")
-        (add-to-list 'default-frame-alist '(font . "Menlo-14"))
-      ;; Otherwise, use Inconsolata
-      (set-frame-font "Inconsolata-12"))
-
-    (load-theme 'loomcom)
-    (load-theme 'org-beautify)
-    (normal-erase-is-backspace-mode 1)))
+       )))
 
 ;; Load C includes (defined on a per-environment basis, in my "local"
 ;; subdirectory)
@@ -553,7 +539,6 @@
   (write-file "/seth@retronet.net:~/public_html/3b2.html")
   (kill-buffer))
 
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -569,9 +554,5 @@
  '(org-startup-folded nil)
  '(require-final-newline nil))
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "unknown" :family "Inconsolata")))))
+(load-theme 'loomcom t)
+

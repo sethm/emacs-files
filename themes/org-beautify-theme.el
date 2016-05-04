@@ -31,13 +31,16 @@
 
 (deftheme org-beautify "Sub-theme to beautify org mode")
 
-(let* ((sans-font (cond ((x-list-fonts "Lucida Grande") '(:font "Lucida Grande"))
+(let* ((sans-font (cond ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+                        ((x-list-fonts "Helvetica") '(:font "Helvetica"))
+                        ((x-list-fonts "Helvetica Neue") '(:font "Helvetica Neue"))
+                        ((x-list-fonts "Lucida Grande") '(:font "Lucida Grande"))
                         ((x-list-fonts "Verdana") '(:font "Verdana"))
                         ((x-family-fonts "Sans Serif") '(:family "Sans Serif"))
                         (nil (warn "Cannot find a Sans Serif Font.  Please report at: https://github.com/jonnay/emagicians-starter-kit/issues"))))
        (base-font-color (face-foreground 'default  nil 'default))
        (background-color (face-background 'default nil 'default))
-       (headline `(:inherit default :foreground ,base-font-color))
+       (headline `(:inherit default :foreground ,base-font-color :weight bold))
        (primary-color (face-foreground 'mode-line nil))
        (secondary-color (face-background 'secondary-selection nil 'region))
        (padding `(:line-width 5 :color ,background-color))
@@ -52,8 +55,7 @@
                           `(org-level-3 ((t (,@headline  :box ,padding))))
                           `(org-level-2 ((t (,@headline ,@sans-font :height 1.25 :box ,padding))))
                           `(org-level-1 ((t (,@headline ,@sans-font :height 1.5 :box ,padding ))))
-                          `(org-document-title ((t (:inherit org-level-1 :height 2.0 :underline nil :box ,padding))))
-
+                          `(org-document-title ((t (:inherit org-level-1))))
                           `(org-block ((t (:foreground ,base-font-color :background ,background-color :box nil))))
                           `(org-block-begin-line ((t ,org-highlights)))
                           `(org-block-end-line ((t ,org-highlights))) 
