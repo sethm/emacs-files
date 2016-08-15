@@ -312,9 +312,8 @@
      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 D") 'paredit-forward-barf-sexp)
      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C") 'paredit-forward-slurp-sexp)))
 
-;; Make sure PATH environment variable works in Mac
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+;; Make sure PATH environment variable works
+(exec-path-from-shell-initialize)
 
 ;; yasnipets
 (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
