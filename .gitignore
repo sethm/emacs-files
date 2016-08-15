@@ -11,3 +11,5 @@ elpa
 c-includes.el
 request
 ac-comphist.dat
+ido.last
+recentf
