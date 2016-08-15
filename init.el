@@ -115,6 +115,20 @@
             (setq ruby-indent 2)
             (setq c-basic-offset 2)))
 
+(add-hook 'javascript-mode-hook
+          '(lambda ()
+             (setq tab-width 4)
+             (setq js-indent-level 4)
+             (setq c-basic-offset 4)
+             (disable-paredit-mode)))
+
+(add-hook 'js2-mode-hook
+          '(lambda ()
+             (setq tab-width 4)
+             (setq js2-basic-offset 4)
+             (setq c-basic-offset 4)
+             (disable-paredit-mode)))
+
 ;; The Go style guide says tabs, so tabs it is.
 (add-hook 'go-mode-hook
           '(lambda ()
@@ -214,6 +228,7 @@
                       auto-complete
                       cider
                       coffee-mode
+                      csharp-mode
                       discover
                       dsvn
                       elnode
@@ -228,6 +243,7 @@
                       haml-mode
                       haskell-mode
                       json
+                      js2-mode
                       magit
                       markdown-mode
                       multi-term
@@ -437,6 +453,8 @@
          ("\\.h$" . c-mode)
          ("\\.outline$" . outline-mode)
          ("\\.lisp$" . lisp-mode)
+         ("\\.js$" . js2-mode)
+         ("\\.cs$" . csharp-mode)
          ("\\.java$" . java-mode)) auto-mode-alist))
 
 ;; Only set mode-line face if running in a terminal
