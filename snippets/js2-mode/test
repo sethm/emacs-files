@@ -1,0 +1,7 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : QUnit.test() {...}
+#group : test
+# --
+QUnit.test("$1", function(assert) {
+    $0
+});

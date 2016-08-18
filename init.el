@@ -561,7 +561,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(c-offsets-alist (quote ((innamespace . [0]))))
+ '(before-save-hook (quote (delete-trailing-whitespace)))
+ '(c-offsets-alist (quote ((innamespace . +))))
  '(find-grep-options "-q -I")
  '(menu-bar-mode t)
  '(org-fontify-whole-heading-line t)
@@ -573,3 +574,9 @@
 
 (load-theme 'loomcom t)
 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
