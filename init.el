@@ -226,6 +226,7 @@
 
 (defvar my-packages '(ac-nrepl
                       auto-complete
+                      cargo
                       cider
                       coffee-mode
                       csharp-mode
@@ -330,6 +331,17 @@
 
 ;; Rust-mode
 (add-hook 'rust-mode-hook 'electric-pair-mode)
+
+(setq racer-cmd "~/.cargo/bin/racer") 
+(setq racer-rust-src-path "~/rust/src")
+
+(add-hook 'rust-mode-hook 'cargo-minor-mode)
+(add-hook 'rust-mode-hook #'racer-mode)
+(add-hook 'racer-mode-hook #'eldoc-mode)
+(add-hook 'racer-mode-hook #'company-mode)
+(add-hook 'rust-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)))
 
 ;; Powerline
 (powerline-default-theme)
@@ -473,6 +485,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun indent-buffer ()
+  "Indent current buffer according to major mode."
+  (interactive)
+  (indent-region (point-min) (point-max)))
 
 ;;
 ;; Stupid convenience functions to increase or decrease the default
