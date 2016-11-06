@@ -271,6 +271,7 @@
                       toml-mode
                       twittering-mode
                       verilog-mode
+                      web-mode
                       yasnippet))
 
 (dolist (p my-packages)
@@ -332,7 +333,7 @@
 ;; Rust-mode
 (add-hook 'rust-mode-hook 'electric-pair-mode)
 
-(setq racer-cmd "~/.cargo/bin/racer") 
+(setq racer-cmd "~/.cargo/bin/racer")
 (setq racer-rust-src-path "~/rust/src")
 
 (add-hook 'rust-mode-hook 'cargo-minor-mode)
@@ -372,6 +373,9 @@
 ;; I can't believe semantic-ia-fast-jump doesn't have a default key
 ;; binding. It's the single most useful part of semantic-mode!
 (define-key semantic-mode-map (kbd "C-c , >") 'semantic-ia-fast-jump)
+
+;; Web mode
+(setq web-mode-markup-indent-offset 2)
 
 ;; Multiple-Cursors mode
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
