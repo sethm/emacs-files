@@ -229,6 +229,8 @@
                       cargo
                       cider
                       coffee-mode
+                      company
+                      company-racer
                       csharp-mode
                       discover
                       dsvn
@@ -254,6 +256,7 @@
                       powerline
                       quack
                       rainbow-delimiters
+                      racer
                       request
                       rinari
                       ruby-mode
@@ -591,6 +594,7 @@
  '(org-pretty-entities t)
  '(org-src-fontify-natively t)
  '(org-startup-folded nil)
+ '(org-startup-indented nil)
  '(require-final-newline nil))
 
 (load-theme 'loomcom t)
