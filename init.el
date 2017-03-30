@@ -595,7 +595,8 @@
  '(org-src-fontify-natively t)
  '(org-startup-folded nil)
  '(org-startup-indented nil)
- '(require-final-newline nil))
+ '(require-final-newline nil)
+ '(vc-git-diff-switches t))
 
 (load-theme 'loomcom t)
 
