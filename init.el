@@ -254,7 +254,6 @@
                       org-bullets
                       pg
                       powerline
-                      quack
                       rainbow-delimiters
                       racer
                       request
@@ -396,9 +395,6 @@
       (require 'slime)
       (slime-setup '(slime-fancy slime-tramp slime-asdf))
       (slime-require :swank-listener-hooks)))
-
-(require 'mud)
-(require 'quack)
 
 ;; Haskell mode hook
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
