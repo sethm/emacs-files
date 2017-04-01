@@ -226,6 +226,7 @@
 
 (defvar my-packages '(ac-nrepl
                       auto-complete
+                      better-defaults
                       cargo
                       cider
                       coffee-mode
@@ -236,6 +237,7 @@
                       dsvn
                       elnode
                       exec-path-from-shell
+                      find-file-in-project
                       geiser
                       git-commit
                       git-timemachine
@@ -245,6 +247,8 @@
                       groovy-mode
                       haml-mode
                       haskell-mode
+                      idle-highlight-mode
+                      ido-ubiquitous
                       json
                       js2-mode
                       magit
@@ -252,6 +256,7 @@
                       multi-term
                       multiple-cursors
                       org-bullets
+                      paredit
                       pg
                       rainbow-delimiters
                       racer
@@ -261,8 +266,10 @@
                       rust-mode
                       rvm
                       scss-mode
+                      scpaste
                       smart-mode-line
                       smart-mode-line-powerline-theme
+                      smex
                       toml-mode
                       textmate
                       toml-mode
