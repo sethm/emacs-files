@@ -253,7 +253,6 @@
                       multiple-cursors
                       org-bullets
                       pg
-                      powerline
                       rainbow-delimiters
                       racer
                       request
@@ -262,6 +261,8 @@
                       rust-mode
                       rvm
                       scss-mode
+                      smart-mode-line
+                      smart-mode-line-powerline-theme
                       starter-kit
                       starter-kit-bindings
                       starter-kit-eshell
@@ -324,6 +325,10 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 
+;; smart-mode-line
+(sml/setup)
+(powerline-center-theme)
+
 ;; Org mode should have nice bullets.
 (add-hook 'org-mode-hook 'org-bullets-mode)
 (add-hook 'org-mode-hook (lambda () (load-theme 'org-beautify t)))
@@ -345,9 +350,6 @@
 (add-hook 'rust-mode-hook
           (lambda ()
             (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)))
-
-;; Powerline
-(powerline-default-theme)
 
 ;; YOW! A can of ASPARAGUS, 73 pigeons, some LIVE ammo, and a FROZEN
 ;; DAQUIRI!!
@@ -471,14 +473,6 @@
          ("\\.cs$" . csharp-mode)
          ("\\.java$" . java-mode)) auto-mode-alist))
 
-;; Only set mode-line face if running in a terminal
-(if (eq window-system nil)
-    (progn
-      (custom-set-faces
-       '(mode-line ((t (:foreground "cyan" :inverse-video t))))
-       '(mode-line-inactive ((default (:inherit mode-line)) (nil (:foreground "white"))))
-       )))
-
 ;; Load C includes (defined on a per-environment basis, in my "local"
 ;; subdirectory)
 
@@ -591,7 +585,11 @@
  '(org-src-fontify-natively t)
  '(org-startup-folded nil)
  '(org-startup-indented nil)
+ '(package-selected-packages
+   (quote
+    (racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate starter-kit-ruby starter-kit-lisp starter-kit-js starter-kit-eshell starter-kit-bindings scss-mode rvm rinari request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
  '(require-final-newline nil)
+ '(sml/theme (quote automatic))
  '(vc-git-diff-switches t))
 
 (load-theme 'loomcom t)
