@@ -263,12 +263,6 @@
                       scss-mode
                       smart-mode-line
                       smart-mode-line-powerline-theme
-                      starter-kit
-                      starter-kit-bindings
-                      starter-kit-eshell
-                      starter-kit-js
-                      starter-kit-lisp
-                      starter-kit-ruby
                       toml-mode
                       textmate
                       toml-mode
@@ -513,6 +507,10 @@
 (global-set-key (kbd "C-+")  'embiggen-default-face)
 (global-set-key (kbd "C--")  'ensmallen-default-face)
 
+;;
+;; Some fun functions
+;;
+
 (defun insert-clisp-project ()
   "Insert a template (with DEFPACKAGE and IN-PACKAGE forms) into
   the current buffer."
@@ -523,23 +521,6 @@
     (insert ";;;; " file "\n")
     (insert "\n(defpackage #:" package "\n  (:use #:cl))\n\n")
     (insert "(in-package #:" package ")\n\n")))
-
-(defun insert-xhtml-1 ()
-  "Insert a template XHTML 1.0 transitional snippet into
-  the current buffer"
-  (interactive)
-  (goto-char 0)
-  (let* ((file (file-name-nondirectory (buffer-file-name)))
-         (title (file-name-sans-extension file)))
-    (insert "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n")
-    (insert "      \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n")
-    (insert "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n")
-    (insert "  <head>\n")
-    (insert "    <title>" title "</title>\n")
-    (insert "  </head>\n")
-    (insert "  <body>\n")
-    (insert "  </body>\n")
-    (insert "</html>\n")))
 
 (defun insert-html5 ()
   "Insert an HTML5 template."
@@ -564,11 +545,14 @@
     (insert "</body>\n")
     (insert "</html>\n")))
 
+;; Publish my org-mode 3B2 file to loomcom
 (defun 3b2-publish ()
   (interactive)
   (org-html-export-as-html)
   (write-file "/seth@www.loomcom.com:/var/www/loomcom/3b2/index.html")
   (kill-buffer-and-window))
+
+(load-theme 'loomcom t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -587,12 +571,10 @@
  '(org-startup-indented nil)
  '(package-selected-packages
    (quote
-    (racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate starter-kit-ruby starter-kit-lisp starter-kit-js starter-kit-eshell starter-kit-bindings scss-mode rvm rinari request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
+    (racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm rinari request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
  '(require-final-newline nil)
  '(sml/theme (quote automatic))
  '(vc-git-diff-switches t))
-
-(load-theme 'loomcom t)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
