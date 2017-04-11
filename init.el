@@ -256,14 +256,13 @@
                       markdown-mode
                       multi-term
                       multiple-cursors
+                      org-jira
                       org-bullets
                       paredit
                       pg
                       rainbow-delimiters
                       racer
                       request
-                      rinari
-                      ruby-mode
                       rust-mode
                       rvm
                       scss-mode
@@ -277,11 +276,16 @@
                       twittering-mode
                       verilog-mode
                       web-mode
+                      xml-rpc
                       yasnippet))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
+
+;; Org-jira mode
+(if (file-exists-p (expand-file-name "~/.emacs.d/local/jira.el"))
+    (load "jira"))
 
 ;; This is a super annoying feature, sometimes. Turn it off
 (setq ido-use-filename-at-point nil)
@@ -334,10 +338,6 @@
 ;; Org mode should have nice bullets.
 (add-hook 'org-mode-hook 'org-bullets-mode)
 (add-hook 'org-mode-hook (lambda () (load-theme 'org-beautify t)))
-
-;; (font-lock-add-keywords 'org-mode
-;;                         '(("^ +\\([-*]\\) "
-;;                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 ;; Rust-mode
 (add-hook 'rust-mode-hook 'electric-pair-mode)
@@ -461,7 +461,6 @@
       (append
        '(("\\.text$" . text-mode)
          ("\\.txt$" . text-mode)
-         ("\\.tl$" . ruby-mode)
          ("\\.py$" . python-mode)
          ("\\.emacs$" . emacs-lisp-mode)
          ("\\.el$" . emacs-lisp-mode)
@@ -579,7 +578,7 @@
  '(org-startup-indented nil)
  '(package-selected-packages
    (quote
-    (fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm rinari request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
+    (fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
  '(require-final-newline nil)
  '(sml/theme (quote automatic))
  '(vc-git-diff-switches t))
