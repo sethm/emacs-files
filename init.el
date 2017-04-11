@@ -290,6 +290,10 @@
 ;; This is a super annoying feature, sometimes. Turn it off
 (setq ido-use-filename-at-point nil)
 
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(ido-mode 1)
+
 (global-ede-mode 1)
 (semantic-mode 1)
 (global-semantic-decoration-mode 1)
@@ -569,6 +573,7 @@
  '(before-save-hook (quote (delete-trailing-whitespace)))
  '(c-offsets-alist (quote ((innamespace . +))))
  '(find-grep-options "-q -I")
+ '(ido-use-virtual-buffers t)
  '(menu-bar-mode t)
  '(org-fontify-whole-heading-line t)
  '(org-hide-leading-stars nil)
