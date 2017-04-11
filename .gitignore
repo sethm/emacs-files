@@ -6,6 +6,7 @@ url
 ede-projects.el
 semanticdb
 .smex-items
+.mc-lists.el
 places
 elpa
 c-includes.el
