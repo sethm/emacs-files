@@ -1,0 +1,6 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : Example of Type
+# --
+#+BEGIN_EXAMPLE $1
+$0
+#+END_EXAMPLE
