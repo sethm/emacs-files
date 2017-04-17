@@ -239,6 +239,7 @@
                       exec-path-from-shell
                       find-file-in-project
                       fic-mode
+                      fill-column-indicator
                       geiser
                       git-commit
                       git-timemachine
@@ -341,7 +342,6 @@
 
 ;; Org mode should have nice bullets.
 (add-hook 'org-mode-hook 'org-bullets-mode)
-(add-hook 'org-mode-hook (lambda () (load-theme 'org-beautify t)))
 
 ;; Rust-mode
 (add-hook 'rust-mode-hook 'electric-pair-mode)
@@ -386,6 +386,9 @@
 
 ;; Web mode
 (setq web-mode-markup-indent-offset 2)
+
+;; fill-column-mode
+(setq fci-rule-column 80)
 
 ;; Multiple-Cursors mode
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
@@ -583,7 +586,7 @@
  '(org-startup-indented nil)
  '(package-selected-packages
    (quote
-    (fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
+    (fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
  '(require-final-newline nil)
  '(sml/theme (quote automatic))
  '(vc-git-diff-switches t))
