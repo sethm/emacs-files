@@ -232,7 +232,6 @@
                       coffee-mode
                       company
                       company-racer
-                      csharp-mode
                       discover
                       dsvn
                       elnode
@@ -240,7 +239,6 @@
                       find-file-in-project
                       fic-mode
                       fill-column-indicator
-                      geiser
                       git-commit
                       git-timemachine
                       git-gutter
@@ -251,13 +249,10 @@
                       haskell-mode
                       idle-highlight-mode
                       ido-ubiquitous
-                      json
-                      js2-mode
                       magit
                       markdown-mode
                       multi-term
                       multiple-cursors
-                      org-jira
                       org-bullets
                       paredit
                       pg
@@ -268,13 +263,10 @@
                       rvm
                       scss-mode
                       scpaste
-                      smart-mode-line
-                      smart-mode-line-powerline-theme
                       smex
                       toml-mode
                       textmate
                       toml-mode
-                      twittering-mode
                       verilog-mode
                       web-mode
                       xml-rpc
@@ -335,10 +327,6 @@
 (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
 (require 'yasnippet)
 (yas-global-mode 1)
-
-;; smart-mode-line
-(sml/setup)
-(powerline-center-theme)
 
 ;; Org mode should have nice bullets.
 (add-hook 'org-mode-hook 'org-bullets-mode)
@@ -596,4 +584,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-block ((t (:background "dark blue" :foreground "white" :box nil)))))
+ '(org-block ((t (:background "dark blue" :foreground "white" :box nil))))
+ '(org-block-background ((t (:background "grey20"))))
+ '(org-block-begin-line ((t (:inverse-video t :height 0.6))) t)
+ '(org-block-end-line ((t (:inverse-video t :height 0.6))) t))
