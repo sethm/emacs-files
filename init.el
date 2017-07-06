@@ -115,18 +115,17 @@
             (setq ruby-indent 2)
             (setq c-basic-offset 2)))
 
-(add-hook 'javascript-mode-hook
+(add-hook 'js-mode-hook
           '(lambda ()
-             (setq tab-width 4)
-             (setq js-indent-level 4)
-             (setq c-basic-offset 4)
-             (disable-paredit-mode)))
+             (setq tab-width 2)
+             (setq js-indent-level 2)
+             (setq c-basic-offset 2)))
 
 (add-hook 'js2-mode-hook
           '(lambda ()
-             (setq tab-width 4)
-             (setq js2-basic-offset 4)
-             (setq c-basic-offset 4)
+             (setq tab-width 2)
+             (setq js2-basic-offset 2)
+             (setq c-basic-offset 2)
              (disable-paredit-mode)))
 
 ;; The Go style guide says tabs, so tabs it is.
@@ -267,7 +266,9 @@
                       toml-mode
                       textmate
                       toml-mode
+                      typescript-mode
                       verilog-mode
+                      vue-mode
                       web-mode
                       xml-rpc
                       yasnippet))
@@ -466,7 +467,9 @@
          ("\\.outline$" . outline-mode)
          ("\\.lisp$" . lisp-mode)
          ("\\.js$" . js2-mode)
+         ("\\.tsx?$" . typescript-mode)
          ("\\.cs$" . csharp-mode)
+         ("\\.vue$" . vue-mode)
          ("\\.java$" . java-mode)) auto-mode-alist))
 
 ;; Load C includes (defined on a per-environment basis, in my "local"
@@ -574,7 +577,7 @@
  '(org-startup-indented nil)
  '(package-selected-packages
    (quote
-    (fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
+    (vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
  '(require-final-newline nil)
  '(sml/theme (quote automatic))
  '(vc-git-diff-switches t))
