@@ -233,6 +233,7 @@
                       company-racer
                       discover
                       dsvn
+                      elm-mode
                       elnode
                       exec-path-from-shell
                       find-file-in-project
