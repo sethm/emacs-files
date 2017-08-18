@@ -404,6 +404,7 @@
 ;; Haskell mode hook
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 
+;; CA65
 (require 'ca65-mode)
 (add-to-list 'auto-mode-alist '("\\.asm\\'" . ca65-mode))
 (add-to-list 'auto-mode-alist '("\\.a65\\'" . ca65-mode))
