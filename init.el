@@ -397,6 +397,9 @@
       (slime-setup '(slime-fancy slime-tramp slime-asdf))
       (slime-require :swank-listener-hooks)))
 
+;; Magit mode
+(global-set-key (kbd "C-x g") 'magit-status)
+
 ;; Haskell mode hook
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 
