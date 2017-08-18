@@ -272,6 +272,7 @@
                       vue-mode
                       web-mode
                       xml-rpc
+                      yarn-mode
                       yasnippet))
 
 (dolist (p my-packages)
@@ -581,7 +582,7 @@
  '(org-startup-indented nil)
  '(package-selected-packages
    (quote
-    (vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
+    (yarn-mode vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
  '(require-final-newline nil)
  '(sml/theme (quote automatic))
  '(vc-git-diff-switches t))
