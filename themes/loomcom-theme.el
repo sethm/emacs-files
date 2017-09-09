@@ -9,7 +9,7 @@
                                 :box nil :strike-through nil
                                 :overline nil :underline nil
                                 :slant normal :weight normal
-                                :height 140 :width normal
+                                :width normal
                                 :foundry "Adobe"
                                 :family "Source Code Pro"))))))
 

@@ -273,7 +273,11 @@
                       web-mode
                       xml-rpc
                       yarn-mode
-                      yasnippet))
+                      yasnippet
+                      ;; Themes
+                      leuven-theme
+                      zenburn-theme
+                      ))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -570,11 +574,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default default default italic underline success warning error])
  '(before-save-hook (quote (delete-trailing-whitespace)))
  '(c-offsets-alist (quote ((innamespace . +))))
+ '(custom-enabled-themes (quote (wombat)))
  '(find-grep-options "-q -I")
  '(ido-use-virtual-buffers t)
  '(menu-bar-mode t)
+ '(org-adapt-indentation nil)
  '(org-fontify-whole-heading-line t)
  '(org-hide-leading-stars nil)
  '(org-pretty-entities t)
@@ -583,7 +591,7 @@
  '(org-startup-indented nil)
  '(package-selected-packages
    (quote
-    (yarn-mode vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
+    (leuven-theme zenburn-theme yarn-mode vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
  '(require-final-newline nil)
  '(sml/theme (quote automatic))
  '(vc-git-diff-switches t))
