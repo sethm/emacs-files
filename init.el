@@ -529,6 +529,9 @@
 (global-set-key (kbd "C-+")  'embiggen-default-face)
 (global-set-key (kbd "C--")  'ensmallen-default-face)
 
+;; Load my custom theme
+(load-theme 'github-modern t nil)
+
 ;;
 ;; Some fun functions
 ;;
@@ -574,9 +577,6 @@
   (write-file "/seth@www.loomcom.com:/var/www/loomcom/3b2/index.html")
   (kill-buffer-and-window))
 
-;;(load-theme 'loomcom t)
-(load-theme 'github-modern t)
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -586,11 +586,14 @@
    [default default default italic underline success warning error])
  '(before-save-hook (quote (delete-trailing-whitespace)))
  '(c-offsets-alist (quote ((innamespace . +))))
- '(custom-enabled-themes (quote (wombat)))
+ '(fci-rule-color "#6a737d")
  '(find-grep-options "-q -I")
  '(ido-use-virtual-buffers t)
  '(markdown-command "pandoc --from markdown_github --to html")
  '(menu-bar-mode t)
+ '(nrepl-message-colors
+   (quote
+    ("#032f62" "#6a737d" "#d73a49" "#6a737d" "#005cc5" "#6f42c1" "#d73a49" "#6a737d")))
  '(org-adapt-indentation nil)
  '(org-fontify-whole-heading-line t)
  '(org-hide-leading-stars nil)
@@ -601,6 +604,7 @@
  '(package-selected-packages
    (quote
     (github-modern-theme leuven-theme zenburn-theme yarn-mode vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
+ '(pdf-view-midnight-colors (quote ("#6a737d" . "#fffbdd")))
  '(require-final-newline nil)
  '(safe-local-variable-values
    (quote
@@ -609,6 +613,28 @@
      (org-wiki-location
       (expand-file-name "~/wiki")))))
  '(sml/theme (quote automatic))
+ '(vc-annotate-background "#3390ff")
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#6a737d")
+     (40 . "#032f62")
+     (60 . "#6a737d")
+     (80 . "#6a737d")
+     (100 . "#6a737d")
+     (120 . "#d73a49")
+     (140 . "#6a737d")
+     (160 . "#6a737d")
+     (180 . "#6a737d")
+     (200 . "#6a737d")
+     (220 . "#22863a")
+     (240 . "#005cc5")
+     (260 . "#6f42c1")
+     (280 . "#6a737d")
+     (300 . "#005cc5")
+     (320 . "#6a737d")
+     (340 . "#d73a49")
+     (360 . "#6a737d"))))
+ '(vc-annotate-very-old-color "#6a737d")
  '(vc-git-diff-switches t))
 
 (custom-set-faces
