@@ -247,6 +247,7 @@
                       groovy-mode
                       haml-mode
                       haskell-mode
+                      helm
                       idle-highlight-mode
                       ido-ubiquitous
                       magit
@@ -358,6 +359,11 @@
 (require 'yow)
 (setq yow-file "~/.emacs.d/misc/yow.txt.gz")
 
+;; I need to make a wiki
+(require 'org-wiki)
+(setq org-wiki-location "~/ownCloud/wiki")
+
+;; Yeah, why not
 (require 'fireplace)
 
 ;; Multi-Term mode
@@ -596,6 +602,12 @@
    (quote
     (github-modern-theme leuven-theme zenburn-theme yarn-mode vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
  '(require-final-newline nil)
+ '(safe-local-variable-values
+   (quote
+    ((org-wiki-location . "~/wiki")
+     (org-wiki-location expand-file-name "~/wiki")
+     (org-wiki-location
+      (expand-file-name "~/wiki")))))
  '(sml/theme (quote automatic))
  '(vc-git-diff-switches t))
 
