@@ -275,6 +275,7 @@
                       yarn-mode
                       yasnippet
                       ;; Themes
+                      github-modern-theme
                       leuven-theme
                       zenburn-theme
                       ))
@@ -567,7 +568,8 @@
   (write-file "/seth@www.loomcom.com:/var/www/loomcom/3b2/index.html")
   (kill-buffer-and-window))
 
-(load-theme 'loomcom t)
+;;(load-theme 'loomcom t)
+(load-theme 'github-modern t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -581,6 +583,7 @@
  '(custom-enabled-themes (quote (wombat)))
  '(find-grep-options "-q -I")
  '(ido-use-virtual-buffers t)
+ '(markdown-command "pandoc --from markdown_github --to html")
  '(menu-bar-mode t)
  '(org-adapt-indentation nil)
  '(org-fontify-whole-heading-line t)
@@ -591,7 +594,7 @@
  '(org-startup-indented nil)
  '(package-selected-packages
    (quote
-    (leuven-theme zenburn-theme yarn-mode vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
+    (github-modern-theme leuven-theme zenburn-theme yarn-mode vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
  '(require-final-newline nil)
  '(sml/theme (quote automatic))
  '(vc-git-diff-switches t))
