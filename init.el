@@ -597,6 +597,7 @@
  '(org-adapt-indentation nil)
  '(org-fontify-whole-heading-line t)
  '(org-hide-leading-stars nil)
+ '(org-list-description-max-indent 5)
  '(org-pretty-entities t)
  '(org-src-fontify-natively t)
  '(org-startup-folded nil)
@@ -644,5 +645,5 @@
  ;; If there is more than one, they won't work right.
  '(org-block ((t (:background "dark blue" :foreground "white" :box nil))))
  '(org-block-background ((t (:background "grey20"))))
- '(org-block-begin-line ((t (:inverse-video t :height 0.6))) t)
- '(org-block-end-line ((t (:inverse-video t :height 0.6))) t))
+ '(org-block-begin-line ((t (:background "dark gray" :inverse-video t :height 0.6))) t)
+ '(org-block-end-line ((t (:background "dark gray" :inverse-video t :height 0.6))) t))
