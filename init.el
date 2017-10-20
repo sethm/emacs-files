@@ -643,7 +643,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-block ((t (:background "dark blue" :foreground "white" :box nil))))
- '(org-block-background ((t (:background "grey20"))))
- '(org-block-begin-line ((t (:background "dark gray" :inverse-video t :height 0.6))) t)
- '(org-block-end-line ((t (:background "dark gray" :inverse-video t :height 0.6))) t))
+ '(default ((t (:inherit nil :stipple nil :background "#ffffff" :foreground "#24292e" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :family "Source Code Pro"))))
+ '(org-block ((t (:background "gainsboro" :foreground "black" :box nil))))
+ '(org-block-background ((t (:background "gainsboro"))))
+ '(org-block-begin-line ((t (:height 0.6))) t)
+ '(org-block-end-line ((t (:height 0.6))) t))
