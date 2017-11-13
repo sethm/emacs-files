@@ -449,6 +449,10 @@
 (if (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el"))
     (load "mail-and-news"))
 
+;; circe
+(if (file-exists-p (expand-file-name "~/.emacs.d/local/circe-config.el"))
+    (load "circe-config"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
