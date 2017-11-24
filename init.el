@@ -248,6 +248,7 @@
                       haml-mode
                       haskell-mode
                       helm
+                      hyperbole
                       idle-highlight-mode
                       ido-ubiquitous
                       magit
