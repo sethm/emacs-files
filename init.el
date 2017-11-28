@@ -589,10 +589,14 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
+ '(ansi-color-names-vector
+   ["#ffffff" "#032f62" "#6a737d" "#d73a49" "#6a737d" "#6a737d" "#6f42c1" "#6a737d"])
  '(before-save-hook (quote (delete-trailing-whitespace)))
  '(c-offsets-alist (quote ((innamespace . +))))
+ '(custom-enabled-themes (quote (github-modern)))
  '(fci-rule-color "#6a737d")
  '(find-grep-options "-q -I")
+ '(hl-sexp-background-color "#efebe9")
  '(ido-use-virtual-buffers t)
  '(markdown-command "pandoc --from markdown_github --to html")
  '(menu-bar-mode t)
@@ -648,7 +652,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#ffffff" :foreground "#24292e" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :family "Source Code Pro"))))
  '(org-block ((t (:background "gainsboro" :foreground "black" :box nil))))
  '(org-block-background ((t (:background "gainsboro"))))
  '(org-block-begin-line ((t (:height 0.6))) t)
