@@ -444,7 +444,13 @@
 (if mu4e-load-path
     (progn
       (add-to-list 'load-path mu4e-load-path)
-      (require 'mu4e)))
+      (require 'mu4e)
+      ;; Add a 'flagged mail' bookmark to mu4e
+      (add-to-list 'mu4e-bookmarks
+                   (make-mu4e-bookmark
+                    :name "Flagged Messages"
+                    :query "flag:flagged"
+                    :key ?f))))
 
 ;; Gnus and Mail are in a local directory, not checked in.
 (if (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el"))
@@ -613,7 +619,7 @@
  '(org-startup-indented nil)
  '(package-selected-packages
    (quote
-    (github-modern-theme leuven-theme zenburn-theme yarn-mode vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
+    (org github-modern-theme leuven-theme zenburn-theme yarn-mode vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
  '(pdf-view-midnight-colors (quote ("#6a737d" . "#fffbdd")))
  '(require-final-newline nil)
  '(safe-local-variable-values
