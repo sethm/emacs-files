@@ -1,0 +1,13 @@
+#+TITLE:  $1
+#+AUTHOR: Seth J. Morabito
+#+EMAIL:  web@loomcom.com
+#+DATE:   `(format-time-string "<%Y-%m-%d>")`
+#+DESCRIPTION: $2
+#+LANGUAGE: en
+#+STARTUP: beamer
+#+OPTIONS: H:2 toc:nil
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [bigger]
+#+BEAMER_THEME: Madrid
+
+$0

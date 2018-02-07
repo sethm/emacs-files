@@ -255,7 +255,6 @@
                       markdown-mode
                       multi-term
                       multiple-cursors
-                      org-bullets
                       paredit
                       pg
                       rainbow-delimiters
@@ -338,8 +337,17 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 
-;; Org mode should have nice bullets.
-(add-hook 'org-mode-hook 'org-bullets-mode)
+;; Fixup inline images
+(defun loomcom/fix-inline-images ()
+  (when org-inline-image-overlays
+    (org-redisplay-inline-images)))
+
+(add-hook 'org-babel-after-execute-hook 'loomcom/fix-inline-images)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages '((C . t)
+                             (emacs-lisp . t)
+                             (dot . t)))
 
 ;; Rust-mode
 (add-hook 'rust-mode-hook 'electric-pair-mode)
@@ -415,6 +423,9 @@
 
 ;; Haskell mode hook
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+
+;; Clojure mode hook
+(add-hook 'clojure-mode-hook 'paredit-mode)
 
 ;; CA65
 (require 'ca65-mode)
