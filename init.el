@@ -553,7 +553,7 @@
 (global-set-key (kbd "C--")  'ensmallen-default-face)
 
 ;; Load my custom theme
-(load-theme 'github-modern t nil)
+(load-theme 'tango-dark t nil)
 
 ;;
 ;; Some fun functions
@@ -599,78 +599,3 @@
   (org-html-export-as-html)
   (write-file "/seth@www.loomcom.com:/var/www/loomcom/3b2/index.html")
   (kill-buffer-and-window))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default default default italic underline success warning error])
- '(ansi-color-names-vector
-   ["#ffffff" "#032f62" "#6a737d" "#d73a49" "#6a737d" "#6a737d" "#6f42c1" "#6a737d"])
- '(before-save-hook (quote (delete-trailing-whitespace)))
- '(c-offsets-alist (quote ((innamespace . +))))
- '(custom-enabled-themes (quote (github-modern)))
- '(fci-rule-color "#6a737d")
- '(find-grep-options "-q -I")
- '(hl-sexp-background-color "#efebe9")
- '(ido-use-virtual-buffers t)
- '(markdown-command "pandoc --from markdown_github --to html")
- '(menu-bar-mode t)
- '(nrepl-message-colors
-   (quote
-    ("#032f62" "#6a737d" "#d73a49" "#6a737d" "#005cc5" "#6f42c1" "#d73a49" "#6a737d")))
- '(org-adapt-indentation nil)
- '(org-fontify-whole-heading-line t)
- '(org-hide-leading-stars nil)
- '(org-list-description-max-indent 5)
- '(org-pretty-entities t)
- '(org-src-fontify-natively t)
- '(org-startup-folded nil)
- '(org-startup-indented nil)
- '(package-selected-packages
-   (quote
-    (org github-modern-theme leuven-theme zenburn-theme yarn-mode vue-mode fill-column-indicator fic-mode racer company-racer company yasnippet yaml-mode web-mode twittering-mode toml-mode textmate scss-mode rvm request rainbow-delimiters quack pg org-bullets multiple-cursors multi-term markdown-mode js2-mode haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode git-timemachine git-gutter geiser exec-path-from-shell elnode dsvn discover csharp-mode coffee-mode cargo ac-nrepl)))
- '(pdf-view-midnight-colors (quote ("#6a737d" . "#fffbdd")))
- '(require-final-newline nil)
- '(safe-local-variable-values
-   (quote
-    ((org-wiki-location . "~/wiki")
-     (org-wiki-location expand-file-name "~/wiki")
-     (org-wiki-location
-      (expand-file-name "~/wiki")))))
- '(sml/theme (quote automatic))
- '(vc-annotate-background "#3390ff")
- '(vc-annotate-color-map
-   (quote
-    ((20 . "#6a737d")
-     (40 . "#032f62")
-     (60 . "#6a737d")
-     (80 . "#6a737d")
-     (100 . "#6a737d")
-     (120 . "#d73a49")
-     (140 . "#6a737d")
-     (160 . "#6a737d")
-     (180 . "#6a737d")
-     (200 . "#6a737d")
-     (220 . "#22863a")
-     (240 . "#005cc5")
-     (260 . "#6f42c1")
-     (280 . "#6a737d")
-     (300 . "#005cc5")
-     (320 . "#6a737d")
-     (340 . "#d73a49")
-     (360 . "#6a737d"))))
- '(vc-annotate-very-old-color "#6a737d")
- '(vc-git-diff-switches t))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-block ((t (:background "gainsboro" :foreground "black" :box nil))))
- '(org-block-background ((t (:background "gainsboro"))))
- '(org-block-begin-line ((t (:height 0.6))) t)
- '(org-block-end-line ((t (:height 0.6))) t))
