@@ -353,7 +353,8 @@
 (add-hook 'rust-mode-hook 'electric-pair-mode)
 
 (setq racer-cmd "~/.cargo/bin/racer")
-(setq racer-rust-src-path "~/rust/src")
+(setq racer-rust-src-path
+      "~/.multirust/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/")
 
 (add-hook 'rust-mode-hook 'cargo-minor-mode)
 (add-hook 'rust-mode-hook #'racer-mode)
