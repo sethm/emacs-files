@@ -255,6 +255,7 @@
                       markdown-mode
                       multi-term
                       multiple-cursors
+                      org2blog
                       paredit
                       pg
                       rainbow-delimiters
@@ -518,6 +519,11 @@
 (if (file-exists-p (expand-file-name "~/.emacs.d/local/c-includes.el"))
     (load "c-includes"))
 
+;; Setup for org2blog
+
+(if (file-exists-p (expand-file-name "~/.emacs.d/local/org2blog-config.el"))
+    (load "org2blog-config"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -599,3 +605,17 @@
   (org-html-export-as-html)
   (write-file "/seth@www.loomcom.com:/var/www/loomcom/3b2/index.html")
   (kill-buffer-and-window))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (org2blog zenburn-theme yasnippet yarn-mode xml-rpc web-mode vue-mode typescript-mode toml-mode textmate smex scss-mode scpaste rvm request rainbow-delimiters racer pg paredit org-bullets multiple-cursors multi-term markdown-mode magit leuven-theme ido-ubiquitous idle-highlight-mode hyperbole helm haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode github-modern-theme git-timemachine git-gutter find-file-in-project fill-column-indicator fic-mode exec-path-from-shell elnode elm-mode dsvn discover company-racer coffee-mode cargo better-defaults ac-nrepl))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
