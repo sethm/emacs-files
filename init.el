@@ -62,6 +62,9 @@
 ;; Highlight matching parens
 (show-paren-mode t)
 
+;; Remote X11 screws with my DELETE key.
+(normal-erase-is-backspace-mode 1)
+
 ;; Transient mark mode - show hilighting when using the keyboard mark
 (transient-mark-mode t)
 
@@ -610,6 +613,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(c-offsets-alist (quote ((brace-list-intro . +))))
  '(package-selected-packages
    (quote
     (org2blog zenburn-theme yasnippet yarn-mode xml-rpc web-mode vue-mode typescript-mode toml-mode textmate smex scss-mode scpaste rvm request rainbow-delimiters racer pg paredit org-bullets multiple-cursors multi-term markdown-mode magit leuven-theme ido-ubiquitous idle-highlight-mode hyperbole helm haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode github-modern-theme git-timemachine git-gutter find-file-in-project fill-column-indicator fic-mode exec-path-from-shell elnode elm-mode dsvn discover company-racer coffee-mode cargo better-defaults ac-nrepl))))
