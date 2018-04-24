@@ -1,4 +1,3 @@
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Misc. startup options.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -253,7 +252,7 @@
                       helm
                       hyperbole
                       idle-highlight-mode
-                      ido-ubiquitous
+                      ;; ido-ubiquitous
                       magit
                       markdown-mode
                       multi-term
@@ -289,16 +288,35 @@
   (when (not (package-installed-p p))
     (package-install p)))
 
+;; Helm mode
+(require 'helm)
+(require 'helm-config)
+
+(when (executable-find "curl")
+  (setq helm-google-suggest-use-curl-p t))
+
+;; (setq helm-split-window-in-side-p           t
+;;       helm-move-to-line-cycle-in-source     t
+;;       helm-ff-search-library-in-sexp        t
+;;       helm-scroll-amount                    8
+;;       helm-ff-file-name-history-use-recentf t
+;;       helm-echo-input-in-header-line t)
+
+(setq helm-autoresize-max-height 0)
+(setq helm-autoresize-min-height 20)
+(helm-autoresize-mode 1)
+(helm-mode 1)
+
 ;; Org-jira mode
 (if (file-exists-p (expand-file-name "~/.emacs.d/local/jira.el"))
     (load "jira"))
 
 ;; This is a super annoying feature, sometimes. Turn it off
-(setq ido-use-filename-at-point nil)
+;; (setq ido-use-filename-at-point nil)
 
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-(ido-mode 1)
+;; (setq ido-enable-flex-matching t)
+;; (setq ido-everywhere t)
+;; (ido-mode 1)
 
 (global-ede-mode 1)
 (semantic-mode 1)
@@ -480,9 +498,8 @@
 ;; Key definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-key global-map "\C-xj" 'java-mode)
 (global-set-key "\C-xl" 'goto-line)
-(global-set-key "\C-cl" 'linum-mode)
+(global-set-key "\C-cl" 'display-line-numbers-mode)
 
 ;; Always enable 'discover' mode.
 (discover-mode)
@@ -616,7 +633,7 @@
  '(c-offsets-alist (quote ((brace-list-intro . +))))
  '(package-selected-packages
    (quote
-    (org2blog zenburn-theme yasnippet yarn-mode xml-rpc web-mode vue-mode typescript-mode toml-mode textmate smex scss-mode scpaste rvm request rainbow-delimiters racer pg paredit org-bullets multiple-cursors multi-term markdown-mode magit leuven-theme ido-ubiquitous idle-highlight-mode hyperbole helm haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode github-modern-theme git-timemachine git-gutter find-file-in-project fill-column-indicator fic-mode exec-path-from-shell elnode elm-mode dsvn discover company-racer coffee-mode cargo better-defaults ac-nrepl))))
+    (org2blog zenburn-theme yasnippet yarn-mode xml-rpc web-mode vue-mode typescript-mode toml-mode textmate smex scss-mode scpaste rvm request rainbow-delimiters racer pg paredit org-bullets multiple-cursors multi-term markdown-mode magit leuven-theme idle-highlight-mode hyperbole helm haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode github-modern-theme git-timemachine git-gutter find-file-in-project fill-column-indicator fic-mode exec-path-from-shell elnode elm-mode dsvn discover company-racer coffee-mode cargo better-defaults ac-nrepl))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
