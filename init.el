@@ -295,12 +295,12 @@
 (when (executable-find "curl")
   (setq helm-google-suggest-use-curl-p t))
 
-;; (setq helm-split-window-in-side-p           t
-;;       helm-move-to-line-cycle-in-source     t
-;;       helm-ff-search-library-in-sexp        t
-;;       helm-scroll-amount                    8
-;;       helm-ff-file-name-history-use-recentf t
-;;       helm-echo-input-in-header-line t)
+(setq helm-split-window-in-side-p           t
+      helm-move-to-line-cycle-in-source     t
+      helm-ff-search-library-in-sexp        t
+      helm-scroll-amount                    8
+      helm-ff-file-name-history-use-recentf t
+      helm-echo-input-in-header-line t)
 
 (setq helm-autoresize-max-height 0)
 (setq helm-autoresize-min-height 20)
@@ -639,4 +639,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(org-block-begin-line ((t (:inherit org-meta-line :foreground "dim gray" :height 0.5))))
+ '(org-level-1 ((t (:inherit outline-1 :underline t :height 1.5))))
+ '(org-level-2 ((t (:inherit outline-2 :height 1.3)))))
