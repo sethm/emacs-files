@@ -25,6 +25,20 @@
 (global-set-key (kbd "C-<right>") 'quiet-windmove-right)
 (global-set-key (kbd "C-<up>")    'quiet-windmove-up)
 (global-set-key (kbd "C-<down>")  'quiet-windmove-down)
+;;
+;; NOTE: This is a workaround for a crazy bug in my desktop Ubuntu
+;; install. Ever since moving to Ubuntu 18.04, F3 and F4 are mapped to
+;; XF86AudioPrev and XF86AudioPlay, respectively.  This is driving me
+;; crazy, but I have absolutely no idea how to fix it even after many
+;; hours of research. This is a quick and dirty workaround.
+;;
+(global-set-key (kbd "<XF86AudioPrev>")
+                'kmacro-start-macro-or-insert-counter)
+(global-set-key (kbd "<XF86AudioPlay>")
+                'kmacro-end-or-call-macro)
+
+;; These cause mayhem sometimes
+(setq create-lockfiles nil)
 
 ;; Make emacs shut up its "No window <foo> from selected window"
 ;; errors when accidentally trying to move to a non-existent window.
@@ -62,7 +76,7 @@
 (show-paren-mode t)
 
 ;; Remote X11 screws with my DELETE key.
-(normal-erase-is-backspace-mode 1)
+;(normal-erase-is-backspace-mode 1)
 
 ;; Transient mark mode - show hilighting when using the keyboard mark
 (transient-mark-mode t)
@@ -80,6 +94,9 @@
 ;; Translates ANSI colors in shell.
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+;; I hate trailing whitespace
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 (setq-default java-indent 4)
 (setq-default tab-width 4)
