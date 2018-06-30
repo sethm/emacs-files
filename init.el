@@ -1,66 +1,29 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Misc. startup options.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Emacs Initialization File
+;; Author: Seth Morabito <web@loomcom.com>
+;; Last Updated: 30-July-2018
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; Configure window movement keys.
-;;
-;; OS X as the client
-(global-set-key (read-kbd-macro "M-[ 5 D") 'quiet-windmove-left)
-(global-set-key (read-kbd-macro "M-[ 5 C") 'quiet-windmove-right)
-(global-set-key (read-kbd-macro "M-[ 5 A") 'quiet-windmove-up)
-(global-set-key (read-kbd-macro "M-[ 5 B") 'quiet-windmove-down)
-(global-set-key (read-kbd-macro "M-[ D") 'quiet-windmove-left)
-(global-set-key (read-kbd-macro "M-[ C") 'quiet-windmove-right)
-(global-set-key (read-kbd-macro "M-[ A") 'quiet-windmove-up)
-(global-set-key (read-kbd-macro "M-[ B") 'quiet-windmove-down)
-;;
-;; Linux as the client
-(global-set-key (read-kbd-macro "M-[ 1 ; 5 D") 'quiet-windmove-left)
-(global-set-key (read-kbd-macro "M-[ 1 ; 5 C") 'quiet-windmove-right)
-(global-set-key (read-kbd-macro "M-[ 1 ; 5 A") 'quiet-windmove-up)
-(global-set-key (read-kbd-macro "M-[ 1 ; 5 B") 'quiet-windmove-down)
-;;
-;; Linux GTK as the client
-(global-set-key (kbd "C-<left>")  'quiet-windmove-left)
-(global-set-key (kbd "C-<right>") 'quiet-windmove-right)
-(global-set-key (kbd "C-<up>")    'quiet-windmove-up)
-(global-set-key (kbd "C-<down>")  'quiet-windmove-down)
-;;
-;; NOTE: This is a workaround for a crazy bug in my desktop Ubuntu
-;; install. Ever since moving to Ubuntu 18.04, F3 and F4 are mapped to
-;; XF86AudioPrev and XF86AudioPlay, respectively.  This is driving me
-;; crazy, but I have absolutely no idea how to fix it even after many
-;; hours of research. This is a quick and dirty workaround.
-;;
-(global-set-key (kbd "<XF86AudioPrev>")
-                'kmacro-start-macro-or-insert-counter)
-(global-set-key (kbd "<XF86AudioPlay>")
-                'kmacro-end-or-call-macro)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Global options
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; These cause mayhem sometimes
+;; Minimize the UI
+(setq inhibit-startup-message t)
+(setq inhibit-splash-screen t)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(tooltip-mode -1)
+(menu-bar-mode -1)
+
+;; Basic offsets
+(setq-default c-basic-offset 4)
+
+;; Prevent lockfiles, I find they cause mayhem.
 (setq create-lockfiles nil)
 
-;; Make emacs shut up its "No window <foo> from selected window"
-;; errors when accidentally trying to move to a non-existent window.
-(defun quiet-windmove (direction)
-  ;; Catch all errors and silently return nil.
-  (condition-case nil
-      (cond ((eq direction 'left)
-             (windmove-left))
-            ((eq direction 'right)
-             (windmove-right))
-            ((eq direction 'up)
-             (windmove-up))
-            ((eq direction 'down)
-             (windmove-down))
-            nil)
-    (error nil)))
-
-;; These are required to be (interactive)
-(defun quiet-windmove-left () (interactive) (quiet-windmove 'left))
-(defun quiet-windmove-right () (interactive) (quiet-windmove 'right))
-(defun quiet-windmove-up () (interactive) (quiet-windmove 'up))
-(defun quiet-windmove-down () (interactive) (quiet-windmove 'down))
+;; Always display line numbers
+(global-display-line-numbers-mode)
 
 ;; Show (line,column) in the modeline
 (setq line-number-mode t)
@@ -69,27 +32,12 @@
 ;; Turn off the annoying (to me) bell and visible bell.
 (setq ring-bell-function 'ignore)
 
-;; To just turn off visible bell but leave audible bell:
-;;(setq visible-bell nil)
-
 ;; Highlight matching parens
 (show-paren-mode t)
-
-;; Remote X11 screws with my DELETE key.
-;(normal-erase-is-backspace-mode 1)
-
-;; Transient mark mode - show hilighting when using the keyboard mark
-(transient-mark-mode t)
 
 ;; Tramp wants these to be happy.  Memory is practically FREE now anyway
 (setq max-lisp-eval-depth 4000)		; default is 400
 (setq max-specpdl-size 5000)		; default is 1000
-
-;; Turn off annoyances.
-(setq inhibit-startup-message t)
-(setq inhibit-splash-screen t)
-(if (not (eq window-system nil))
-    (tool-bar-mode -1))
 
 ;; Translates ANSI colors in shell.
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
@@ -98,80 +46,11 @@
 ;; I hate trailing whitespace
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-(setq-default java-indent 4)
-(setq-default tab-width 4)
-(setq-default c-basic-offset 4)
+;; I prefer tabs to be expanded into spaces by default
 (setq-default indent-tabs-mode nil)
-
-(add-hook 'c-mode-common-hook
-          '(lambda ()
-             (local-set-key  (kbd "C-c o") 'ff-find-other-file)
-             (setq tab-width 4)
-             (setq c-basic-offset 4)
-             (setq indent-tabs-mode nil)))
-
-(add-hook 'ca65-mode-hook
-          '(lambda ()
-             (setq tab-width 8)
-             (setq indent-tabs-mode t)))
-
-(add-hook 'asm-mode-hook
-          '(lambda ()
-             (setq tab-width 8)
-             (setq indent-tabs-mode t)))
-
-(add-hook 'sh-set-shell-hook
-          '(lambda ()
-             (setq sh-basic-offset 4)))
-
-(add-hook 'python-mode-hook
-          '(lambda ()
-             (setq python-indent 4)))
-
-(add-hook 'ruby-mode-hook
-          '(lambda ()
-            (setq tab-width 2)
-            (setq ruby-indent 2)
-            (setq c-basic-offset 2)))
-
-(add-hook 'js-mode-hook
-          '(lambda ()
-             (setq tab-width 2)
-             (setq js-indent-level 2)
-             (setq c-basic-offset 2)))
-
-(add-hook 'js2-mode-hook
-          '(lambda ()
-             (setq tab-width 2)
-             (setq js2-basic-offset 2)
-             (setq c-basic-offset 2)
-             (disable-paredit-mode)))
-
-;; The Go style guide says tabs, so tabs it is.
-(add-hook 'go-mode-hook
-          '(lambda ()
-             (setq indent-tabs-mode t)
-             (setq tab-width 4)))
-
-;; Tell dired to hide dot files and emacs backup files.
-(add-hook 'dired-load-hook
-          '(lambda ()
-             (load "dired-x")))
-
-(add-hook 'dired-mode-hook
-          '(lambda ()
-             (setq dired-omit-files "^\\.[a-z|A-Z]+\\|^\\.?#\\|^\\.$")
-             (dired-omit-mode 1)))
 
 ;; Enable upcase-region function (why is this disabled by default??)
 (put 'upcase-region 'disabled nil)
-
-;; Font Lock
-(global-font-lock-mode t)
-(display-time-mode t)
-
-;; Enable visual feedback on selections
-(setq transient-mark-mode t)
 
 ;; Show the time and date in the bar
 (setq display-time-day-and-date t)
@@ -194,38 +73,16 @@
 ;; Silently delete old versions, don't interrupt saving and ask if it's OK.
 (setq delete-old-versions t)
 
-;; Tell emacs where to find custom themes.
-(setq custom-theme-directory "~/.emacs.d/themes/")
-
 ;; Always auto-revert buffers if they are un-edited, and the file changes
 ;; on disk.
 (global-auto-revert-mode t)
 
-;; NB: This is NOT SAFE IN GENERAL, custom themes can run arbitrary
-;; code. But since I control my own 'themes' directory, I'm going to
-;; run with scissors and make all custom themes safe by default.
-(setq custom-safe-themes t)
-
-;; Delete trailing whitespace on saves
-; (add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-;; ;; Save desktop state.
-;; (setq desktop-dirname             "~/.emacs.d/local/"
-;;       desktop-base-file-name      "emacs.desktop"
-;;       desktop-base-lock-name      "lock"
-;;       desktop-path                (list desktop-dirname)
-;;       desktop-save                t
-;;       desktop-files-not-to-save   "^$" ;reload tramp paths
-;;       desktop-load-locked-desktop nil)
-;;
-;; (desktop-save-mode 1)
-
 ;; I'm kind of a dummy, and I need this :B
 (setq confirm-kill-emacs 'yes-or-no-p)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Mode Stuff
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Packages
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/misc")
@@ -235,146 +92,75 @@
 ;;
 
 (require 'package)
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.org/packages/")
-                         ("org" . "http://orgmode.org/elpa/")))
-
+(setq package-enable-at-startup nil)
+(setq package-archives '(("org" . "https://orgmode.org/elpa/")
+                         ("gnu" . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 
-(defvar my-packages '(ac-nrepl
-                      auto-complete
-                      better-defaults
-                      cargo
-                      cider
-                      coffee-mode
-                      company
-                      company-racer
-                      discover
-                      dsvn
-                      elm-mode
-                      elnode
-                      exec-path-from-shell
-                      find-file-in-project
-                      fic-mode
-                      fill-column-indicator
-                      git-commit
-                      git-timemachine
-                      git-gutter
-                      go-mode
-                      graphviz-dot-mode
-                      groovy-mode
-                      haml-mode
-                      haskell-mode
-                      helm
-                      hyperbole
-                      idle-highlight-mode
-                      ;; ido-ubiquitous
-                      magit
-                      markdown-mode
-                      multi-term
-                      multiple-cursors
-                      org2blog
-                      paredit
-                      pg
-                      rainbow-delimiters
-                      racer
-                      request
-                      rust-mode
-                      rvm
-                      scss-mode
-                      scpaste
-                      smex
-                      toml-mode
-                      textmate
-                      toml-mode
-                      typescript-mode
-                      verilog-mode
-                      vue-mode
-                      web-mode
-                      xml-rpc
-                      yarn-mode
-                      yasnippet
-                      ;; Themes
-                      github-modern-theme
-                      leuven-theme
-                      zenburn-theme
-                      ))
+;; Bootstrap 'use-package'
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
 
-(dolist (p my-packages)
-  (when (not (package-installed-p p))
-    (package-install p)))
+;; Theme
+(use-package doom-themes
+  :ensure t
+  :config
+  (load-theme 'doom-city-lights t))
+
+;; Treemacs
+(use-package treemacs
+  :ensure t)
+
+;; magit
+(use-package magit
+  :ensure t)
 
 ;; Helm mode
-(require 'helm)
-(require 'helm-config)
+(use-package helm
+  :ensure t
+  :init
+  (setq helm-mode-fuzzy-match t)
+  (setq helm-completion-in-region-fuzzy-match t)
+  (setq helm-candidate-number-list 50)
+  (setq helm-split-window-in-side-p t)
+  (setq helm-move-to-line-cycle-in-source t)
+  (setq helm-ff-search-library-in-sexp t)
+  (setq helm-scroll-amount 8)
+  (setq helm-ff-file-name-history-use-recentf t)
+  (setq helm-echo-input-in-header-line t)
+  (setq helm-autoresize-max-height 0)
+  (setq helm-autoresize-min-height 20))
 
-(when (executable-find "curl")
-  (setq helm-google-suggest-use-curl-p t))
+;; Rust mode
+(use-package rust-mode
+  :ensure t
+  :init
+  (setq racer-cmd
+        "~/.cargo/bin/racer")
+  (setq racer-rust-src-path
+        "~/.multirust/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/"))
 
-(setq helm-split-window-in-side-p           t
-      helm-move-to-line-cycle-in-source     t
-      helm-ff-search-library-in-sexp        t
-      helm-scroll-amount                    8
-      helm-ff-file-name-history-use-recentf t
-      helm-echo-input-in-header-line t)
-
-(setq helm-autoresize-max-height 0)
-(setq helm-autoresize-min-height 20)
-(helm-autoresize-mode 1)
-(helm-mode 1)
-
-;; Org-jira mode
-(if (file-exists-p (expand-file-name "~/.emacs.d/local/jira.el"))
-    (load "jira"))
-
-;; This is a super annoying feature, sometimes. Turn it off
-;; (setq ido-use-filename-at-point nil)
-
-;; (setq ido-enable-flex-matching t)
-;; (setq ido-everywhere t)
-;; (ido-mode 1)
-
-(global-ede-mode 1)
-(semantic-mode 1)
-(global-semantic-decoration-mode 1)
-(global-semantic-stickyfunc-mode 1)
-(global-semantic-idle-summary-mode 1)
-
-(global-git-gutter-mode +1)
-
-;; paredit-mode tries to snag C-<left> and C-<right> when editing
-;; LISP. It maps the same to C-S-<left> and C-S-<right>, so just keep
-;; those but kill off the ones I like to use.
-
-(eval-after-load "paredit"
-  '(progn
-     (define-key paredit-mode-map (kbd "C-<left>") nil)
-     (define-key paredit-mode-map (kbd "C-<right>") nil)
-     (define-key paredit-mode-map (kbd "C-S-<left>") 'paredit-forward-barf-sexp)
-     (define-key paredit-mode-map (kbd "C-S-<right>") 'paredit-forward-slurp-sexp)
-
-     ;; But then we have the same problem as above. When running in a
-     ;; terminal, we need to capture weird escape sequences for C-S-<left>
-     ;; and C-S-<right>. Oh bother.
-
-     ;; OS X as the client
-     (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 D") 'paredit-forward-barf-sexp)
-     (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 C") 'paredit-forward-slurp-sexp)
-     (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 d") 'paredit-forward-barf-sexp)
-     (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 c") 'paredit-forward-slurp-sexp)
-
-     ;; Linux as the client
-     (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 D") 'paredit-forward-barf-sexp)
-     (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C") 'paredit-forward-slurp-sexp)))
-
-;; Make sure PATH environment variable works
-(exec-path-from-shell-initialize)
+;; Paredit mode
+(use-package paredit
+  :ensure t
+  :init
+  (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
+  (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook #'enable-paredit-mode))
 
 ;; yasnipets
-(add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
-(require 'yasnippet)
-(yas-global-mode 1)
+(use-package yasnippet
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
+  (yas-global-mode t))
 
 ;; Fixup inline images
 (defun loomcom/fix-inline-images ()
@@ -388,13 +174,6 @@
                              (emacs-lisp . t)
                              (dot . t)))
 
-;; Rust-mode
-(add-hook 'rust-mode-hook 'electric-pair-mode)
-
-(setq racer-cmd "~/.cargo/bin/racer")
-(setq racer-rust-src-path
-      "~/.multirust/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/")
-
 (add-hook 'rust-mode-hook 'cargo-minor-mode)
 (add-hook 'rust-mode-hook #'racer-mode)
 (add-hook 'racer-mode-hook #'eldoc-mode)
@@ -403,167 +182,92 @@
           (lambda ()
             (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)))
 
-;; YOW! A can of ASPARAGUS, 73 pigeons, some LIVE ammo, and a FROZEN
-;; DAQUIRI!!
-(require 'yow)
-(setq yow-file "~/.emacs.d/misc/yow.txt.gz")
 
-;; I need to make a wiki
-(require 'org-wiki)
-(setq org-wiki-location "~/ownCloud/wiki")
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Global Key Bindings
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Yeah, why not
-(require 'fireplace)
+;; I like to navigate windows with C-<arrow-key>. These global
+;; bindings do that for me.
 
-;; Multi-Term mode
+;; 1. Make window movement fail silently when accidentally trying
+;;    to navigate to where no window exists.
+(defun quiet-windmove-left () (interactive) (quiet-windmove 'left))
+(defun quiet-windmove-right () (interactive) (quiet-windmove 'right))
+(defun quiet-windmove-up () (interactive) (quiet-windmove 'up))
+(defun quiet-windmove-down () (interactive) (quiet-windmove 'down))
+(defun quiet-windmove (direction)
+  ;; Catch all errors and silently return nil.
+  (condition-case nil
+      (cond ((eq direction 'left)
+             (windmove-left))
+            ((eq direction 'right)
+             (windmove-right))
+            ((eq direction 'up)
+             (windmove-up))
+            ((eq direction 'down)
+             (windmove-down))
+            nil)
+    (error nil)))
 
-(setq multi-term-program
-      (cond ((file-exists-p "/bin/bash") "/bin/bash")
-            ((file-exists-p "/usr/local/bin/bash") "/usr/local/bin/bash")))
+;; 2. Configure window movement keys.
 
-(setq explicit-shell-file-name
-      (cond ((file-exists-p "/bin/bash") "/bin/bash")
-            ((file-exists-p "/usr/local/bin/bash") "/usr/local/bin/bash")))
+;; OS X as the client
+(global-set-key (read-kbd-macro "M-[ 5 D") 'quiet-windmove-left)
+(global-set-key (read-kbd-macro "M-[ 5 C") 'quiet-windmove-right)
+(global-set-key (read-kbd-macro "M-[ 5 A") 'quiet-windmove-up)
+(global-set-key (read-kbd-macro "M-[ 5 B") 'quiet-windmove-down)
+(global-set-key (read-kbd-macro "M-[ D") 'quiet-windmove-left)
+(global-set-key (read-kbd-macro "M-[ C") 'quiet-windmove-right)
+(global-set-key (read-kbd-macro "M-[ A") 'quiet-windmove-up)
+(global-set-key (read-kbd-macro "M-[ B") 'quiet-windmove-down)
 
-(if explicit-shell-file-name
-    (progn
-      (setq explicit-bash-args '("--noediting" "--login" "-i"))
-      (setenv "SHELL" shell-file-name)
-      (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
+;; Linux as the client
+(global-set-key (read-kbd-macro "M-[ 1 ; 5 D") 'quiet-windmove-left)
+(global-set-key (read-kbd-macro "M-[ 1 ; 5 C") 'quiet-windmove-right)
+(global-set-key (read-kbd-macro "M-[ 1 ; 5 A") 'quiet-windmove-up)
+(global-set-key (read-kbd-macro "M-[ 1 ; 5 B") 'quiet-windmove-down)
 
-;; I can't believe semantic-ia-fast-jump doesn't have a default key
-;; binding. It's the single most useful part of semantic-mode!
-(define-key semantic-mode-map (kbd "C-c , >") 'semantic-ia-fast-jump)
+;; Linux GTK as the client
+(global-set-key (kbd "C-<left>")  'quiet-windmove-left)
+(global-set-key (kbd "C-<right>") 'quiet-windmove-right)
+(global-set-key (kbd "C-<up>")    'quiet-windmove-up)
+(global-set-key (kbd "C-<down>")  'quiet-windmove-down)
 
-;; Web mode
-(setq web-mode-markup-indent-offset 2)
-
-;; fill-column-mode
-(setq fci-rule-column 80)
-
-;; Multiple-Cursors mode
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-
-;; Slime! I let Quicklisp handle slime for me.
-
-(if (file-exists-p (expand-file-name "~/quicklisp/slime-helper.el"))
-    (progn
-      (load (expand-file-name "~/quicklisp/slime-helper.el"))
-      ;; Replace "sbcl" with the path to your implementation
-      (setq inferior-lisp-program "sbcl")
-      (require 'slime)
-      (slime-setup '(slime-fancy slime-tramp slime-asdf))
-      (slime-require :swank-listener-hooks)))
-
-;; Magit mode
-(global-set-key (kbd "C-x g") 'magit-status)
-
-;; Haskell mode hook
-(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-
-;; Clojure mode hook
-(add-hook 'clojure-mode-hook 'paredit-mode)
-
-;; CA65
-(require 'ca65-mode)
-(add-to-list 'auto-mode-alist '("\\.asm\\'" . ca65-mode))
-(add-to-list 'auto-mode-alist '("\\.a65\\'" . ca65-mode))
-
-;; Verilog mode
-(setq verilog-auto-lineup nil
-      verilog-auto-newline nil)
-
-;; SCons
-(add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
-(add-to-list 'auto-mode-alist '("SConscript" . python-mode))
-
-
-;; twittering-mode
-(setq twittering-use-master-password t)
-
-;; mu4e (Don't ask. Machine differences.)
-(setq mu4e-load-path nil)
-
-(cond ((file-exists-p "/opt/share/emacs/site-lisp/mu4e")
-       (setq mu4e-load-path "/opt/share/emacs/site-lisp/mu4e"))
-      ((file-exists-p "/usr/local/share/emacs/site-lisp/mu4e")
-       (setq mu4e-load-path "/usr/local/share/emacs/site-lisp/mu4e")))
-
-(if mu4e-load-path
-    (progn
-      (add-to-list 'load-path mu4e-load-path)
-      (require 'mu4e)
-      ;; Add a 'flagged mail' bookmark to mu4e
-      (add-to-list 'mu4e-bookmarks
-                   (make-mu4e-bookmark
-                    :name "Flagged Messages"
-                    :query "flag:flagged"
-                    :key ?f))))
-
-;; Gnus and Mail are in a local directory, not checked in.
-(if (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el"))
-    (load "mail-and-news"))
-
-;; circe
-(if (file-exists-p (expand-file-name "~/.emacs.d/local/circe-config.el"))
-    (load "circe-config"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Key definitions
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;; Other global keys
 (global-set-key "\C-xl" 'goto-line)
-(global-set-key "\C-cl" 'display-line-numbers-mode)
 
-;; Always enable 'discover' mode.
-(discover-mode)
+;;
+;; Paredit key bindings
+;; --------------------
+;; Paredit messes with my navigation, so I redefine several
+;; paredit mode keys. Essentially, this changes C-<left>
+;; and C-<right> into S-C-<left> and S-C-<right>, on multiple
+;; platforms.
+;;
 
-;; Auto-complete goodness
-(global-auto-complete-mode)
-(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
-(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
-(add-hook 'clojure-nrepl-mode-hook 'ac-nrepl-setup)
+(define-key paredit-mode-map (kbd "C-<left>") nil)
+(define-key paredit-mode-map (kbd "C-<right>") nil)
+(define-key paredit-mode-map (kbd "C-S-<left>")
+  'paredit-forward-barf-sexp)
+(define-key paredit-mode-map (kbd "C-S-<right>")
+  'paredit-forward-slurp-sexp)
+(define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 D")
+  'paredit-forward-barf-sexp)
+(define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 C")
+  'paredit-forward-slurp-sexp)
+(define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 d")
+  'paredit-forward-barf-sexp)
+(define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 c")
+  'paredit-forward-slurp-sexp)
+(define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 D")
+  'paredit-forward-barf-sexp)
+(define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C")
+  'paredit-forward-slurp-sexp)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; auto-mode-alist
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(setq auto-mode-alist
-      (append
-       '(("\\.text$" . text-mode)
-         ("\\.txt$" . text-mode)
-         ("\\.py$" . python-mode)
-         ("\\.emacs$" . emacs-lisp-mode)
-         ("\\.el$" . emacs-lisp-mode)
-         ("\\.pl$" . perl-mode)
-         ("\\.pm$" . perl-mode)
-         ("\\.c$" . c-mode)
-         ("\\.h$" . c-mode)
-         ("\\.outline$" . outline-mode)
-         ("\\.lisp$" . lisp-mode)
-         ("\\.js$" . js2-mode)
-         ("\\.tsx?$" . typescript-mode)
-         ("\\.cs$" . csharp-mode)
-         ("\\.vue$" . vue-mode)
-         ("\\.java$" . java-mode)) auto-mode-alist))
-
-;; Load C includes (defined on a per-environment basis, in my "local"
-;; subdirectory)
-
-(if (file-exists-p (expand-file-name "~/.emacs.d/local/c-includes.el"))
-    (load "c-includes"))
-
-;; Setup for org2blog
-
-(if (file-exists-p (expand-file-name "~/.emacs.d/local/org2blog-config.el"))
-    (load "org2blog-config"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun indent-buffer ()
   "Indent current buffer according to major mode."
@@ -581,8 +285,9 @@
 
 (defun change-face-size (dir-func delta)
   (progn
-    (set-face-attribute 'default nil :height
-                        (funcall dir-func (face-attribute 'default :height) delta))))
+    (set-face-attribute
+     'default nil :height
+     (funcall dir-func (face-attribute 'default :height) delta))))
 
 (defun embiggen-default-face ()
   (interactive)
@@ -594,9 +299,6 @@
 
 (global-set-key (kbd "C-+")  'embiggen-default-face)
 (global-set-key (kbd "C--")  'ensmallen-default-face)
-
-;; Load my custom theme
-(load-theme 'tango-dark t nil)
 
 ;;
 ;; Some fun functions
@@ -642,20 +344,25 @@
   (org-html-export-as-html)
   (write-file "/seth@www.loomcom.com:/var/www/loomcom/3b2/index.html")
   (kill-buffer-and-window))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Emacs custom-set-variable and custom-set-faces below.
+;; DO NOT HAND EDIT!
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(c-offsets-alist (quote ((brace-list-intro . +))))
  '(package-selected-packages
    (quote
-    (org2blog zenburn-theme yasnippet yarn-mode xml-rpc web-mode vue-mode typescript-mode toml-mode textmate smex scss-mode scpaste rvm request rainbow-delimiters racer pg paredit org-bullets multiple-cursors multi-term markdown-mode magit leuven-theme idle-highlight-mode hyperbole helm haskell-mode haml-mode groovy-mode graphviz-dot-mode go-mode github-modern-theme git-timemachine git-gutter find-file-in-project fill-column-indicator fic-mode exec-path-from-shell elnode elm-mode dsvn discover company-racer coffee-mode cargo better-defaults ac-nrepl))))
+    (treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-block-begin-line ((t (:inherit org-meta-line :foreground "dim gray" :height 0.5))))
- '(org-level-1 ((t (:inherit outline-1 :underline t :height 1.5))))
- '(org-level-2 ((t (:inherit outline-2 :height 1.3)))))
+ )
