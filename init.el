@@ -108,7 +108,8 @@
 (use-package doom-themes
   :ensure t
   :config
-  (load-theme 'doom-city-lights t))
+  (if (display-graphic-p)
+      (load-theme 'doom-city-lights t)))
 
 ;; Treemacs
 (use-package treemacs
@@ -161,6 +162,17 @@
   :init
   (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
   (yas-global-mode t))
+
+;; mu4e - local, may or may not be installed
+(when (require 'mu4e nil 'noerror)
+  (progn
+    (if (file-exists-p
+         (expand-file-name "~/.emacs.d/local/mail-and-news.el"))
+        (load "mail-and-news.el"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MISC - I don't know where to put this.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Fixup inline images
 (defun loomcom/fix-inline-images ()
@@ -359,7 +371,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes))))
+    (mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
