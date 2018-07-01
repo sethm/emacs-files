@@ -55,6 +55,10 @@
 ;; Show the time and date in the bar
 (setq display-time-day-and-date t)
 
+;; Desktop saving
+(desktop-save-mode 1)
+(setq desktop-dirname "~/.emacs.d/")
+
 ;; Always wrap split windows
 (setq truncate-partial-width-windows nil)
 
@@ -113,7 +117,10 @@
 
 ;; Treemacs
 (use-package treemacs
-  :ensure t)
+  :ensure t
+  :defer t
+  :config
+  (setq treemacs-width 30))
 
 ;; magit
 (use-package magit
@@ -122,53 +129,73 @@
 ;; Helm mode
 (use-package helm
   :ensure t
-  :init
-  (setq helm-mode-fuzzy-match t)
-  (setq helm-completion-in-region-fuzzy-match t)
-  (setq helm-candidate-number-list 50)
-  (setq helm-split-window-in-side-p t)
-  (setq helm-move-to-line-cycle-in-source t)
-  (setq helm-ff-search-library-in-sexp t)
-  (setq helm-scroll-amount 8)
-  (setq helm-ff-file-name-history-use-recentf t)
-  (setq helm-echo-input-in-header-line t)
-  (setq helm-autoresize-max-height 0)
-  (setq helm-autoresize-min-height 20))
+  :config
+  (setq helm-mode-fuzzy-match t
+        helm-completion-in-region-fuzzy-match t
+        helm-candidate-number-list 50
+        helm-split-window-in-side-p t
+        helm-move-to-line-cycle-in-source t
+        helm-ff-search-library-in-sexp t
+        helm-scroll-amount 8
+        helm-ff-file-name-history-use-recentf t
+        helm-echo-input-in-header-line t
+        helm-autoresize-max-height 0
+        helm-autoresize-min-height 20))
 
 ;; Rust mode
 (use-package rust-mode
   :ensure t
+  :config
+  (setq racer-cmd "~/.cargo/bin/racer"
+        racer-rust-src-path "~/.multirust/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/"))
+
+;; CEDET
+(use-package cedet
+  :ensure t
   :init
-  (setq racer-cmd
-        "~/.cargo/bin/racer")
-  (setq racer-rust-src-path
-        "~/.multirust/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/"))
+  (progn
+    (semantic-mode 1)
+    (global-semantic-decoration-mode 1)
+    (global-semantic-stickyfunc-mode 1)
+    (global-semantic-idle-summary-mode 1)
+    (global-semantic-idle-local-symbol-highlight-mode 1)
+    (global-semantic-highlight-func-mode 1)
+    (global-ede-mode 1))
+  :bind (:map semantic-mode-map
+              ("C-c , >" . semantic-ia-fast-jump)))
+
+;; git gutter
+(use-package git-gutter
+  :ensure t
+  :init
+  (global-git-gutter-mode +1))
 
 ;; Paredit mode
 (use-package paredit
   :ensure t
   :init
-  (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
-  (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
-  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-  (add-hook 'ielm-mode-hook #'enable-paredit-mode)
-  (add-hook 'lisp-mode-hook #'enable-paredit-mode)
-  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-  (add-hook 'scheme-mode-hook #'enable-paredit-mode))
+  (progn
+    (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
+    (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+    (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+    (add-hook 'ielm-mode-hook #'enable-paredit-mode)
+    (add-hook 'lisp-mode-hook #'enable-paredit-mode)
+    (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+    (add-hook 'scheme-mode-hook #'enable-paredit-mode)))
 
 ;; yasnipets
 (use-package yasnippet
   :ensure t
   :init
-  (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
-  (yas-global-mode t))
+  (progn
+    (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
+    (yas-global-mode t)))
 
 ;; mu4e - local, may or may not be installed
 (when (require 'mu4e nil 'noerror)
-  (progn
-    (if (file-exists-p
-         (expand-file-name "~/.emacs.d/local/mail-and-news.el"))
-        (load "mail-and-news.el"))))
+  (if (file-exists-p
+       (expand-file-name "~/.emacs.d/local/mail-and-news.el"))
+      (load "mail-and-news.el")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MISC - I don't know where to put this.
