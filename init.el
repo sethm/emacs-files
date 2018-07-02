@@ -126,6 +126,11 @@
 (use-package magit
   :ensure t)
 
+;; Haskell
+(use-package haskell-mode
+  :ensure t
+  :defer t)
+
 ;; Helm mode
 (use-package helm
   :ensure t
