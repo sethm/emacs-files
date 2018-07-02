@@ -142,25 +142,47 @@
         helm-autoresize-max-height 0
         helm-autoresize-min-height 20))
 
+;; Cargo mode
+(use-package cargo
+  :ensure t)
+
+;; Company mode
+(use-package company
+  :ensure t
+  :defer t
+  :init (global-company-mode))
+
+;; Racer mode
+(use-package racer
+  :ensure t
+  :defer t)
+
 ;; Rust mode
 (use-package rust-mode
   :ensure t
-  :config
-  (setq racer-cmd "~/.cargo/bin/racer"
-        racer-rust-src-path "~/.multirust/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/"))
+  :defer t
+  :bind (("TAB" . company-indent-or-complete-common)
+         ("C-c TAB" . rust-format-buffer))
+  ;; Note that the hooks are set up here in an 'init:' block
+  ;; intentionally! There is a dependency load order problem
+  ;; that prevents these from being 'hook:' calls.
+  :init
+  (add-hook 'rust-mode-hook #'racer-mode)
+  (add-hook 'racer-mode-hook #'cargo-minor-mode)
+  (add-hook 'racer-mode-hook #'eldoc-mode)
+  (add-hook 'racer-mode-hook #'company-mode))
 
 ;; CEDET
 (use-package cedet
   :ensure t
   :init
-  (progn
-    (semantic-mode 1)
-    (global-semantic-decoration-mode 1)
-    (global-semantic-stickyfunc-mode 1)
-    (global-semantic-idle-summary-mode 1)
-    (global-semantic-idle-local-symbol-highlight-mode 1)
-    (global-semantic-highlight-func-mode 1)
-    (global-ede-mode 1))
+  (semantic-mode 1)
+  (global-semantic-decoration-mode 1)
+  (global-semantic-stickyfunc-mode 1)
+  (global-semantic-idle-summary-mode 1)
+  (global-semantic-idle-local-symbol-highlight-mode 1)
+  (global-semantic-highlight-func-mode 1)
+  (global-ede-mode 1)
   :bind (:map semantic-mode-map
               ("C-c , >" . semantic-ia-fast-jump)))
 
@@ -173,23 +195,47 @@
 ;; Paredit mode
 (use-package paredit
   :ensure t
+  :defer t
   :init
-  (progn
-    (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
-    (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
-    (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-    (add-hook 'ielm-mode-hook #'enable-paredit-mode)
-    (add-hook 'lisp-mode-hook #'enable-paredit-mode)
-    (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-    (add-hook 'scheme-mode-hook #'enable-paredit-mode)))
+  (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
+  (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook #'enable-paredit-mode)
+  :config
+  ;; Paredit key bindings
+  ;; --------------------
+  ;; Paredit messes with my navigation, so I redefine several
+  ;; paredit mode keys. Essentially, this changes C-<left>
+  ;; and C-<right> into S-C-<left> and S-C-<right>, on multiple
+  ;; platforms.
+  (define-key paredit-mode-map (kbd "C-<left>") nil)
+  (define-key paredit-mode-map (kbd "C-<right>") nil)
+  (define-key paredit-mode-map (kbd "C-S-<left>")
+    'paredit-forward-barf-sexp)
+  (define-key paredit-mode-map (kbd "C-S-<right>")
+    'paredit-forward-slurp-sexp)
+  (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 D")
+    'paredit-forward-barf-sexp)
+  (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 C")
+    'paredit-forward-slurp-sexp)
+  (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 d")
+    'paredit-forward-barf-sexp)
+  (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 c")
+    'paredit-forward-slurp-sexp)
+  (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 D")
+    'paredit-forward-barf-sexp)
+  (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C")
+    'paredit-forward-slurp-sexp))
 
 ;; yasnipets
 (use-package yasnippet
   :ensure t
   :init
-  (progn
-    (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
-    (yas-global-mode t)))
+  (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
+  (yas-global-mode t))
 
 ;; mu4e - local, may or may not be installed
 (when (require 'mu4e nil 'noerror)
@@ -198,7 +244,7 @@
       (load "mail-and-news.el")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; MISC - I don't know where to put this.
+;; MISC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Fixup inline images
@@ -212,15 +258,6 @@
  'org-babel-load-languages '((C . t)
                              (emacs-lisp . t)
                              (dot . t)))
-
-(add-hook 'rust-mode-hook 'cargo-minor-mode)
-(add-hook 'rust-mode-hook #'racer-mode)
-(add-hook 'racer-mode-hook #'eldoc-mode)
-(add-hook 'racer-mode-hook #'company-mode)
-(add-hook 'rust-mode-hook
-          (lambda ()
-            (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Global Key Bindings
@@ -275,34 +312,6 @@
 
 ;; Other global keys
 (global-set-key "\C-xl" 'goto-line)
-
-;;
-;; Paredit key bindings
-;; --------------------
-;; Paredit messes with my navigation, so I redefine several
-;; paredit mode keys. Essentially, this changes C-<left>
-;; and C-<right> into S-C-<left> and S-C-<right>, on multiple
-;; platforms.
-;;
-
-(define-key paredit-mode-map (kbd "C-<left>") nil)
-(define-key paredit-mode-map (kbd "C-<right>") nil)
-(define-key paredit-mode-map (kbd "C-S-<left>")
-  'paredit-forward-barf-sexp)
-(define-key paredit-mode-map (kbd "C-S-<right>")
-  'paredit-forward-slurp-sexp)
-(define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 D")
-  'paredit-forward-barf-sexp)
-(define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 C")
-  'paredit-forward-slurp-sexp)
-(define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 d")
-  'paredit-forward-barf-sexp)
-(define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 c")
-  'paredit-forward-slurp-sexp)
-(define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 D")
-  'paredit-forward-barf-sexp)
-(define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C")
-  'paredit-forward-slurp-sexp)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions
