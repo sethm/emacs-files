@@ -238,9 +238,15 @@
 ;; yasnipets
 (use-package yasnippet
   :ensure t
-  :init
+  :defer 1
+  :diminish yas-minor-mode
+  :config
   (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
-  (yas-global-mode t))
+  (yas-global-mode))
+
+(use-package yasnippet-snippets
+  :after yasnippet
+  :config (yasnippet-snippets-initialize))
 
 ;; mu4e - local, may or may not be installed
 (when (require 'mu4e nil 'noerror)
