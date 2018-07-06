@@ -275,7 +275,8 @@
 ;; Inspired 100% by https://ogbe.net/blog/blogging_with_org.html
 ;;
 
-(let ((p "~/Projects/loomcom/"))
+(let* ((p "~/Projects/loomcom/"))
+
   (setq loomcom/extra-head
         "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">")
 
@@ -291,10 +292,50 @@
          "<a href=\"https://orgmode.org/\">Org Mode</a>"
          "</div>"))
 
+  (defun loomcom/get-preview (file)
+    ""
+    (with-temp-buffer
+      (insert-file-contents file)
+      (goto-char (point-min))
+      (let ((beg (+ 1 (re-search-forward "^#\\+BEGIN_PREVIEW$")))
+            (end (progn (re-search-forward "^#\\+END_PREVIEW$")
+                        (match-beginning 0))))
+        (buffer-substring beg end))))
+
+  (defun loomcom/sitemap (title list)
+    "Publish a sitemap
+The list is un-ordered, which means that we're responsible for building
+a set of metadata about each file and ordering the list ourselves"
+    (let ((links (cdr list))
+          (strings '()))
+      (push (concat "#+TITLE: " title "\n") strings)
+      (push (concat "* " title "\n") strings)
+      (push (concat "#+BEGIN_EXAMPLE") strings)
+      ;;
+      ;; We're given a list of links in the form:
+      ;;
+      ;;   [[filename.org][File Title]]
+      ;;
+      ;; We parse out the filenames, load each into a temporary
+      ;; buffer, parse it, and pull out metadata.
+      ;;
+      (while (setq link (car (pop links)))
+        (let ((elem (car (org-element-parse-secondary-string link '(link)))))
+          (with-temp-buffer
+            (find-file (concat "~/Projects/loomcom/blog/" (org-element-property :path elem)))
+            (org-element-map (org-element-parse-buffer)
+                'headline
+              (lambda (hl)
+                (push (org-element-property :raw-value hl) strings)
+                (push (org-element-property :contents hl) strings)))
+            (kill-buffer))))
+      (push (concat "#+END_EXAMPLE") strings)
+      (string-join (reverse strings) "\n")))
+
   (defun loomcom/header (arg)
-      (with-temp-buffer
-        (insert-file-contents loomcom/header-file)
-        (buffer-string)))
+    (with-temp-buffer
+      (insert-file-contents loomcom/header-file)
+      (buffer-string)))
 
   (setq org-publish-timestamp-directory (concat p "cache/"))
   (setq org-publish-project-alist
@@ -324,6 +365,7 @@
            :html-preamble loomcom/header
            :html-postamble ,loomcom/footer
            :auto-sitemap t
+           :sitemap-function loomcom/sitemap
            :sitemap-filename "index.org"
            :sitemap-title "Weblog"
            :sitemap-sort-files anti-chronologically
