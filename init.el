@@ -255,10 +255,109 @@
   :ensure t)
 
 ;; mu4e - local, may or may not be installed
-(when (require 'mu4e nil 'noerror)
-  (if (file-exists-p
-       (expand-file-name "~/.emacs.d/local/mail-and-news.el"))
-      (load "mail-and-news.el")))
+(when (and (require 'mu4e nil 'noerror)
+           (file-exists-p (expand-file-name "~/.emacs.d/local/mutt-and-news.el")))
+  (load "mail-and-news.el"))
+
+;;
+;; A special case, for development of eblog-mode.
+;;
+(when (file-exists-p "~/Projects/eblog-mode/")
+  (add-to-list 'load-path "~/Projects/eblog-mode/")
+  (require 'eblog-mode)
+  (add-hook 'org-mode-hook 'eblog-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Website Configuration
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;
+;; Inspired 100% by https://ogbe.net/blog/blogging_with_org.html
+;;
+
+(let ((p "~/Projects/loomcom/"))
+  (setq loomcom/extra-head
+        "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">")
+
+  (setq loomcom/header-file
+        (concat p "blog/header.html"))
+
+  (setq loomcom/footer
+        (concat
+         "<div id=\"footer\">\n"
+         "<p>Seth Morabito</p>\n"
+         "<p>Proudly published with "
+         "<a href=\"https://www.gnu.org/software/emacs/\">Emacs</a> and "
+         "<a href=\"https://orgmode.org/\">Org Mode</a>"
+         "</div>"))
+
+  (defun loomcom/header (arg)
+      (with-temp-buffer
+        (insert-file-contents loomcom/header-file)
+        (buffer-string)))
+
+  (setq org-publish-timestamp-directory (concat p "cache/"))
+  (setq org-publish-project-alist
+        `(("loomcom"
+           :components ("blog" "pages" "res" "images"))
+          ("blog"
+           :base-directory ,(concat p "blog/")
+           :base-extension "org"
+           :publishing-directory ,(concat p "www/blog/")
+           :publishing-function org-html-publish-to-html
+           :with-author t
+           :with-creator nil
+           :with-date t
+           :section-numbers nil
+           :with-title nil
+           :with-toc nil
+           :with-drawers t
+           :with-sub-superscript nil
+           :html-link-home "/"
+           :html-head nil
+           :html-head-extra ,loomcom/extra-head
+           :html-head-include-default-style nil
+           :html-head-include-scripts nil
+           :html-viewport nil
+           :html-link-up ""
+           :html-link-home ""
+           :html-preamble loomcom/header
+           :html-postamble ,loomcom/footer
+           :auto-sitemap t
+           :sitemap-filename "index.org"
+           :sitemap-title "Weblog"
+           :sitemap-sort-files anti-chronologically
+           :sitemap-date-format "Published: %a %b %d %Y")
+          ("pages"
+           :base-directory ,(concat p "pages/")
+           :base-extension "org"
+           :publishing-directory ,(concat p "www/")
+           :publishing-function org-html-publish-to-html
+           :section-numbers nil
+           :with-title nil
+           :with-toc nil
+           :with-drawers t
+           :with-sub-superscript nil
+           :html-link-home "/"
+           :html-head nil
+           :html-head-extra ,loomcom/extra-head
+           :html-head-include-default-style nil
+           :html-head-include-scripts nil
+           :html-link-up ""
+           :html-link-home ""
+           :html-preamble loomcom/header
+           :html-postamble ,loomcom/footer
+           :html-viewport nil)
+          ("res"
+           :base-directory ,(concat p "res/")
+           :base-extension ".*"
+           :publishing-directory ,(concat p "www/res/")
+           :publishing-function org-publish-attachment)
+          ("images"
+           :base-directory ,(concat p "images/")
+           :base-extension ".*"
+           :publishing-directory ,(concat p "www/images/")
+           :publishing-function org-publish-attachment))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MISC
