@@ -245,8 +245,13 @@
   (yas-global-mode))
 
 (use-package yasnippet-snippets
+  :ensure t
   :after yasnippet
   :config (yasnippet-snippets-initialize))
+
+;; htmlize
+(use-package htmlize
+  :ensure t)
 
 ;; mu4e - local, may or may not be installed
 (when (require 'mu4e nil 'noerror)
@@ -324,6 +329,10 @@
 ;; Other global keys
 (global-set-key "\C-xl" 'goto-line)
 
+;; Make fonts bigger and smaller
+(global-set-key (kbd "C-+")  'embiggen-default-face)
+(global-set-key (kbd "C--")  'ensmallen-default-face)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -356,9 +365,6 @@
   (interactive)
   (change-face-size '- 10))
 
-(global-set-key (kbd "C-+")  'embiggen-default-face)
-(global-set-key (kbd "C--")  'ensmallen-default-face)
-
 ;;
 ;; Some fun functions
 ;;
@@ -370,8 +376,8 @@
   (goto-char 0)
   (let* ((file (file-name-nondirectory (buffer-file-name)))
          (package (file-name-sans-extension file)))
-    (insert ";;;; " file "\n")
-    (insert "\n(defpackage #:" package "\n  (:use #:cl))\n\n")
+    (insert ";;;; " file "\n\n")
+    (insert "(defpackage #:" package "\n  (:use #:cl))\n\n")
     (insert "(in-package #:" package ")\n\n")))
 
 (defun insert-html5 ()
@@ -396,14 +402,6 @@
     (insert "  <script src=\"js/scripts.js\"></script>\n")
     (insert "</body>\n")
     (insert "</html>\n")))
-
-;; Publish my org-mode 3B2 file to loomcom
-(defun 3b2-publish ()
-  (interactive)
-  (org-html-export-as-html)
-  (write-file "/seth@www.loomcom.com:/var/www/loomcom/3b2/index.html")
-  (kill-buffer-and-window))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Emacs custom-set-variable and custom-set-faces below.
