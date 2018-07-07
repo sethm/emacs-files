@@ -19,6 +19,8 @@
        "<a href=\"https://orgmode.org/\">Org Mode</a>"
        "</div>"))
 
+(setq org-html-html5-fancy t)
+
 (defun loomcom/get-preview (filename)
   "Return the preview text for a file"
   (with-temp-buffer
@@ -82,6 +84,7 @@
          :with-toc nil
          :with-drawers t
          :with-sub-superscript nil
+         :html-doctype "html5"
          :html-link-home "/"
          :html-head nil
          :html-head-extra ,loomcom/extra-head
@@ -110,6 +113,7 @@
          :with-sub-superscript nil
          :html-link-home "/"
          :html-head nil
+         :html-doctype "html5"
          :html-head-extra ,loomcom/extra-head
          :html-head-include-default-style nil
          :html-head-include-scripts nil
