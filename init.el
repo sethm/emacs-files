@@ -89,7 +89,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-to-list 'load-path "~/.emacs.d/local")
-(add-to-list 'load-path "~/.emacs.d/misc")
+(add-to-list 'load-path "~/.emacs.d/lisp")
 
 ;;
 ;; Emacs built-in package management and the Marmalade repo.
@@ -275,136 +275,7 @@
 ;; Inspired 100% by https://ogbe.net/blog/blogging_with_org.html
 ;;
 
-(let* ((p "~/Projects/loomcom/"))
-
-  (setq loomcom/extra-head
-        "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">")
-
-  (setq loomcom/header-file
-        (concat p "blog/header.html"))
-
-  (setq loomcom/footer
-        (concat
-         "<div id=\"footer\">\n"
-         "<p>Seth Morabito</p>\n"
-         "<p>Proudly published with "
-         "<a href=\"https://www.gnu.org/software/emacs/\">Emacs</a> and "
-         "<a href=\"https://orgmode.org/\">Org Mode</a>"
-         "</div>"))
-
-  (defun loomcom/get-preview (filename)
-    ""
-    (with-temp-buffer
-      (insert-file-contents (concat "~/Projects/loomcom/blog/" filename))
-      (goto-char (point-min))
-      (let ((beg (+ 1 (re-search-forward "^#\\+BEGIN_PREVIEW$")))
-            (end (progn (re-search-forward "^#\\+END_PREVIEW$")
-                        (match-beginning 0))))
-        (buffer-substring beg end))))
-
-  (defun loomcom/parse-link (list-item)
-    "Parse a sexpr of the form '(\"[[file1.org][File One]]\") and
-return the parsed Org link element"
-    (car (org-element-parse-secondary-string (car list-item) '(link))))
-
-  (defun loomcom/metadata (filename)
-    "Get the Org-Mode metadata for a file"
-    (with-temp-buffer
-      (insert-file-contents (concat "~/Projects/loomcom/blog/" filename))
-      (org-element-map (org-element-parse-buffer) 'keyword
-        (lambda (element)
-          (let ((key (org-element-property :key element))
-                (value (org-element-property :value element)))
-            `(,key ,value))))))
-
-  (defun loomcom/sitemap (title list)
-    "Publish a sitemap"
-    ;;
-    ;; We're given a list of links in the form:
-    ;;
-    ;;   '(unordered ("[[file1.org][File One]]") ("[file2.org][File Two]"))
-    ;;
-    (let ((elements (mapcar #'loomcom/parse-link (cdr list)))
-          (strings '()))
-      (push (concat "#+TITLE: " title "\n") strings)
-      (while (setq element (pop elements))
-        (push (loomcom/get-preview (org-element-property :path element))
-              strings)
-        (push (format "[[%s][Read More...]]"
-                      (org-element-property :raw-link element))
-              strings)
-        (if (> (length elements) 0)
-            (push "--------" strings)))
-      (string-join (reverse strings) "\n")))
-
-  (defun loomcom/header (arg)
-    (with-temp-buffer
-      (insert-file-contents loomcom/header-file)
-      (buffer-string)))
-
-  (setq org-publish-timestamp-directory (concat p "cache/"))
-  (setq org-publish-project-alist
-        `(("loomcom"
-           :components ("blog" "pages" "res" "images"))
-          ("blog"
-           :base-directory ,(concat p "blog/")
-           :base-extension "org"
-           :publishing-directory ,(concat p "www/blog/")
-           :publishing-function org-html-publish-to-html
-           :with-author t
-           :with-creator nil
-           :with-date t
-           :section-numbers nil
-           :with-title nil
-           :with-toc nil
-           :with-drawers t
-           :with-sub-superscript nil
-           :html-link-home "/"
-           :html-head nil
-           :html-head-extra ,loomcom/extra-head
-           :html-head-include-default-style nil
-           :html-head-include-scripts nil
-           :html-viewport nil
-           :html-link-up ""
-           :html-link-home ""
-           :html-preamble loomcom/header
-           :html-postamble ,loomcom/footer
-           :auto-sitemap t
-           :sitemap-function loomcom/sitemap
-           :sitemap-filename "index.org"
-           :sitemap-title "Weblog"
-           :sitemap-sort-files anti-chronologically
-           :sitemap-date-format "Published: %a %b %d %Y")
-          ("pages"
-           :base-directory ,(concat p "pages/")
-           :base-extension "org"
-           :publishing-directory ,(concat p "www/")
-           :publishing-function org-html-publish-to-html
-           :section-numbers nil
-           :with-title nil
-           :with-toc nil
-           :with-drawers t
-           :with-sub-superscript nil
-           :html-link-home "/"
-           :html-head nil
-           :html-head-extra ,loomcom/extra-head
-           :html-head-include-default-style nil
-           :html-head-include-scripts nil
-           :html-link-up ""
-           :html-link-home ""
-           :html-preamble loomcom/header
-           :html-postamble ,loomcom/footer
-           :html-viewport nil)
-          ("res"
-           :base-directory ,(concat p "res/")
-           :base-extension ".*"
-           :publishing-directory ,(concat p "www/res/")
-           :publishing-function org-publish-attachment)
-          ("images"
-           :base-directory ,(concat p "images/")
-           :base-extension ".*"
-           :publishing-directory ,(concat p "www/images/")
-           :publishing-function org-publish-attachment))))
+(load "loomcom.el")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MISC
