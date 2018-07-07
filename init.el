@@ -292,44 +292,49 @@
          "<a href=\"https://orgmode.org/\">Org Mode</a>"
          "</div>"))
 
-  (defun loomcom/get-preview (file)
+  (defun loomcom/get-preview (filename)
     ""
     (with-temp-buffer
-      (insert-file-contents file)
+      (insert-file-contents (concat "~/Projects/loomcom/blog/" filename))
       (goto-char (point-min))
       (let ((beg (+ 1 (re-search-forward "^#\\+BEGIN_PREVIEW$")))
             (end (progn (re-search-forward "^#\\+END_PREVIEW$")
                         (match-beginning 0))))
         (buffer-substring beg end))))
 
+  (defun loomcom/parse-link (list-item)
+    "Parse a sexpr of the form '(\"[[file1.org][File One]]\") and
+return the parsed Org link element"
+    (car (org-element-parse-secondary-string (car list-item) '(link))))
+
+  (defun loomcom/metadata (filename)
+    "Get the Org-Mode metadata for a file"
+    (with-temp-buffer
+      (insert-file-contents (concat "~/Projects/loomcom/blog/" filename))
+      (org-element-map (org-element-parse-buffer) 'keyword
+        (lambda (element)
+          (let ((key (org-element-property :key element))
+                (value (org-element-property :value element)))
+            `(,key ,value))))))
+
   (defun loomcom/sitemap (title list)
-    "Publish a sitemap
-The list is un-ordered, which means that we're responsible for building
-a set of metadata about each file and ordering the list ourselves"
-    (let ((links (cdr list))
+    "Publish a sitemap"
+    ;;
+    ;; We're given a list of links in the form:
+    ;;
+    ;;   '(unordered ("[[file1.org][File One]]") ("[file2.org][File Two]"))
+    ;;
+    (let ((elements (mapcar #'loomcom/parse-link (cdr list)))
           (strings '()))
       (push (concat "#+TITLE: " title "\n") strings)
-      (push (concat "* " title "\n") strings)
-      (push (concat "#+BEGIN_EXAMPLE") strings)
-      ;;
-      ;; We're given a list of links in the form:
-      ;;
-      ;;   [[filename.org][File Title]]
-      ;;
-      ;; We parse out the filenames, load each into a temporary
-      ;; buffer, parse it, and pull out metadata.
-      ;;
-      (while (setq link (car (pop links)))
-        (let ((elem (car (org-element-parse-secondary-string link '(link)))))
-          (with-temp-buffer
-            (find-file (concat "~/Projects/loomcom/blog/" (org-element-property :path elem)))
-            (org-element-map (org-element-parse-buffer)
-                'headline
-              (lambda (hl)
-                (push (org-element-property :raw-value hl) strings)
-                (push (org-element-property :contents hl) strings)))
-            (kill-buffer))))
-      (push (concat "#+END_EXAMPLE") strings)
+      (while (setq element (pop elements))
+        (push (loomcom/get-preview (org-element-property :path element))
+              strings)
+        (push (format "[[%s][Read More...]]"
+                      (org-element-property :raw-link element))
+              strings)
+        (if (> (length elements) 0)
+            (push "--------" strings)))
       (string-join (reverse strings) "\n")))
 
   (defun loomcom/header (arg)
