@@ -22,14 +22,26 @@
 (setq org-html-html5-fancy t)
 
 (defun loomcom/get-preview (filename)
-  "Return the preview text for a file"
+  "Returns a list: '(<needs-more> <preview-string>) where
+<needs-more> is t or nil, indicating whether a \"Read More...\"
+link is needed."
   (with-temp-buffer
     (insert-file-contents (concat loomcom/project-dir "blog/" filename))
     (goto-char (point-min))
-    (let ((beg (+ 1 (re-search-forward "^#\\+BEGIN_preview$")))
-          (end (progn (re-search-forward "^#\\+END_preview$")
-                      (match-beginning 0))))
-      (buffer-substring beg end))))
+    (let ((content-start (or
+                          ;; Look for the first non-keyword line
+                          (and (re-search-forward "^[^#]" nil t)
+                               (match-beginning 0))
+                          ;; Failing that, assume we're malformed and
+                          ;; have no content
+                          (buffer-size)))
+          (marker (or
+                   (and (re-search-forward "^#\\+BEGIN_PREVIEW$" nil t)
+                        (match-beginning 0))
+                   (buffer-size))))
+      ;; Return a pair of '(needs-more preview-string)
+      (list (not (= marker (buffer-size)))
+            (buffer-substring content-start marker)))))
 
 (defun loomcom/metadata (filename)
   "Get the Org-Mode metadata for a file"
@@ -52,14 +64,25 @@
     (format (string-join
              '("* [[file:%s][%s]]\n"
                "#+begin_published\n"
-               "Published: %s\n"
+               "%s\n"
                "#+end_published\n"
                "%s\n"
                "--------\n"))
             entry
             (org-publish-find-title entry project)
-            (format-time-string "%a %b %d %Y" (org-publish-find-date entry project))
-            (loomcom/get-preview entry))))
+            (format-time-string "%A, %B %_d %Y at %l:%M %p %Z" (org-publish-find-date entry project))
+            (let* ((preview (loomcom/get-preview entry))
+                   (needs-more (car preview))
+                   (preview-text (cadr preview)))
+              (if needs-more
+                  (format
+                   (concat
+                    "%s\n\n"
+                    "#+begin_morelink\n"
+                    "[[file:%s][Read More...]]\n"
+                    "#+end_morelink\n")
+                   preview-text entry)
+                (format "%s" preview-text))))))
 
 (defun loomcom/header (arg)
   (with-temp-buffer
