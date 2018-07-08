@@ -36,7 +36,7 @@ link is needed."
                           ;; have no content
                           (buffer-size)))
           (marker (or
-                   (and (re-search-forward "^#\\+BEGIN_PREVIEW$" nil t)
+                   (and (re-search-forward "^#\\+BEGIN_more$" nil t)
                         (match-beginning 0))
                    (buffer-size))))
       ;; Return a pair of '(needs-more preview-string)
@@ -63,9 +63,9 @@ link is needed."
   (when (not (directory-name-p entry))
     (format (string-join
              '("* [[file:%s][%s]]\n"
-               "#+begin_published\n"
+               "#+BEGIN_published\n"
                "%s\n"
-               "#+end_published\n"
+               "#+END_published\n"
                "%s\n"
                "--------\n"))
             entry
@@ -78,9 +78,9 @@ link is needed."
                   (format
                    (concat
                     "%s\n\n"
-                    "#+begin_morelink\n"
+                    "#+BEGIN_morelink\n"
                     "[[file:%s][Read More...]]\n"
-                    "#+end_morelink\n")
+                    "#+END_morelink\n")
                    preview-text entry)
                 (format "%s" preview-text))))))
 
