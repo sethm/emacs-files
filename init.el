@@ -271,6 +271,10 @@
   (require 'eblog-mode)
   (add-hook 'org-mode-hook 'eblog-mode))
 
+;; Org-mode is built in, but I need to set some things
+
+(setq org-pretty-entities t)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Website Configuration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
