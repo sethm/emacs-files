@@ -134,6 +134,9 @@
 ;; Helm mode
 (use-package helm
   :ensure t
+  :bind (("C-x C-f" . helm-find-files)
+         ("C-x b" . helm-buffers-list)
+         ("M-x" . helm-M-x))
   :config
   (setq helm-mode-fuzzy-match t
         helm-completion-in-region-fuzzy-match t
@@ -145,7 +148,9 @@
         helm-ff-file-name-history-use-recentf t
         helm-echo-input-in-header-line t
         helm-autoresize-max-height 0
-        helm-autoresize-min-height 20))
+        helm-autoresize-min-height 20)
+  (helm-mode 1))
+
 
 ;; Cargo mode
 (use-package cargo
@@ -196,16 +201,6 @@
   :ensure t
   :init
   (global-git-gutter-mode +1))
-
-;; helm
-(use-package helm
-  :ensure t
-  :bind (("C-x C-f" . helm-find-files)
-         ("C-x b" . helm-buffers-list))
-  :config
-  (progn
-    (setq helm-buffers-fuzzy-matching t)
-    (helm-mode 1)))
 
 ;; Paredit mode
 (use-package paredit
