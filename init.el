@@ -197,6 +197,16 @@
   :init
   (global-git-gutter-mode +1))
 
+;; helm
+(use-package helm
+  :ensure t
+  :bind (("C-x C-f" . helm-find-files)
+         ("C-x b" . helm-buffers-list))
+  :config
+  (progn
+    (setq helm-buffers-fuzzy-matching t)
+    (helm-mode 1)))
+
 ;; Paredit mode
 (use-package paredit
   :ensure t
