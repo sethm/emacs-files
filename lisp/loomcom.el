@@ -130,6 +130,7 @@ link is needed."
          :publishing-directory ,(concat loomcom/project-dir "www/")
          :publishing-function org-html-publish-to-html
          :section-numbers nil
+         :recursive t
          :with-title t
          :with-toc nil
          :with-drawers t

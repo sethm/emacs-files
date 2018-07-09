@@ -243,7 +243,6 @@
 ;; yasnipets
 (use-package yasnippet
   :ensure t
-  :defer t
   :diminish yas-minor-mode
   :config
   (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
