@@ -273,7 +273,23 @@
 
 ;; Org-mode is built in, but I need to set some things
 
-(setq org-pretty-entities t)
+(use-package org
+  :ensure t
+  :bind (("C-c a" . org-agenda))
+  ()
+  :config
+  (org-add-link-type
+   "youtube"
+   (lambda (handle)
+     (browse-url
+      (concat "https://www.youtube.com/embed/" handle)))
+   (lambda (path desc backend)
+     (cl-case backend
+       (html (format youtube-iframe-format
+                     path (or desc "")))
+       (latex (format "\href{%s}{%s}"
+                      path (or desc "video"))))))
+  (setq org-pretty-entities t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Website Configuration
@@ -289,18 +305,6 @@
           " src=\"https://www.youtube.com/embed/%s\""
           " frameborder=\"0\""
           " allowfullscreen>%s</iframe>"))
-
-(org-add-link-type
- "youtube"
- (lambda (handle)
-   (browse-url
-    (concat "https://www.youtube.com/embed/" handle)))
- (lambda (path desc backend)
-   (cl-case backend
-     (html (format youtube-iframe-format
-                   path (or desc "")))
-     (latex (format "\href{%s}{%s}"
-                    path (or desc "video"))))))
 
 (load "loomcom.el")
 
@@ -467,4 +471,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(org-level-1 ((t (:background "#28323B" :foreground "#5EC4FF" :underline t :weight ultra-bold :height 1.25)))))

@@ -4,7 +4,7 @@
 #+TITLE:  $1
 #+AUTHOR: Seth Morabito
 #+EMAIL:  web@loomcom.com
-#+DATE:   `(format-time-string "%Y-%m-%d" (current-time))`
+#+DATE:   `(format-time-string "<%Y-%m-%d %a %H:%M>" (current-time))`
 
 * Summary
 $0
