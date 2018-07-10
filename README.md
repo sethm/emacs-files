@@ -9,4 +9,5 @@ June 30, 2018
 
 Changelog
 ---------
+July 10, 2018: Lots of little fixes and updates.
 June 30, 2018: Complete rewrite from scratch.
