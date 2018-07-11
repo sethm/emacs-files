@@ -192,7 +192,6 @@
   (global-semantic-idle-summary-mode 1)
   (global-semantic-idle-local-symbol-highlight-mode 1)
   (global-semantic-highlight-func-mode 1)
-  (global-ede-mode 1)
   :bind (:map semantic-mode-map
               ("C-c , >" . semantic-ia-fast-jump)))
 
@@ -289,7 +288,8 @@
                      path (or desc "")))
        (latex (format "\href{%s}{%s}"
                       path (or desc "video"))))))
-  (setq org-pretty-entities t))
+  (setq org-pretty-entities t
+        org-ellipsis "▼"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Website Configuration
@@ -465,7 +465,8 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes))))
+    (mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
+ '(safe-local-variable-values (quote ((eval org-content 2)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
