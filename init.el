@@ -265,7 +265,7 @@
 ;;
 ;; A special case, for development of eblog-mode.
 ;;
-(when (file-exists-p "~/Projects/eblog-mode/")
+(when (file-exists-p (expand-file-name "~/Projects/eblog-mode/"))
   (add-to-list 'load-path "~/Projects/eblog-mode/")
   (require 'eblog-mode)
   (add-hook 'org-mode-hook 'eblog-mode))
@@ -290,6 +290,10 @@
                       path (or desc "video"))))))
   (setq org-pretty-entities t
         org-ellipsis "▼"))
+
+;; Org agenda setup varies by machine
+(when (file-exists-p (expand-file-name "~/.emacs.d/local/org-agenda-setup.el"))
+  (load "org-agenda-setup.el"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Website Configuration
