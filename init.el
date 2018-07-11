@@ -470,10 +470,28 @@
  '(package-selected-packages
    (quote
     (mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
- '(safe-local-variable-values (quote ((eval org-content 2)))))
+ '(safe-local-variable-values
+   (quote
+    ((eval face-remap-add-relative
+           (quote org-level-1)
+           (quote
+            (:background "grey80" :foreground "grey10" :weight ultra-bold :height 1.25)))
+     (eval face-remap-add-relative
+           (quote org-level-3)
+           (quote
+            (:foreground "#B62D65" :slant italic :weight semi-bold)))
+     (eval face-remap-add-relative
+           (quote org-level-2)
+           (quote
+            (:foreground "#E27E8D" :overline t :weight semi-bold)))
+     (eval face-remap-add-relative
+           (quote org-level-1)
+           (quote
+            (:backround "grey80" :foreground "grey10" :weight ultra-bold :height 1.25)))
+     (eval org-content 2)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-level-1 ((t (:background "#28323B" :foreground "#5EC4FF" :underline t :weight ultra-bold :height 1.25)))))
+ )
