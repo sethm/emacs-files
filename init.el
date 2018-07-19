@@ -273,7 +273,7 @@
 ;; Org-mode is built in, but I need to set some things
 
 (use-package org
-  :ensure t
+  :ensure org-plus-contrib
   :bind (("C-c a" . org-agenda))
   ()
   :config

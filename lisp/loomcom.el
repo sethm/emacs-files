@@ -2,6 +2,12 @@
 ;; Loom Communications Website Config
 ;;
 
+(require 'ox-html)
+(require 'ox-rss)
+
+(setq org-export-html-coding-system 'utf-8-unix
+      org-html-viewport nil)
+
 (setq loomcom/project-dir "~/Projects/loomcom/")
 
 (setq loomcom/extra-head
@@ -63,6 +69,10 @@ link is needed."
   (when (not (directory-name-p entry))
     (format (string-join
              '("* [[file:%s][%s]]\n"
+               "  :PROPERTIES:\n"
+               "  :RSS_PERMALINK: %s\n"
+               "  :PUBDATE: %s\n"
+               "  :END:\n"
                "#+BEGIN_published\n"
                "%s\n"
                "#+END_published\n"
@@ -70,6 +80,8 @@ link is needed."
                "--------\n"))
             entry
             (org-publish-find-title entry project)
+            (concat (file-name-sans-extension entry) ".html")
+            (format-time-string (car org-time-stamp-formats) (org-publish-find-date entry project))
             (format-time-string "%A, %B %_d %Y at %l:%M %p %Z" (org-publish-find-date entry project))
             (let* ((preview (loomcom/get-preview entry))
                    (needs-more (car preview))
@@ -93,7 +105,7 @@ link is needed."
 
 (setq org-publish-project-alist
       `(("loomcom"
-         :components ("blog" "pages" "res" "images"))
+         :components ("blog" "blog-rss" "pages" "res" "images"))
         ("blog"
          :base-directory ,(concat loomcom/project-dir "blog/")
          :base-extension "org"
@@ -124,6 +136,19 @@ link is needed."
          :sitemap-filename "index.org"
          :sitemap-title "A Weblog"
          :sitemap-sort-files anti-chronologically)
+        ("blog-rss"
+         :base-directory ,(concat loomcom/project-dir "blog/")
+         :base-extension "org"
+         :publishing-directory ,(concat loomcom/project-dir "www/blog/")
+         :publishing-function org-rss-publish-to-rss
+         :html-link-home "https://loomcom.com/blog/"
+         :html-link-use-abs-url t
+         :email "web@loomcom.com"
+         :title "Loom Communications - Blog"
+         :section-numbers nil
+         :exclude ".*"
+         :include ("index.org")
+         :table-of-contents nil)
         ("pages"
          :base-directory ,(concat loomcom/project-dir "pages/")
          :base-extension "org"
