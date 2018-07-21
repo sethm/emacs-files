@@ -3,7 +3,6 @@
 ;;
 
 (require 'ox-html)
-(require 'ox-rss)
 
 (setq org-export-html-coding-system 'utf-8-unix
       org-html-viewport nil)

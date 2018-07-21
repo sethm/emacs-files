@@ -275,8 +275,9 @@
 (use-package org
   :ensure org-plus-contrib
   :bind (("C-c a" . org-agenda))
-  ()
   :config
+  (require 'org-drill)
+  (require 'ox-rss)
   (org-add-link-type
    "youtube"
    (lambda (handle)
