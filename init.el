@@ -259,7 +259,7 @@
 
 ;; mu4e - local, may or may not be installed
 (when (and (require 'mu4e nil 'noerror)
-           (file-exists-p (expand-file-name "~/.emacs.d/local/mutt-and-news.el")))
+           (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el")))
   (load "mail-and-news.el"))
 
 ;;
