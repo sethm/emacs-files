@@ -10,7 +10,10 @@
 (setq loomcom/project-dir "~/Projects/loomcom/")
 
 (setq loomcom/extra-head
-      "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">")
+      (concat
+       "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">\n"
+       "<link href=\"https://fonts.googleapis.com/css?family=Rubik\" rel=\"stylesheet\">\n"
+       "<link href=\"https://fonts.googleapis.com/css?family=Source+Code+Pro\" rel=\"stylesheet\">\n"))
 
 (setq loomcom/header-file
       (concat loomcom/project-dir "pages/header.html"))
@@ -60,7 +63,7 @@ link is needed."
 
 (defun loomcom/sitemap (title list)
   "Generate the sitemap (Blog Main Page)"
-  (concat "#+TITLE: " title "\n" "--------\n"
+  (concat "#+TITLE: " title "\n"
           (string-join (mapcar #'car (cdr list)) "\n\n")))
 
 (defun loomcom/sitemap-entry (entry style project)
