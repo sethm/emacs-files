@@ -21,8 +21,8 @@
 (setq loomcom/footer
       (concat
        "<div id=\"footer\">\n"
-       "<p>Seth Morabito</p>\n"
-       "<p>Proudly published with "
+       "<p>Copyright 2018 by Seth Morabito. \n"
+       "Proudly published with "
        "<a href=\"https://www.gnu.org/software/emacs/\">Emacs</a> and "
        "<a href=\"https://orgmode.org/\">Org Mode</a>"
        "</div>"))
@@ -31,7 +31,7 @@
 
 (defun loomcom/get-preview (filename)
   "Returns a list: '(<needs-more> <preview-string>) where
-<needs-more> is t or nil, indicating whether a \"Read More...\"
+<needs-more> is t or nil, indicating whether a \"Read More →\"
 link is needed."
   (with-temp-buffer
     (insert-file-contents (concat loomcom/project-dir "blog/" filename))
@@ -93,7 +93,7 @@ link is needed."
                    (concat
                     "%s\n\n"
                     "#+BEGIN_morelink\n"
-                    "[[file:%s][Read More...]]\n"
+                    "[[file:%s][Read More →]]\n"
                     "#+END_morelink\n")
                    preview-text entry)
                 (format "%s" preview-text))))))
