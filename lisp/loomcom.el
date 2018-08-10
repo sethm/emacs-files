@@ -5,20 +5,21 @@
 (require 'ox-html)
 
 (setq org-export-html-coding-system 'utf-8-unix
-      org-html-viewport nil)
+      org-html-viewport nil
+      org-html-html5-fancy t)
 
-(setq loomcom/project-dir "~/Projects/loomcom/")
+(setq lc/project-dir "~/Projects/loomcom/")
 
-(setq loomcom/extra-head
+(setq lc/header-file
+      (concat lc/project-dir "pages/header.html"))
+
+(setq lc/extra-head
       (concat
        "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">\n"
        "<link href=\"https://fonts.googleapis.com/css?family=Rubik\" rel=\"stylesheet\">\n"
        "<link href=\"https://fonts.googleapis.com/css?family=Source+Code+Pro\" rel=\"stylesheet\">\n"))
 
-(setq loomcom/header-file
-      (concat loomcom/project-dir "pages/header.html"))
-
-(setq loomcom/footer
+(setq lc/footer
       (concat
        "<div id=\"footer\">\n"
        "<p>Copyright 2018 by Seth Morabito. \n"
@@ -27,14 +28,13 @@
        "<a href=\"https://orgmode.org/\">Org Mode</a>"
        "</div>"))
 
-(setq org-html-html5-fancy t)
 
-(defun loomcom/get-preview (filename)
+(defun lc/get-preview (filename)
   "Returns a list: '(<needs-more> <preview-string>) where
 <needs-more> is t or nil, indicating whether a \"Read More →\"
 link is needed."
   (with-temp-buffer
-    (insert-file-contents (concat loomcom/project-dir "blog/" filename))
+    (insert-file-contents (concat lc/project-dir "blog/" filename))
     (goto-char (point-min))
     (let ((content-start (or
                           ;; Look for the first non-keyword line
@@ -51,22 +51,32 @@ link is needed."
       (list (not (= marker (buffer-size)))
             (buffer-substring content-start marker)))))
 
-(defun loomcom/metadata (filename)
+(defun lc/metadata (filename)
   "Get the Org-Mode metadata for a file"
   (with-temp-buffer
-    (insert-file-contents (concat loomcom/project-dir "blog/" filename))
+    (insert-file-contents (concat lc/project-dir "blog/" filename))
     (org-element-map (org-element-parse-buffer) 'keyword
       (lambda (element)
         (let ((key (org-element-property :key element))
               (value (org-element-property :value element)))
           `(,key ,value))))))
 
-(defun loomcom/sitemap (title list)
-  "Generate the sitemap (Blog Main Page)"
-  (concat "#+TITLE: " title "\n"
-          (string-join (mapcar #'car (cdr list)) "\n\n")))
+(defun lc/sitemap-for-group (title previous-page next-page list)
+  "Generate the sitemap for one group of pages"
+  (let ((previous-link (if previous-page
+                           (format "[[%s][<< Previous Page]]" previous-page)
+                         ""))
+        (next-link (if next-page
+                       (format "[[%s][Next Page >>]]" next-page)
+                     "")))
+    (concat "#+TITLE: " title "\n\n"
+            "#+BEGIN_pagination\n"
+            (format "- %s\n" previous-link)
+            (format "- %s\n" next-link)
+            "#+END_pagination\n\n"
+            (string-join (mapcar #'car (cdr list)) "\n\n"))))
 
-(defun loomcom/sitemap-entry (entry style project)
+(defun lc/sitemap-entry (entry project lastp)
   "Sitemap (Blog Main Page) Entry Formatter"
   (when (not (directory-name-p entry))
     (format (string-join
@@ -79,13 +89,13 @@ link is needed."
                "%s\n"
                "#+END_published\n"
                "%s\n"
-               "--------\n"))
+               "%s"))
             entry
             (org-publish-find-title entry project)
             (concat (file-name-sans-extension entry) ".html")
             (format-time-string (car org-time-stamp-formats) (org-publish-find-date entry project))
             (format-time-string "%A, %B %_d %Y at %l:%M %p %Z" (org-publish-find-date entry project))
-            (let* ((preview (loomcom/get-preview entry))
+            (let* ((preview (lc/get-preview entry))
                    (needs-more (car preview))
                    (preview-text (cadr preview)))
               (if needs-more
@@ -96,22 +106,85 @@ link is needed."
                     "[[file:%s][Read More →]]\n"
                     "#+END_morelink\n")
                    preview-text entry)
-                (format "%s" preview-text))))))
+                (format "%s" preview-text)))
+            (if lastp "" "--------\n"))))
 
-(defun loomcom/header (arg)
+(defun lc/header (arg)
   (with-temp-buffer
-    (insert-file-contents loomcom/header-file)
+    (insert-file-contents lc/header-file)
     (buffer-string)))
 
-(setq org-publish-timestamp-directory (concat loomcom/project-dir "cache/"))
+(defun lc/sitemap-files-to-lisp (files project)
+  "Convert a group of entries into a list"
+  (let ((root (expand-file-name
+               (file-name-as-directory
+                (org-publish-property :base-directory project))))
+        (last-item (car (reverse files))))
+    (cons 'unordered
+          (mapcar
+           (lambda (f)
+             (list (lc/sitemap-entry (file-relative-name f root) project (eq last-item f))))
+           files))))
+
+(defun lc/group (source n)
+  "Group a list by 'n' elements"
+  (if (not (endp (nthcdr n source)))
+      (cons (subseq source 0 n)
+            (lc/group (nthcdr n source) n))
+    (list source)))
+
+;;
+;; This is a _heavily_ modified version of the original `org-publish-sitemap`
+;; that is shipped with org-mode
+;;
+(defun org-publish-sitemap (project &optional sitemap-filename)
+  "Publish the blog."
+  (let* ((root (expand-file-name
+		(file-name-as-directory
+		 (org-publish-property :base-directory project))))
+	 (title (or (org-publish-property :sitemap-title project)
+		    (concat "Sitemap for project " (car project))))
+         (sort-predicate
+          (lambda (a b)
+            (let* ((adate (org-publish-find-date a project))
+                   (bdate (org-publish-find-date b project))
+                   (A (+ (lsh (car adate) 16) (cadr adate)))
+                   (B (+ (lsh (car bdate) 16) (cadr bdate))))
+              (>= A B))))
+         (file-filter (lambda (f) (not (string-match "index.*\\.org" f))))
+         (files (seq-filter file-filter (org-publish-get-base-files project))))
+    (message "Generating sitemap for Loomcom Weblog")
+    (let* ((pages (sort files sort-predicate))
+           (page-groups (lc/group pages 10))
+           (page-number 0))
+      (dolist (group page-groups page-number)
+        (let ((fname (if (eq 0 page-number)
+                         (concat root "index.org")
+                       (format (concat root "index_%d.org") page-number)))
+              (previous-page (cond ((eq 0 page-number) nil)
+                                   ((eq 1 page-number) (concat root "index.org"))
+                                   (t (format (concat root "index_%d.org") (- page-number 1)))))
+              (next-page (if (eq (- (length page-groups) 1) page-number)
+                             nil
+                           (format (concat root "index_%d.org") (+ page-number 1)))))
+          (setq page-number (+ 1 page-number))
+          (with-temp-file fname
+            (insert
+             (lc/sitemap-for-group
+              title
+              previous-page
+              next-page
+              (lc/sitemap-files-to-lisp group project)))))))))
+
+(setq org-publish-timestamp-directory (concat lc/project-dir "cache/"))
 
 (setq org-publish-project-alist
       `(("loomcom"
-         :components ("blog" "blog-rss" "pages" "res" "images"))
+         :components ("blog" "pages" "res" "images"))
         ("blog"
-         :base-directory ,(concat loomcom/project-dir "blog/")
+         :base-directory ,(concat lc/project-dir "blog/")
          :base-extension "org"
-         :publishing-directory ,(concat loomcom/project-dir "www/blog/")
+         :publishing-directory ,(concat lc/project-dir "www/blog/")
          :publishing-function org-html-publish-to-html
          :with-author t
          :with-creator nil
@@ -124,37 +197,22 @@ link is needed."
          :html-doctype "html5"
          :html-link-home "/"
          :html-head nil
-         :html-head-extra ,loomcom/extra-head
+         :html-head-extra ,lc/extra-head
          :html-head-include-default-style nil
          :html-head-include-scripts nil
          :html-viewport nil
          :html-link-up ""
          :html-link-home ""
-         :html-preamble loomcom/header
-         :html-postamble ,loomcom/footer
+         :html-preamble lc/header
+         :html-postamble ,lc/footer
          :auto-sitemap t
-         :sitemap-function loomcom/sitemap
-         :sitemap-format-entry loomcom/sitemap-entry
          :sitemap-filename "index.org"
          :sitemap-title "A Weblog"
          :sitemap-sort-files anti-chronologically)
-        ("blog-rss"
-         :base-directory ,(concat loomcom/project-dir "blog/")
-         :base-extension "org"
-         :publishing-directory ,(concat loomcom/project-dir "www/blog/")
-         :publishing-function org-rss-publish-to-rss
-         :html-link-home "https://loomcom.com/blog/"
-         :html-link-use-abs-url t
-         :email "web@loomcom.com"
-         :title "Loom Communications - Blog"
-         :section-numbers nil
-         :exclude ".*"
-         :include ("index.org")
-         :table-of-contents nil)
         ("pages"
-         :base-directory ,(concat loomcom/project-dir "pages/")
+         :base-directory ,(concat lc/project-dir "pages/")
          :base-extension "org"
-         :publishing-directory ,(concat loomcom/project-dir "www/")
+         :publishing-directory ,(concat lc/project-dir "www/")
          :publishing-function org-html-publish-to-html
          :section-numbers nil
          :recursive t
@@ -165,21 +223,21 @@ link is needed."
          :html-link-home "/"
          :html-head nil
          :html-doctype "html5"
-         :html-head-extra ,loomcom/extra-head
+         :html-head-extra ,lc/extra-head
          :html-head-include-default-style nil
          :html-head-include-scripts nil
          :html-link-up ""
          :html-link-home ""
-         :html-preamble loomcom/header
-         :html-postamble ,loomcom/footer
+         :html-preamble lc/header
+         :html-postamble ,lc/footer
          :html-viewport nil)
         ("res"
-         :base-directory ,(concat loomcom/project-dir "res/")
+         :base-directory ,(concat lc/project-dir "res/")
          :base-extension ".*"
-         :publishing-directory ,(concat loomcom/project-dir "www/res/")
+         :publishing-directory ,(concat lc/project-dir "www/res/")
          :publishing-function org-publish-attachment)
         ("images"
-         :base-directory ,(concat loomcom/project-dir "images/")
+         :base-directory ,(concat lc/project-dir "images/")
          :base-extension ".*"
-         :publishing-directory ,(concat loomcom/project-dir "www/images/")
+         :publishing-directory ,(concat lc/project-dir "www/images/")
          :publishing-function org-publish-attachment)))

@@ -16,6 +16,11 @@
 (tooltip-mode -1)
 (menu-bar-mode -1)
 
+;; Make the title bar not ugly in OS X
+(when (eq window-system 'ns)
+  (add-to-list 'frameset-filter-alist '(ns-transparent-titlebar . :never))
+  (add-to-list 'frameset-filter-alist '(ns-appearance . :never)))
+
 ;; Basic offsets
 (setq-default c-basic-offset 4)
 
@@ -203,6 +208,10 @@
   :init
   (global-git-gutter-mode +1))
 
+;; Typescript mode
+(use-package typescript-mode
+  :ensure t)
+
 ;; Paredit mode
 (use-package paredit
   :ensure t
@@ -263,14 +272,6 @@
 (when (and (require 'mu4e nil 'noerror)
            (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el")))
   (load "mail-and-news.el"))
-
-;;
-;; A special case, for development of eblog-mode.
-;;
-(when (file-exists-p (expand-file-name "~/Projects/eblog-mode/"))
-  (add-to-list 'load-path "~/Projects/eblog-mode/")
-  (require 'eblog-mode)
-  (add-hook 'org-mode-hook 'eblog-mode))
 
 ;; Org-mode is built in, but I need to set some things
 
@@ -473,7 +474,7 @@
  '(ns-right-command-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
+    (typescript-mode mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
