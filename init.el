@@ -89,6 +89,10 @@
 ;; I'm kind of a dummy, and I need this :B
 (setq confirm-kill-emacs 'yes-or-no-p)
 
+;; In remote X11, my delete key behaves incorrectly
+(when (eq window-system 'x)
+  (normal-erase-is-backspace-mode 1))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
