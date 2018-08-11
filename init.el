@@ -476,6 +476,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ns-right-command-modifier (quote meta))
+ '(org-html-link-use-abs-url t)
  '(package-selected-packages
    (quote
     (typescript-mode mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))

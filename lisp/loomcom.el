@@ -67,6 +67,42 @@ link is needed."
             "#+END_pagination\n\n"
             (string-join (mapcar #'car (cdr list)) "\n\n"))))
 
+;; Filter for 'pagination', 'published', and 'read more' blocks. This
+;; feels like a gross kludge, and I'd like to find a better way to
+;; handle this.
+(defun loomcom--rss-special-block-filter (contents backend info)
+  (if (or (string-match "<div class=\"pagination\">" contents)
+          (string-match "<div class=\"published\">" contents)
+          (string-match "<div class=\"morelink\">" contents))
+      ""
+    contents))
+
+;; Create our special RSS backend to filter out special blocks.
+(org-export-define-derived-backend 'loomcom-rss 'rss
+  :filters-alist '((:filter-special-block . loomcom--rss-special-block-filter)))
+
+;; Stolen directly from ox-rss.el, but 'rss changed to 'loomcom-rss.
+;; This exists only so that we can filter out special blocks!
+(defun org-rss-publish-to-loomcom-rss (plist filename pub-dir)
+  "Publish an org file to RSS.
+
+FILENAME is the filename of the Org file to be published.  PLIST
+is the property list for the given project.  PUB-DIR is the
+publishing directory.
+
+Return output file name."
+  (let ((bf (get-file-buffer filename)))
+    (if bf
+	  (with-current-buffer bf
+	    (org-icalendar-create-uid filename 'warn-user)
+	    (org-rss-add-pubdate-property)
+	    (write-file filename))
+      (find-file filename)
+      (org-icalendar-create-uid filename 'warn-user)
+      (org-rss-add-pubdate-property)
+      (write-file filename) (kill-buffer)))
+  (org-publish-org-to
+   'loomcom-rss filename (concat "." org-rss-extension) plist pub-dir))
 
 (defun loomcom--sitemap-entry (entry project lastp)
   "Sitemap (Blog Main Page) Entry Formatter"
@@ -85,7 +121,7 @@ link is needed."
             entry
             (org-publish-find-title entry project)
             (concat (file-name-sans-extension entry) ".html")
-            (format-time-string (car org-time-stamp-formats) (org-publish-find-date entry project))
+            (format-time-string (cdr org-time-stamp-formats) (org-publish-find-date entry project))
             (format-time-string "%A, %B %_d %Y at %l:%M %p %Z" (org-publish-find-date entry project))
             (let* ((preview (loomcom--get-preview entry))
                    (needs-more (car preview))
@@ -221,7 +257,7 @@ link is needed."
          :email "web@loomcom.com"
          :rss-extension "xml"
          :publishing-directory ,(concat loomcom-project-dir "www/blog/")
-         :publishing-function (org-rss-publish-to-rss)
+         :publishing-function (org-rss-publish-to-loomcom-rss)
          :section-numbers nil
          :exclude ".*"
          :include ("index.org")
