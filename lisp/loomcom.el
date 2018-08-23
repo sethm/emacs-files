@@ -15,6 +15,10 @@
 
 (setq loomcom-extra-head
       (concat
+       "<meta name=\"twitter:card\" content=\"summary\" />\n"
+       "<meta name=\"twitter:site\" content=\"@twylo\" />\n"
+       "<meta name=\"twitter:creator\" content=\"@twylo\" />\n"
+       "<link rel=\"alternate\" type=\"application/rss+xml\" href=\"https://loomcom.com/blog/index.xml\" />\n"
        "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">\n"
        "<link href=\"https://fonts.googleapis.com/css?family=Rubik\" rel=\"stylesheet\">\n"
        "<link href=\"https://fonts.googleapis.com/css?family=Source+Code+Pro\" rel=\"stylesheet\">\n"))
@@ -28,6 +32,7 @@
        "<a href=\"https://orgmode.org/\">Org Mode</a>"
        "</div>"))
 
+(setq loomcom-posts-per-page 12)
 
 (defun loomcom--get-preview (filename)
   "Returns a list: '(<needs-more> <preview-string>) where
@@ -189,7 +194,7 @@ Return output file name."
          (files (seq-filter file-filter (org-publish-get-base-files project))))
     (message (format "Generating blog indexes for %s" title))
     (let* ((pages (sort files sort-predicate))
-           (page-groups (loomcom--group pages 20))
+           (page-groups (loomcom--group pages loomcom-posts-per-page))
            (page-number 0))
       (dolist (group page-groups page-number)
         (let ((fname (if (eq 0 page-number)
