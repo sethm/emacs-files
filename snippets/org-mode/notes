@@ -1,10 +1,10 @@
 #contributor : Seth Morabito <web@loomcom.com>
-#name : New Notes
+#name : New Notes or Blog File
 # --
-#+TITLE:  $1
 #+AUTHOR: Seth Morabito
 #+EMAIL:  web@loomcom.com
+#+TITLE:  $1
 #+DATE:   `(format-time-string "<%Y-%m-%d %a %H:%M>" (current-time))`
+#+STARTUP: showall inlineimages
 
-* Summary
 $0

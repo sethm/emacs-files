@@ -292,10 +292,12 @@ Return output file name."
         ("res"
          :base-directory ,(concat loomcom-project-dir "res/")
          :base-extension ".*"
+         :recursive t
          :publishing-directory ,(concat loomcom-project-dir "www/res/")
          :publishing-function org-publish-attachment)
         ("images"
          :base-directory ,(concat loomcom-project-dir "images/")
          :base-extension ".*"
+         :recursive t
          :publishing-directory ,(concat loomcom-project-dir "www/images/")
          :publishing-function org-publish-attachment)))

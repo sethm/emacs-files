@@ -23,6 +23,7 @@
 
 ;; Basic offsets
 (setq-default c-basic-offset 4)
+(c-set-offset 'brace-list-intro '+)
 
 ;; Prevent lockfiles, I find they cause mayhem.
 (setq create-lockfiles nil)
