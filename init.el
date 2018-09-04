@@ -487,7 +487,21 @@
  '(package-selected-packages
    (quote
     (typescript-mode mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
- )
+ '(safe-local-variable-values
+   (quote
+    ((eval face-remap-add-relative
+           (quote org-level-3)
+           (quote
+            (:foreground "#B62D65" :slant italic :weight semi-bold)))
+     (eval face-remap-add-relative
+           (quote org-level-2)
+           (quote
+            (:foreground "#E27E8D" :overline t :weight semi-bold)))
+     (eval face-remap-add-relative
+           (quote org-level-1)
+           (quote
+            (:background "grey80" :foreground "grey10" :weight ultra-bold :height 1.25)))
+     (eval org-content 2)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
