@@ -132,6 +132,10 @@
 (use-package doom-themes
   :ensure t)
 
+;; Graphviz
+(use-package graphviz-dot-mode
+  :ensure t)
+
 ;; Treemacs
 (use-package treemacs
   :ensure t
@@ -486,7 +490,7 @@
  '(ns-right-command-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (typescript-mode mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
+    (graphviz-dot-mode typescript-mode mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
