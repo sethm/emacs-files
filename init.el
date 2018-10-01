@@ -128,6 +128,10 @@
   (package-install 'use-package))
 (require 'use-package)
 
+;; Ledger Mode
+(use-package ledger-mode
+  :ensure t)
+
 ;; Theme
 (use-package doom-themes
   :ensure t)
@@ -490,7 +494,7 @@
  '(ns-right-command-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (graphviz-dot-mode typescript-mode mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
+    (ledger-mode graphviz-dot-mode typescript-mode mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
