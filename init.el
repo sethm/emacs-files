@@ -495,7 +495,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ns-right-command-modifier (quote meta))
  '(package-selected-packages
    (quote
     (ledger-mode graphviz-dot-mode typescript-mode mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
