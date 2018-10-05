@@ -16,10 +16,14 @@
 (tooltip-mode -1)
 (menu-bar-mode -1)
 
-;; Make the title bar not ugly in OS X
+;; Make the title bar not ugly in OS X, and enable keys I like
 (when (eq window-system 'ns)
   (add-to-list 'frameset-filter-alist '(ns-transparent-titlebar . :never))
-  (add-to-list 'frameset-filter-alist '(ns-appearance . :never)))
+  (add-to-list 'frameset-filter-alist '(ns-appearance . :never))
+  (setq mac-option-modifier 'none
+        mac-command-modifier 'meta
+        mac-function-modifier 'hyper
+        mac-right-option-modifier 'super))
 
 ;; Basic offsets
 (setq-default c-basic-offset 4)
