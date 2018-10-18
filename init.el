@@ -319,6 +319,10 @@
   (setq org-pretty-entities t
         org-ellipsis "▼"))
 
+(use-package org-bullets
+  :commands (org-bullets-mode)
+  :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
 ;; Org agenda setup varies by machine
 (when (file-exists-p (expand-file-name "~/.emacs.d/local/org-agenda-setup.el"))
   (load "org-agenda-setup.el"))
@@ -497,7 +501,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (ledger-mode graphviz-dot-mode typescript-mode mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
+    (org-bullets ledger-mode graphviz-dot-mode typescript-mode mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
