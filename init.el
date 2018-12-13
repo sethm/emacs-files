@@ -327,6 +327,26 @@
 (when (file-exists-p (expand-file-name "~/.emacs.d/local/org-agenda-setup.el"))
   (load "org-agenda-setup.el"))
 
+;; I prefer to insert periods after section numbers
+;; when exporting org-mode to HTML
+(defun my-html-filter-headline-yesdot (text backend info)
+  "Ensure dots in headlines."
+  (when (org-export-derived-backend-p backend 'html)
+    (save-match-data
+      (when (let ((case-fold-search t))
+              (string-match
+               (rx (group "<span class=\"section-number-" (+ (char digit)) "\">"
+                          (+ (char digit ".")))
+                   (group "</span>"))
+               text))
+        (replace-match "\\1.\\2"
+                       t nil text)))))
+
+(eval-after-load 'ox
+  '(progn
+     (add-to-list 'org-export-filter-headline-functions
+                  'my-html-filter-headline-yesdot)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Website Configuration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
