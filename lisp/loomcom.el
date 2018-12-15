@@ -121,7 +121,6 @@ Return output file name."
                "#+BEGIN_published\n"
                "%s\n"
                "#+END_published\n"
-               "%s\n"
                "%s"))
             entry
             (org-publish-find-title entry project)
@@ -139,15 +138,12 @@ Return output file name."
                     "[[file:%s][Read More →]]\n"
                     "#+END_morelink\n")
                    preview-text entry)
-                (format "%s" preview-text)))
-            (if lastp "" "--------\n"))))
-
+                (format "%s" preview-text))))))
 
 (defun loomcom--header (arg)
   (with-temp-buffer
     (insert-file-contents loomcom-header-file)
     (buffer-string)))
-
 
 (defun loomcom--sitemap-files-to-lisp (files project)
   "Convert a group of entries into a list"
