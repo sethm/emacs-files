@@ -197,6 +197,7 @@
   :defer t)
 
 ;; Rust mode
+
 (use-package rust-mode
   :ensure t
   :defer t
@@ -206,12 +207,22 @@
   ;; intentionally! There is a dependency load order problem
   ;; that prevents these from being 'hook:' calls.
   :init
-  (add-hook 'rust-mode-hook #'racer-mode)
-  (add-hook 'racer-mode-hook #'cargo-minor-mode)
-  (add-hook 'racer-mode-hook #'eldoc-mode)
-  (add-hook 'racer-mode-hook #'company-mode)
+  (add-hook 'rust-mode-hook #'flycheck-mode)
   :config
-  (setq racer-rust-src-path "~/.rustup/toolchains/nightly-x86_64-apple-darwin/lib/rustlib/src/rust/src"))
+  (use-package flycheck
+    :ensure t))
+
+(use-package lsp-mode
+  :ensure t
+  :init
+  (require 'lsp-clients)
+  (add-hook 'rust-mode-hook 'lsp)
+  :config
+  (use-package lsp-rust
+    :ensure t
+    :load-path "~/Projects/lsp-rust/")
+  (use-package lsp-ui
+    :ensure t))
 
 ;; CEDET
 (use-package cedet
