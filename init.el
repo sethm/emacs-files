@@ -187,6 +187,8 @@
 
 ;; Rust mode
 
+(setq exec-path (append exec-path '("~/.cargo/bin")))
+
 (use-package rust-mode
   :ensure t
   :defer t
