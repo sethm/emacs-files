@@ -185,24 +185,12 @@
 (use-package cargo
   :ensure t)
 
-;; Company mode
-(use-package company
-  :ensure t
-  :defer t
-  :init (global-company-mode))
-
-;; Racer mode
-(use-package racer
-  :ensure t
-  :defer t)
-
 ;; Rust mode
 
 (use-package rust-mode
   :ensure t
   :defer t
-  :bind (("TAB" . company-indent-or-complete-common)
-         ("C-c TAB" . rust-format-buffer))
+  :bind (("C-c TAB" . rust-format-buffer))
   ;; Note that the hooks are set up here in an 'init:' block
   ;; intentionally! There is a dependency load order problem
   ;; that prevents these from being 'hook:' calls.
@@ -547,7 +535,10 @@
            (quote org-level-1)
            (quote
             (:background "grey80" :foreground "grey10" :weight ultra-bold :height 1.25)))
-     (eval org-content 2)))))
+     (eval org-content 2))))
+ '(semantic-c-dependency-system-include-path
+   (quote
+    ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
