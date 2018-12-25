@@ -165,6 +165,21 @@ Return output file name."
             (loomcom--group (nthcdr n source) n))
     (list source)))
 
+;;
+;; We keep a local cache of filename to date. This speeds up
+;; publishing tremendously, because org-publish-find-date is very
+;; expensive, and the sorting predicate we use calls it n^2 times.
+;;
+(setq loomcom-sitemap-file-dates (make-hash-table))
+
+(defun loomcom--find-date (file-name project)
+  "Find the date for a file and cache it"
+  (let ((maybe-date (gethash file-name loomcom-sitemap-file-dates nil)))
+    (if maybe-date
+        maybe-date
+      (let ((new-date (org-publish-find-date file-name project)))
+        (puthash file-name new-date loomcom-sitemap-file-dates)
+        new-date))))
 
 ;;
 ;; This is a _heavily_ modified version of the original
@@ -181,8 +196,8 @@ Return output file name."
 		    (concat "Sitemap for project " (car project))))
          (sort-predicate
           (lambda (a b)
-            (let* ((adate (org-publish-find-date a project))
-                   (bdate (org-publish-find-date b project))
+            (let* ((adate (loomcom--find-date a project))
+                   (bdate (loomcom--find-date b project))
                    (A (+ (lsh (car adate) 16) (cadr adate)))
                    (B (+ (lsh (car bdate) 16) (cadr bdate))))
               (>= A B))))

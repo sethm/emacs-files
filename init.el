@@ -298,8 +298,7 @@
            (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el")))
   (load "mail-and-news.el"))
 
-;; Org-mode is built in, but I need to set some things
-
+;; Org mode is essential
 (use-package org
   :ensure org-plus-contrib
   :bind (("C-c a" . org-agenda))
@@ -321,6 +320,7 @@
         org-ellipsis "▼"))
 
 (use-package org-bullets
+  :ensure t
   :commands (org-bullets-mode)
   :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
@@ -443,6 +443,22 @@
 ;; Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;
+;; I publish my entire site with emacs and org-mode. org-publish is
+;; horribily slow unless you disable a few modes, so I use this
+;; function to accomplish things.
+;;
+(defun publish-loomcom ()
+  "Publish my website"
+  (interactive)
+  (remove-hook 'find-file-hooks 'vc-find-file-hook)
+  (magit-file-mode -1)
+  (global-git-gutter-mode -1)
+  (org-publish 'loomcom)
+  (global-git-gutter-mode +1)
+  (magit-file-mode +1)
+  (add-hook 'find-file-hooks 'vc-find-file-hook))
+
 (defun indent-buffer ()
   "Indent current buffer according to major mode."
   (interactive)
@@ -522,7 +538,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (org-bullets ledger-mode graphviz-dot-mode typescript-mode mu4e treemacs sr-speedbar sidebar-mode paredit yasnippet use-package rust-mode helm doom-themes)))
+    (org-bullets org-plus-contrib htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter lsp-ui lsp-rust lsp-mode flycheck cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode use-package)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
