@@ -1,4 +1,4 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Emacs Initialization File
 ;; Author: Seth Morabito <web@loomcom.com>
 ;; Last Updated: 10-July-2018
@@ -208,9 +208,6 @@
   (require 'lsp-clients)
   (add-hook 'rust-mode-hook 'lsp)
   :config
-  (use-package lsp-rust
-    :ensure t
-    :load-path "~/Projects/lsp-rust/")
   (use-package lsp-ui
     :ensure t))
 
