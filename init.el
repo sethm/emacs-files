@@ -451,7 +451,7 @@
   (remove-hook 'find-file-hooks 'vc-find-file-hook)
   (magit-file-mode -1)
   (global-git-gutter-mode -1)
-  (org-publish 'loomcom)
+  (org-publish-all)
   (global-git-gutter-mode +1)
   (magit-file-mode +1)
   (add-hook 'find-file-hooks 'vc-find-file-hook))
