@@ -441,6 +441,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;
+;; Rsync my ~/Projects/loomcom/www/ directory to my website.
+;;
+(defun loomcom-rsync-www ()
+  "Rsync my working directory to my public web directory"
+  (interactive)
+  (let ((publish-dir (expand-file-name "~/Projects/loomcom/www/"))
+        (remote-dir "loomcom.com:/var/www/loomcom/"))
+    (when (file-exists-p publish-dir)
+      (shell-command
+       (format "rsync -avz --delete --delete-after %s %s" publish-dir remote-dir)))))
+
+;;
 ;; I publish my entire site with emacs and org-mode. org-publish is
 ;; horribily slow unless you disable a few modes, so I use this
 ;; function to accomplish things.
@@ -452,6 +464,7 @@
   (magit-file-mode -1)
   (global-git-gutter-mode -1)
   (org-publish-all)
+  (loomcom-rsync-www)
   (global-git-gutter-mode +1)
   (magit-file-mode +1)
   (add-hook 'find-file-hooks 'vc-find-file-hook))
