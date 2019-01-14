@@ -115,6 +115,12 @@
 (add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/lisp")
 
+;; If there is a file named 'local-init.el', load it.
+(when (and (require 'mu4e nil 'noerror)
+           (file-exists-p (expand-file-name "~/.emacs.d/local/local-init.el")))
+  (load "local-init.el"))
+
+
 ;;
 ;; Emacs built-in package management and the Marmalade repo.
 ;;
@@ -183,7 +189,10 @@
 
 ;; Cargo mode
 (use-package cargo
-  :ensure t)
+  :ensure t
+  :config
+  (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
+  (setq exec-path (append exec-path '("~/.cargo/bin"))))
 
 ;; Rust mode
 
@@ -198,18 +207,43 @@
   ;; that prevents these from being 'hook:' calls.
   :init
   (add-hook 'rust-mode-hook #'flycheck-mode)
+  :hook
+  (prog-mode . electric-pair-mode)
   :config
+  (use-package racer
+    :ensure t
+    :defer t)
   (use-package flycheck
     :ensure t))
 
+(use-package flycheck
+  :hook (prog-mode . flycheck-mode))
+
+(use-package company
+  :hook (prog-mode . company-mode)
+  :config
+  (setq company-idle-delay 1)
+  (setq company-tooltip-align-annotations t)
+  (setq company-minimum-prefix-length 1))
+
 (use-package lsp-mode
   :ensure t
-  :init
-  (require 'lsp-clients)
-  (add-hook 'rust-mode-hook 'lsp)
+  :config (require 'lsp-clients))
+
+(use-package lsp-ui)
+
+(use-package toml-mode)
+
+(use-package rust-mode
+  :hook (rust-mode . lsp)
   :config
-  (use-package lsp-ui
-    :ensure t))
+  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common))
+
+(use-package cargo
+  :hook (rust-mode . cargo-minor-mode))
+
+(use-package flycheck-rust
+  :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 ;; CEDET
 (use-package cedet
@@ -548,7 +582,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (org-bullets org-plus-contrib htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter lsp-ui lsp-rust lsp-mode flycheck cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode use-package)))
+    (company toml-mode racer flycheck-rust org-bullets org-plus-contrib htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter lsp-ui lsp-rust lsp-mode flycheck cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode use-package)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
@@ -566,7 +600,7 @@
      (eval org-content 2))))
  '(semantic-c-dependency-system-include-path
    (quote
-    ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0"))))
+    ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0" "/Users/seth/Projects/simh" "/Users/seth/Projects/simh/3B2"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
