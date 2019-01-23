@@ -217,9 +217,11 @@
     :ensure t))
 
 (use-package flycheck
+  :ensure t
   :hook (prog-mode . flycheck-mode))
 
 (use-package company
+  :ensure t
   :hook (prog-mode . company-mode)
   :config
   (setq company-idle-delay 1)
@@ -230,19 +232,24 @@
   :ensure t
   :config (require 'lsp-clients))
 
-(use-package lsp-ui)
+(use-package lsp-ui
+  :ensure t)
 
-(use-package toml-mode)
+(use-package toml-mode
+  :ensure t)
 
 (use-package rust-mode
+  :ensure t
   :hook (rust-mode . lsp)
   :config
   (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common))
 
 (use-package cargo
+  :ensure t
   :hook (rust-mode . cargo-minor-mode))
 
 (use-package flycheck-rust
+  :ensure t
   :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 ;; CEDET
