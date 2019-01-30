@@ -1,7 +1,9 @@
+;;; init.el --- Initialization file for Emacs
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Emacs Initialization File
 ;; Author: Seth Morabito <web@loomcom.com>
-;; Last Updated: 10-July-2018
+;; Last Updated: 30-January-2019
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -9,12 +11,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Minimize the UI
+
+;;; Code:
+
 (setq inhibit-startup-message t)
 (setq inhibit-splash-screen t)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(tooltip-mode -1)
-(menu-bar-mode -1)
+(when (display-graphic-p)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (tooltip-mode -1)
+  (menu-bar-mode -1))
 
 ;; Make the title bar not ugly in OS X, and enable keys I like
 (when (eq window-system 'ns)
@@ -66,17 +72,18 @@
 (setq display-time-day-and-date t)
 
 ;; Desktop saving
+(defvar desktop-dirname user-emacs-directory)
 (desktop-save-mode 1)
-(setq desktop-dirname "~/.emacs.d/")
 
 ;; Always wrap split windows
 (setq truncate-partial-width-windows nil)
 
 ;; Backup and auto save. I like these to be in a unified location, not
 ;; scattered to the wind.
-(if (not (file-exists-p "~/.emacs.d/backups"))
-    (make-directory "~/.emacs.d/backups" t))
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+
+(if (not (file-exists-p "~/.emacs.d/backups/"))
+    (make-directory "~/.emacs.d/backups/" t))
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups/")))
 (setq backup-by-copying t)
 (setq auto-save-default t)
 
@@ -98,6 +105,10 @@
 (when (eq window-system 'x)
   (normal-erase-is-backspace-mode 1))
 
+;; Load a theme in graphics mode.
+(when (display-graphic-p)
+  (load-theme 'tango-dark))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -108,18 +119,51 @@
 
 (when (file-exists-p (expand-file-name "~/quicklisp/slime-helper.el"))
   (load (expand-file-name "~/quicklisp/slime-helper.el"))
-  (setq inferior-lisp-program "sbcl"))
+  (defvar inferior-lisp-program "sbcl"))
 
 ;; Load some packages from local locations
 
-(add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/lisp")
+(add-to-list 'load-path "~/.emacs.d/local")
+(add-to-list 'load-path "~/.emacs.d/lisp/org-9.2/lisp/")
+(add-to-list 'load-path "~/.emacs.d/lisp/org-9.2/contrib/lisp/")
 
 ;; If there is a file named 'local-init.el', load it.
 (when (and (require 'mu4e nil 'noerror)
            (file-exists-p (expand-file-name "~/.emacs.d/local/local-init.el")))
   (load "local-init.el"))
 
+;;
+;; Org Mode.
+;;
+;; I treat org-mode specially, outside the package management
+;; system, mostly for stability. I like to know exactly what
+;; version I'm using at all times.
+;;
+
+
+(require 'org)
+(require 'org-drill)
+(require 'ox-rss)
+
+(org-link-set-parameters
+ "youtube"
+ :follow (lambda (id)
+           (browse-url
+            (concat "https://www.youtube.com/embed/" id)))
+ :export (lambda (path desc backend)
+           (cl-case backend
+             (html (format youtube-iframe-format
+                           path (or desc "")))
+             (latex (format "\href{%s}{%s}"
+                            path (or desc "video"))))))
+(setq org-pretty-entities t
+      org-ellipsis "▼")
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (local-set-key
+             (kbd "C-c a") 'org-agenda)))
 
 ;;
 ;; Emacs built-in package management and the Marmalade repo.
@@ -137,6 +181,15 @@
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
+
+(use-package org-bullets
+  :ensure t
+  :commands (org-bullets-mode)
+  :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+;; Org agenda setup varies by machine
+(when (file-exists-p (expand-file-name "~/.emacs.d/local/org-agenda-setup.el"))
+  (load "org-agenda-setup.el"))
 
 ;; Ledger Mode
 (use-package ledger-mode
@@ -173,14 +226,10 @@
          ("C-x b" . helm-buffers-list)
          ("M-x" . helm-M-x))
   :config
-  (setq helm-mode-fuzzy-match t
-        helm-completion-in-region-fuzzy-match t
-        helm-candidate-number-list 50
-        helm-split-window-in-side-p t
+  (setq helm-candidate-number-limit 50
+        helm-split-window-inside-p t
         helm-move-to-line-cycle-in-source t
-        helm-ff-search-library-in-sexp t
         helm-scroll-amount 8
-        helm-ff-file-name-history-use-recentf t
         helm-echo-input-in-header-line t
         helm-autoresize-max-height 0
         helm-autoresize-min-height 20)
@@ -336,40 +385,13 @@
            (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el")))
   (load "mail-and-news.el"))
 
-;; Org mode is essential
-(use-package org
-  :ensure org-plus-contrib
-  :bind (("C-c a" . org-agenda))
-  :config
-  (require 'org-drill)
-  (require 'ox-rss)
-  (org-add-link-type
-   "youtube"
-   (lambda (handle)
-     (browse-url
-      (concat "https://www.youtube.com/embed/" handle)))
-   (lambda (path desc backend)
-     (cl-case backend
-       (html (format youtube-iframe-format
-                     path (or desc "")))
-       (latex (format "\href{%s}{%s}"
-                      path (or desc "video"))))))
-  (setq org-pretty-entities t
-        org-ellipsis "▼"))
-
-(use-package org-bullets
-  :ensure t
-  :commands (org-bullets-mode)
-  :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-
-;; Org agenda setup varies by machine
-(when (file-exists-p (expand-file-name "~/.emacs.d/local/org-agenda-setup.el"))
-  (load "org-agenda-setup.el"))
-
 ;; I prefer to insert periods after section numbers
 ;; when exporting org-mode to HTML
 (defun my-html-filter-headline-yesdot (text backend info)
-  "Ensure dots in headlines."
+  "Ensure dots in headlines.
+* TEXT is the text being exported.
+* BACKEND is the backend (e.g. 'html).
+* INFO is ignored."
   (when (org-export-derived-backend-p backend 'html)
     (save-match-data
       (when (let ((case-fold-search t))
@@ -409,6 +431,7 @@
 
 ;; Fixup inline images
 (defun loomcom/fix-inline-images ()
+  "Redisplay inline images."
   (when org-inline-image-overlays
     (org-redisplay-inline-images)))
 
@@ -426,14 +449,28 @@
 ;; I like to navigate windows with C-<arrow-key>. These global
 ;; bindings do that for me.
 
-;; 1. Make window movement fail silently when accidentally trying
-;;    to navigate to where no window exists.
-(defun quiet-windmove-left () (interactive) (quiet-windmove 'left))
-(defun quiet-windmove-right () (interactive) (quiet-windmove 'right))
-(defun quiet-windmove-up () (interactive) (quiet-windmove 'up))
-(defun quiet-windmove-down () (interactive) (quiet-windmove 'down))
+;; `quit-windmove' exists so that I can accidentally try to move
+;; somewhere that doesn't exist without Emacs freaking out.
+
+(defun quiet-windmove-left ()
+  "Navigate to the window immediately to the left the current one."
+  (interactive) (quiet-windmove 'left))
+
+(defun quiet-windmove-right ()
+  "Navigate to the window immediately to the right the current one."
+  (interactive) (quiet-windmove 'right))
+
+(defun quiet-windmove-up ()
+  "Navigate to the window immediately above the current one."
+  (interactive) (quiet-windmove 'up))
+
+(defun quiet-windmove-down ()
+  "Navigate to the window immediately below the current one."
+  (interactive) (quiet-windmove 'down))
+
 (defun quiet-windmove (direction)
-  ;; Catch all errors and silently return nil.
+  "Catch all errors and silently return nil.
+* DIRECTION is a symbol, 'left, 'right, 'up, or 'down."
   (condition-case nil
       (cond ((eq direction 'left)
              (windmove-left))
@@ -442,8 +479,7 @@
             ((eq direction 'up)
              (windmove-up))
             ((eq direction 'down)
-             (windmove-down))
-            nil)
+             (windmove-down)))
     (error nil)))
 
 ;; 2. Configure window movement keys.
@@ -485,7 +521,7 @@
 ;; Rsync my ~/Projects/loomcom/www/ directory to my website.
 ;;
 (defun loomcom-rsync-www ()
-  "Rsync my working directory to my public web directory"
+  "Rsync my working directory to my public web directory."
   (interactive)
   (let ((publish-dir (expand-file-name "~/Projects/loomcom/www/"))
         (remote-dir "loomcom.com:/var/www/loomcom/"))
@@ -499,7 +535,7 @@
 ;; function to accomplish things.
 ;;
 (defun publish-loomcom ()
-  "Publish my website"
+  "Publish my website."
   (interactive)
   (remove-hook 'find-file-hooks 'vc-find-file-hook)
   (magit-file-mode -1)
@@ -524,27 +560,41 @@
 ;; why I added these
 ;;
 
-(defun change-face-size (dir-func delta)
+(defun change-face-size (dir-func &optional delta)
+  "Increase or decrease font size in all frames and windows.
+
+* DIR-FUNC is a direction function (embiggen-default-face) or
+  (ensmallen-default-face)
+* DELTA is an amount to increase.  By default, the value is 10."
   (progn
     (set-face-attribute
      'default nil :height
      (funcall dir-func (face-attribute 'default :height) delta))))
 
-(defun embiggen-default-face ()
-  (interactive)
-  (change-face-size '+ 10))
+(defun embiggen-default-face (&optional delta)
+  "Increase the default font.
 
-(defun ensmallen-default-face ()
+* DELTA is the amount (in point units) to increase the font size.
+  If not specified, the dfault is 10."
   (interactive)
-  (change-face-size '- 10))
+  (let ((incr (or delta 10)))
+    (change-face-size '+ incr)))
+
+(defun ensmallen-default-face (&optional delta)
+  "Decrease the default font.
+
+* DELTA is the amount (in point units) to decrease the font size.
+  If not specified, the default is 10."
+  (interactive)
+  (let ((incr (or delta 10)))
+    (change-face-size '- incr)))
 
 ;;
 ;; Some fun functions
 ;;
 
 (defun insert-clisp-project ()
-  "Insert a template (with DEFPACKAGE and IN-PACKAGE forms) into
-  the current buffer."
+  "Insert a Common Lisp template into the current buffer."
   (interactive)
   (goto-char 0)
   (let* ((file (file-name-nondirectory (buffer-file-name)))
@@ -589,7 +639,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (company toml-mode racer flycheck-rust org-bullets org-plus-contrib htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter lsp-ui lsp-rust lsp-mode flycheck cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode use-package)))
+    (company toml-mode racer flycheck-rust org-bullets htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter lsp-ui lsp-rust lsp-mode flycheck cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode use-package)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
@@ -614,3 +664,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(provide 'init)
+;;; init.el ends here
