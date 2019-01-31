@@ -534,7 +534,7 @@
 ;; horribily slow unless you disable a few modes, so I use this
 ;; function to accomplish things.
 ;;
-(defun publish-loomcom ()
+(defun loomcom-publish ()
   "Publish my website."
   (interactive)
   (remove-hook 'find-file-hooks 'vc-find-file-hook)
@@ -658,12 +658,3 @@
  '(semantic-c-dependency-system-include-path
    (quote
     ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0" "/Users/seth/Projects/simh" "/Users/seth/Projects/simh/3B2"))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
-(provide 'init)
-;;; init.el ends here
