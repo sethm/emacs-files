@@ -13,9 +13,8 @@
 (setq loomcom-header-file
       (concat loomcom-project-dir "pages/header.html"))
 
-(setq loomcom-extra-head
+(setq loomcom-head
       (concat
-       "<meta name=\"twitter:card\" content=\"summary\" />\n"
        "<meta name=\"twitter:site\" content=\"@twylo\" />\n"
        "<meta name=\"twitter:creator\" content=\"@twylo\" />\n"
        "<link rel=\"alternate\" type=\"application/rss+xml\" href=\"https://loomcom.com/blog/index.xml\" />\n"
@@ -249,8 +248,8 @@ Return output file name."
          :html-doctype "html5"
          :html-link-home "https://loomcom.com/"
          :html-link-use-abs-url t
-         :html-head nil
-         :html-head-extra ,loomcom-extra-head
+         :html-head ,loomcom-head
+         :html-head-extra nil
          :html-head-include-default-style nil
          :html-head-include-scripts nil
          :html-viewport nil
@@ -292,7 +291,8 @@ Return output file name."
          :html-link-home "/"
          :html-head nil
          :html-doctype "html5"
-         :html-head-extra ,loomcom-extra-head
+         :html-head ,loomcom-head
+         :html-head-extra nil
          :html-head-include-default-style nil
          :html-head-include-scripts nil
          :html-link-up ""
