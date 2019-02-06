@@ -557,6 +557,7 @@
 ;;
 (defun loomcom-publish ()
   "Publish my website."
+  (interactive)
   (loomcom-publish-local)
   (loomcom-rsync-www))
 
