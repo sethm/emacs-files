@@ -110,6 +110,22 @@
   (load-theme 'tango-dark))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Font Customization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; I prefer not to use custom-set-face for this, because different
+;; fonts exist on different platforms. I try to apply these in order
+;; of preference.
+
+(cond ((member "Source Code Pro" (font-family-list))
+       (set-face-attribute 'default nil :family "Source Code Pro"))
+      ((member "DejaVu Sans Mono" (font-family-list))
+       (set-face-attribute 'default nil :family "DejaVu Sans Mono"))
+      ((member "Inconsolata" (font-family-list))
+       (set-face-attribute 'default nil :family "Inconsolata"))
+      (t (set-face-attribute 'default nil :family "Courier")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -451,23 +467,6 @@
  'org-babel-load-languages '((C . t)
                              (emacs-lisp . t)
                              (dot . t)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Font Customization
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; I prefer not to use custom-set-face for this, because different
-;; fonts exist on different platforms. I try to apply these in order
-;; of preference.
-
-(cond ((member "Source Code Pro" (font-family-list))
-       (set-face-attribute 'default nil :family "Source Code Pro"))
-      ((member "DejaVu Sans Mono" (font-family-list))
-       (set-face-attribute 'default nil :family "DejaVu Sans Mono"))
-      ((member "Inconsolata" (font-family-list))
-       (set-face-attribute 'default nil :family "Inconsolata"))
-      (t (set-face-attribute 'default nil :family "Courier")))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Global Key Bindings
