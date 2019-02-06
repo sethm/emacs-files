@@ -539,6 +539,17 @@
       (shell-command
        (format "rsync -avz --delete --delete-after %s %s" publish-dir remote-dir)))))
 
+(defun loomcom-publish-local ()
+  "Publish my website, but do not push to the server."
+  (interactive)
+  (remove-hook 'find-file-hooks 'vc-find-file-hook)
+  (magit-file-mode -1)
+  (global-git-gutter-mode -1)
+  (org-publish-all)
+  (global-git-gutter-mode +1)
+  (magit-file-mode +1)
+  (add-hook 'find-file-hooks 'vc-find-file-hook))
+
 ;;
 ;; I publish my entire site with emacs and org-mode. org-publish is
 ;; horribily slow unless you disable a few modes, so I use this
@@ -546,15 +557,8 @@
 ;;
 (defun loomcom-publish ()
   "Publish my website."
-  (interactive)
-  (remove-hook 'find-file-hooks 'vc-find-file-hook)
-  (magit-file-mode -1)
-  (global-git-gutter-mode -1)
-  (org-publish-all)
-  (loomcom-rsync-www)
-  (global-git-gutter-mode +1)
-  (magit-file-mode +1)
-  (add-hook 'find-file-hooks 'vc-find-file-hook))
+  (loomcom-publish-local)
+  (loomcom-rsync-www))
 
 (defun indent-buffer ()
   "Indent current buffer according to major mode."
