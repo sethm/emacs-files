@@ -453,6 +453,23 @@
                              (dot . t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Font Customization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; I prefer not to use custom-set-face for this, because different
+;; fonts exist on different platforms. I try to apply these in order
+;; of preference.
+
+(cond ((member "Source Code Pro" (font-family-list))
+       (set-face-attribute 'default nil :family "Source Code Pro"))
+      ((member "DejaVu Sans Mono" (font-family-list))
+       (set-face-attribute 'default nil :family "DejaVu Sans Mono"))
+      ((member "Inconsolata" (font-family-list))
+       (set-face-attribute 'default nil :family "Inconsolata"))
+      (t (set-face-attribute 'default nil :family "Courier")))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Global Key Bindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -652,9 +669,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (company toml-mode racer flycheck-rust org-bullets htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter lsp-ui lsp-rust lsp-mode flycheck cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode use-package)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
@@ -669,7 +683,8 @@
            (quote org-level-1)
            (quote
             (:background "grey80" :foreground "grey10" :weight ultra-bold :height 1.25)))
-     (eval org-content 2))))
+     (eval org-content 2)
+     (eval visual-line-mode t))))
  '(semantic-c-dependency-system-include-path
    (quote
     ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0" "/Users/seth/Projects/simh" "/Users/seth/Projects/simh/3B2"))))
@@ -678,4 +693,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#2e3436" :foreground "#eeeeec" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 160 :width normal :foundry "nil" :family "Inconsolata")))))
+ )
