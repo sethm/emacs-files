@@ -110,6 +110,18 @@
   (load-theme 'tango-dark))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Exec Path
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(when (file-exists-p "/usr/local/bin")
+  (setq exec-path (append exec-path '("/usr/local/bin")))
+  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
+
+(when (file-exists-p "/Library/TeX/texbin")
+  (setq exec-path (append exec-path '("/Library/TeX/texbin")))
+  (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Font Customization
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -130,8 +142,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; I load slime from Quicklisp
-
-(setq exec-path (append exec-path '("/usr/local/bin")))
 
 (when (file-exists-p (expand-file-name "~/quicklisp/slime-helper.el"))
   (load (expand-file-name "~/quicklisp/slime-helper.el"))
