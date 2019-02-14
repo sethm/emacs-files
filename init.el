@@ -678,6 +678,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-bullets-bullet-list (quote ("§" "¶" "⁕" "•")))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
