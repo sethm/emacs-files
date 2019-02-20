@@ -61,10 +61,10 @@ link is needed."
 (defun loomcom--sitemap-for-group (title previous-page next-page list)
   "Generate the sitemap for one group of pages"
   (let ((previous-link (if previous-page
-                           (format "[[%s][<< Previous Page]]" previous-page)
+                           (format "[[%s][← Previous Page]]" previous-page)
                          ""))
         (next-link (if next-page
-                       (format "[[%s][Next Page >>]]" next-page)
+                       (format "[[%s][Next Page →]]" next-page)
                      "")))
     (concat "#+TITLE: " title "\n\n"
             "#+BEGIN_pagination\n"
@@ -261,7 +261,7 @@ Return output file name."
          :html-postamble ,loomcom-footer
          :auto-sitemap t
          :sitemap-filename "index.org"
-         :sitemap-title "Seth Morabito • A Weblog"
+         :sitemap-title "Seth Morabito ∴ A Weblog"
          :sitemap-sort-files anti-chronologically)
         ("blog-rss"
          :base-directory ,(concat loomcom-project-dir "blog/")
