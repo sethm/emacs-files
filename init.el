@@ -240,6 +240,16 @@
 (use-package magit
   :ensure t)
 
+;; web-mode
+(use-package web-mode
+  :ensure t
+  :defer t)
+
+;; PHP
+(use-package php-mode
+  :ensure t
+  :defer t)
+
 ;; Haskell
 (use-package haskell-mode
   :ensure t
@@ -679,6 +689,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(org-bullets-bullet-list (quote ("§" "¶" "⁕" "•")))
+ '(package-selected-packages
+   (quote
+    (web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
