@@ -21,8 +21,8 @@
        "<link rel=\"icon\" type=\"image/png\" href=\"/images/icon/favicon-32x32.png\" />\n"
        "<link rel=\"apple-touch-icon-precomposed\" href=\"/images/icon/apple-touch-icon.png\" />\n"
        "<link rel=\"alternate\" type=\"application/rss+xml\" href=\"https://loomcom.com/blog/index.xml\" />\n"
-       "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">\n"
-       "<link href=\"https://fonts.googleapis.com/css?family=Rubik\" rel=\"stylesheet\">\n"))
+       "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/faces.css\">\n"
+       "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">\n"))
 
 (setq loomcom-footer
       (concat

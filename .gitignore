@@ -21,4 +21,5 @@ network-security.data
 .emacs.desktop*
 history
 image-dired
+transient
 *.elc
