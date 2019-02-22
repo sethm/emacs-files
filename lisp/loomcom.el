@@ -1,17 +1,31 @@
 ;;
-;; Loom Communications Website Config
+;; Loom Communications Website Publishing Configuration
 ;;
 
 (require 'ox-html)
+(require 'ox-rss)
+(require 'org)
 
-(setq org-export-html-coding-system 'utf-8-unix
-      org-html-viewport nil
-      org-html-html5-fancy t)
+;;; Code:
+
+(defvar loomcom-project-dir)
+(defvar loomcom-org-dir)
+(defvar loomcom-www-dir)
+(defvar loomcom-blog-org-dir)
+(defvar loomcom-blog-www-dir)
+(defvar loomcom-header-file)
+(defvar loomcom-head)
+(defvar loomcom-footer)
+(defvar loomcom-posts-per-page)
 
 (setq loomcom-project-dir "~/Projects/loomcom/")
+(setq loomcom-org-dir (concat loomcom-project-dir "org/"))
+(setq loomcom-www-dir (concat loomcom-project-dir "www/"))
+(setq loomcom-blog-org-dir (concat loomcom-org-dir "blog/"))
+(setq loomcom-blog-www-dir (concat loomcom-www-dir "blog/"))
 
 (setq loomcom-header-file
-      (concat loomcom-project-dir "pages/header.html"))
+      (concat loomcom-project-dir "org/header.html"))
 
 (setq loomcom-head
       (concat
@@ -36,11 +50,14 @@
 (setq loomcom-posts-per-page 12)
 
 (defun loomcom--get-preview (filename)
-  "Returns a list: '(<needs-more> <preview-string>) where
-<needs-more> is t or nil, indicating whether a \"Read More →\"
-link is needed."
+  "Get a preview string for a file.
+This function returns a list, '(<needs-more> <preview-string>),
+where <needs-more> is nil or non-nil, and indicates whether
+a \"Read More →\" link is needed.
+
+FILENAME The file to get a preview for."
   (with-temp-buffer
-    (insert-file-contents (concat loomcom-project-dir "blog/" filename))
+    (insert-file-contents (concat loomcom-blog-org-dir filename))
     (goto-char (point-min))
     (let ((content-start (or
                           ;; Look for the first non-keyword line
@@ -59,7 +76,12 @@ link is needed."
 
 
 (defun loomcom--sitemap-for-group (title previous-page next-page list)
-  "Generate the sitemap for one group of pages"
+  "Generate the sitemap for one group of pages.
+
+TITLE  The title of the page
+PREVIOUS-PAGE  The previous index page to link to.
+NEXT-PAGE  The next index page to link to.
+LIST  The group of pages."
   (let ((previous-link (if previous-page
                            (format "[[%s][← Previous Page]]" previous-page)
                          ""))
@@ -77,6 +99,11 @@ link is needed."
 ;; feels like a gross kludge, and I'd like to find a better way to
 ;; handle this.
 (defun loomcom--rss-special-block-filter (contents backend info)
+  "Filter out special blocks from RSS content.
+
+CONTENTS  The contents to search in.
+BACKEND  (Unused).
+INFO  (Unused)."
   (if (or (string-match "<div class=\"pagination\">" contents)
           (string-match "<div class=\"published\">" contents)
           (string-match "<div class=\"morelink\">" contents))
@@ -110,8 +137,11 @@ Return output file name."
   (org-publish-org-to
    'loomcom-rss filename (concat "." org-rss-extension) plist pub-dir))
 
-(defun loomcom--sitemap-entry (entry project lastp)
-  "Sitemap (Blog Main Page) Entry Formatter"
+(defun loomcom--sitemap-entry (entry project)
+  "Sitemap (Blog Main Page) Entry Formatter.
+
+ENTRY  The sitemap entry to format.
+PROJECT  The project structure."
   (when (not (directory-name-p entry))
     (format (string-join
              '("* [[file:%s][%s]]\n"
@@ -141,26 +171,31 @@ Return output file name."
                    preview-text entry)
                 (format "%s" preview-text))))))
 
-(defun loomcom--header (arg)
+(defun loomcom--header (_)
+  "Insert the header of the page."
   (with-temp-buffer
     (insert-file-contents loomcom-header-file)
     (buffer-string)))
 
 (defun loomcom--sitemap-files-to-lisp (files project)
-  "Convert a group of entries into a list"
+  "Convert a group of entries into a list.
+
+FILES  The group of entries to list-ify.
+PROJECT  The project structure."
   (let ((root (expand-file-name
                (file-name-as-directory
-                (org-publish-property :base-directory project))))
-        (last-item (car (reverse files))))
+                (org-publish-property :base-directory project)))))
     (cons 'unordered
           (mapcar
            (lambda (f)
-             (list (loomcom--sitemap-entry (file-relative-name f root) project (eq last-item f))))
+             (list (loomcom--sitemap-entry (file-relative-name f root) project)))
            files))))
 
-
 (defun loomcom--group (source n)
-  "Group a list by 'n' elements"
+  "Group a list by 'n' elements.
+
+SOURCE  The list.
+N  The number to group the list by."
   (if (not (endp (nthcdr n source)))
       (cons (subseq source 0 n)
             (loomcom--group (nthcdr n source) n))
@@ -174,7 +209,10 @@ Return output file name."
 (setq loomcom-sitemap-file-dates (make-hash-table))
 
 (defun loomcom--find-date (file-name project)
-  "Find the date for a file and cache it"
+  "Find the date for a file and cache it.
+
+FILE-NAME  The file in which to find a date.
+PROJECT  The project structure."
   (let ((maybe-date (gethash file-name loomcom-sitemap-file-dates nil)))
     (if maybe-date
         maybe-date
@@ -188,11 +226,13 @@ Return output file name."
 ;; support publishing multiple index pages.
 ;;
 (defun org-publish-sitemap (project &optional sitemap-filename)
-  "Publish the blog."
+  "Publish the blog.
+
+PROJECT  The project structure.
+SITEMAP-FILENAME  The filename to use as the default index."
   (let* ((base (file-name-sans-extension (or sitemap-filename "index.org")))
-         (root (expand-file-name
-		(file-name-as-directory
-		 (org-publish-property :base-directory project))))
+         (root (file-name-as-directory (expand-file-name
+                                        (concat loomcom-org-dir "blog/"))))
 	 (title (or (org-publish-property :sitemap-title project)
 		    (concat "Sitemap for project " (car project))))
          (sort-predicate
@@ -231,11 +271,12 @@ Return output file name."
 
 (setq org-publish-project-alist
       `(("loomcom"
-         :components ("blog" "blog-rss" "pages" "res" "images"))
+         :components ("blog" "rss" "pages" "res" "images"))
+
         ("blog"
-         :base-directory ,(concat loomcom-project-dir "blog/")
+         :base-directory ,loomcom-blog-org-dir
          :base-extension "org"
-         :publishing-directory ,(concat loomcom-project-dir "www/blog/")
+         :publishing-directory ,loomcom-blog-www-dir
          :publishing-function org-html-publish-to-html
          :with-author t
          :author "Seth Morabito"
@@ -260,12 +301,16 @@ Return output file name."
          :html-preamble loomcom--header
          :html-postamble ,loomcom-footer
          :auto-sitemap t
+         ;; Just for testing.
          :sitemap-filename "index.org"
          :sitemap-title "Seth Morabito ∴ A Weblog"
          :sitemap-sort-files anti-chronologically)
-        ("blog-rss"
-         :base-directory ,(concat loomcom-project-dir "blog/")
+
+        ("rss"
+         :base-directory ,loomcom-blog-org-dir
          :base-extension "org"
+         :exclude ".*"
+         :include ("index.org")
          :rss-image-url "https://loomcom.com/images/loomcom_logo_sm.png"
          :rss-link-home "https://loomcom.com/blog/"
          :html-link-home "https://loomcom.com/blog/"
@@ -273,16 +318,16 @@ Return output file name."
          :author "Seth Morabito"
          :email "web@loomcom.com"
          :rss-extension "xml"
-         :publishing-directory ,(concat loomcom-project-dir "www/blog/")
+         :publishing-directory ,loomcom-blog-www-dir
          :publishing-function (org-rss-publish-to-loomcom-rss)
          :section-numbers nil
-         :exclude ".*"
-         :include ("index.org")
          :table-of-contents nil)
+
         ("pages"
-         :base-directory ,(concat loomcom-project-dir "pages/")
+         :base-directory ,loomcom-org-dir
          :base-extension "org"
-         :publishing-directory ,(concat loomcom-project-dir "www/")
+         :exclude ".*blog/.*"
+         :publishing-directory ,loomcom-www-dir
          :publishing-function org-html-publish-to-html
          :section-numbers nil
          :recursive t
@@ -290,6 +335,11 @@ Return output file name."
          :with-toc nil
          :with-drawers t
          :with-sub-superscript nil
+         :with-author t
+         :author "Seth Morabito"
+         :email "web@loomcom.com"
+         :with-creator nil
+         :with-date t
          :html-link-home "/"
          :html-head nil
          :html-doctype "html5"
@@ -302,15 +352,20 @@ Return output file name."
          :html-preamble loomcom--header
          :html-postamble ,loomcom-footer
          :html-viewport nil)
+
         ("res"
-         :base-directory ,(concat loomcom-project-dir "res/")
-         :base-extension ".*"
+         :base-directory ,loomcom-org-dir
+         :base-extension "css\\|js\\|woff2\\|woff\\|ttf"
          :recursive t
-         :publishing-directory ,(concat loomcom-project-dir "www/res/")
+         :publishing-directory ,loomcom-www-dir
          :publishing-function org-publish-attachment)
+
         ("images"
-         :base-directory ,(concat loomcom-project-dir "images/")
-         :base-extension ".*"
+         :base-directory ,loomcom-org-dir
+         :base-extension "png\\|jpg\\|gif\\|pdf"
          :recursive t
-         :publishing-directory ,(concat loomcom-project-dir "www/images/")
+         :publishing-directory ,loomcom-www-dir
          :publishing-function org-publish-attachment)))
+
+(provide 'loomcom)
+;;; loomcom.el ends here

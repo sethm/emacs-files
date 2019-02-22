@@ -151,8 +151,8 @@
 
 (add-to-list 'load-path "~/.emacs.d/lisp")
 (add-to-list 'load-path "~/.emacs.d/local")
-(add-to-list 'load-path "~/.emacs.d/lisp/org-9.2/lisp/")
-(add-to-list 'load-path "~/.emacs.d/lisp/org-9.2/contrib/lisp/")
+(add-to-list 'load-path "~/.emacs.d/lisp/org-mode/lisp/")
+(add-to-list 'load-path "~/.emacs.d/lisp/org-mode/contrib/lisp/")
 
 ;; If there is a file named 'local-init.el', load it.
 (when (and (require 'mu4e nil 'noerror)
