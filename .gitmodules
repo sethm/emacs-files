@@ -1,3 +1,6 @@
 [submodule "lisp/org-mode"]
 	path = lisp/org-mode
 	url = https://code.orgmode.org/bzg/org-mode.git
+[submodule "lisp/buffer-expose"]
+	path = lisp/buffer-expose
+	url = https://github.com/clemera/buffer-expose.git
