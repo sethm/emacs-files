@@ -214,12 +214,7 @@
 ;; buffer-expose is not available on melpa or elpa (yet!)
 (use-package buffer-expose
   :load-path "~/.emacs.d/lisp/buffer-expose"
-  :init (buffer-expose-mode 1)
-  ;; The default key binding for buffer-expose-no-stars is <s-tab>,
-  ;; but I don't have a super key in easy reach, just Meta and
-  ;; Control, so I rebind <C-tab> (used for buffer-expose-stars, which
-  ;; I don't even have much of a need for) to buffer-expose-no-stars.
-  :bind (([remap buffer-expose-stars] . buffer-expose-no-stars)))
+  :init (buffer-expose-mode 1))
 
 ;; I need nice org bullets.
 (use-package org-bullets
