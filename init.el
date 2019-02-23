@@ -1,4 +1,7 @@
 ;;; init.el --- Initialization file for Emacs
+;;;
+;;; Commentary:
+;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Emacs Initialization File
@@ -150,9 +153,9 @@
 ;; Load some packages from local locations
 
 (add-to-list 'load-path "~/.emacs.d/lisp")
-(add-to-list 'load-path "~/.emacs.d/local")
 (add-to-list 'load-path "~/.emacs.d/lisp/org-mode/lisp/")
 (add-to-list 'load-path "~/.emacs.d/lisp/org-mode/contrib/lisp/")
+(add-to-list 'load-path "~/.emacs.d/local")
 
 ;; If there is a file named 'local-init.el', load it.
 (when (and (require 'mu4e nil 'noerror)

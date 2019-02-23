@@ -1,10 +1,11 @@
-;;
-;; Loom Communications Website Publishing Configuration
-;;
+;;; loomcom.el --- Loom Communications Website Publishing
+;;;
+;;; Commentary:
+;;;
 
+(require 'org)
 (require 'ox-html)
 (require 'ox-rss)
-(require 'org)
 
 ;;; Code:
 
@@ -220,13 +221,16 @@ PROJECT  The project structure."
         (puthash file-name new-date loomcom-sitemap-file-dates)
         new-date))))
 
-;;
-;; This is a _heavily_ modified version of the original
-;; `org-publish-sitemap` that is shipped with org-mode, changed to
-;; support publishing multiple index pages.
-;;
+;; Un-define the original version of 'org-publish-sitemap'
+(fmakunbound 'org-publish-sitemap)
+
+;; Define our own version.
 (defun org-publish-sitemap (project &optional sitemap-filename)
   "Publish the blog.
+
+This is actually a heavily modified and customized version of the
+function by the same name in ox-publish.el.  It allows the
+generation of a sitemap with multiple pages.
 
 PROJECT  The project structure.
 SITEMAP-FILENAME  The filename to use as the default index."
@@ -301,7 +305,6 @@ SITEMAP-FILENAME  The filename to use as the default index."
          :html-preamble loomcom--header
          :html-postamble ,loomcom-footer
          :auto-sitemap t
-         ;; Just for testing.
          :sitemap-filename "index.org"
          :sitemap-title "Seth Morabito ∴ A Weblog"
          :sitemap-sort-files anti-chronologically)
