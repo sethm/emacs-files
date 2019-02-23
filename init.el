@@ -214,7 +214,7 @@
 ;; buffer-expose is not available on melpa or elpa (yet!)
 (use-package buffer-expose
   :load-path "~/.emacs.d/lisp/buffer-expose"
-  :init (buffer-expose-mode 1))
+  :config (buffer-expose-mode 1))
 
 ;; I need nice org bullets.
 (use-package org-bullets
