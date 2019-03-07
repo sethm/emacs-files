@@ -132,7 +132,9 @@
 ;; fonts exist on different platforms. I try to apply these in order
 ;; of preference.
 
-(cond ((member "Source Code Pro" (font-family-list))
+(cond ((member "ibm 3270" (font-family-list))
+       (set-face-attribute 'default nil :family "ibm 3270"))
+      ((member "Source Code Pro" (font-family-list))
        (set-face-attribute 'default nil :family "Source Code Pro"))
       ((member "DejaVu Sans Mono" (font-family-list))
        (set-face-attribute 'default nil :family "DejaVu Sans Mono"))
