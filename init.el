@@ -108,10 +108,6 @@
 (when (eq window-system 'x)
   (normal-erase-is-backspace-mode 1))
 
-;; Load a theme in graphics mode.
-(when (display-graphic-p)
-  (load-theme 'tango-dark))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Exec Path
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -132,8 +128,10 @@
 ;; fonts exist on different platforms. I try to apply these in order
 ;; of preference.
 
-(cond ((member "ibm 3270" (font-family-list))
-       (set-face-attribute 'default nil :family "ibm 3270"))
+(cond ((member "IBM 3270" (font-family-list))
+       (set-face-attribute 'default nil
+                           :family "IBM 3270"
+                           :height 200))
       ((member "Source Code Pro" (font-family-list))
        (set-face-attribute 'default nil :family "Source Code Pro"))
       ((member "DejaVu Sans Mono" (font-family-list))
@@ -232,8 +230,20 @@
 (use-package ledger-mode
   :ensure t)
 
-;; Theme
-(use-package doom-themes
+;; Themes!
+(use-package cyberpunk-theme
+  :ensure t)
+
+(use-package solarized-theme
+  :ensure t)
+
+(use-package monokai-theme
+  :ensure t)
+
+(use-package monokai-alt-theme
+  :ensure t)
+
+(use-package color-theme-sanityinc-tomorrow
   :ensure t)
 
 ;; Graphviz
@@ -456,7 +466,7 @@
                   'my-html-filter-headline-yesdot)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Additional Configuration (mostly for working on SIMH)
+;; Additional Configuration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-hook 'c-mode-hook
@@ -464,6 +474,10 @@
                            (list
                             (expand-file-name "~/Projects/simh/")
                             (expand-file-name "~/Projects/simh/3B2/")))))
+
+;; Load a theme in graphics mode.
+(when (display-graphic-p)
+  (load-theme 'sanityinc-tomorrow-night t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Website Configuration
@@ -699,10 +713,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "d1ede12c09296a84d007ef121cd72061c2c6722fcb02cb50a77d9eae4138a3ff" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "59e82a683db7129c0142b4b5a35dbbeaf8e01a4b81588f8c163bd255b76f4d21" "bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
  '(org-bullets-bullet-list (quote ("§" "¶" "⁕" "•")))
  '(package-selected-packages
    (quote
-    (web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
+    (spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
