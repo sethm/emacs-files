@@ -131,7 +131,7 @@
 (cond ((member "IBM 3270" (font-family-list))
        (set-face-attribute 'default nil
                            :family "IBM 3270"
-                           :height 200))
+                           :height 180))
       ((member "Source Code Pro" (font-family-list))
        (set-face-attribute 'default nil :family "Source Code Pro"))
       ((member "DejaVu Sans Mono" (font-family-list))
