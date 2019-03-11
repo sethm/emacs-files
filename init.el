@@ -129,15 +129,26 @@
 ;; of preference.
 
 (cond ((member "IBM 3270" (font-family-list))
-       (set-face-attribute 'default nil
-                           :family "IBM 3270"
-                           :height 180))
+       (or (set-face-font 'default "-PfEd-IBM 3270-normal-italic-normal-*-*-*-*-*-*-0-iso10646-1")
+           (set-face-attribute 'default nil
+                               :family "IBM 3270"
+                               :slant 'normal
+                               :height 160)))
       ((member "Source Code Pro" (font-family-list))
-       (set-face-attribute 'default nil :family "Source Code Pro"))
+       (set-face-attribute 'default nil
+                           :family "Source Code Pro"
+                           :slant 'normal
+                           :height 160))
       ((member "DejaVu Sans Mono" (font-family-list))
-       (set-face-attribute 'default nil :family "DejaVu Sans Mono"))
+       (set-face-attribute 'default nil
+                           :family "DejaVu Sans Mono"
+                           :slant 'normal
+                           :height 160))
       ((member "Inconsolata" (font-family-list))
-       (set-face-attribute 'default nil :family "Inconsolata"))
+       (set-face-attribute 'default nil
+                           :family "Inconsolata"
+                           :slant 'normal
+                           :height 160))
       (t (set-face-attribute 'default nil :family "Courier")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
