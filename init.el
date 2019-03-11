@@ -227,6 +227,10 @@
   :load-path "~/.emacs.d/lisp/buffer-expose"
   :config (buffer-expose-mode 1))
 
+;; Trying out multi-term
+(use-package multi-term
+  :ensure t)
+
 ;; I need nice org bullets.
 (use-package org-bullets
   :ensure t
@@ -302,7 +306,6 @@
         helm-autoresize-max-height 0
         helm-autoresize-min-height 20)
   (helm-mode 1))
-
 
 ;; Cargo mode
 (use-package cargo
@@ -730,7 +733,7 @@
  '(org-bullets-bullet-list (quote ("§" "¶" "⁕" "•")))
  '(package-selected-packages
    (quote
-    (spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
+    (multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
