@@ -128,27 +128,14 @@
 ;; fonts exist on different platforms. I try to apply these in order
 ;; of preference.
 
-(cond ((member "IBM 3270" (font-family-list))
-       (or (set-face-font 'default "-PfEd-IBM 3270-normal-italic-normal-*-*-*-*-*-*-0-iso10646-1")
-           (set-face-attribute 'default nil
-                               :family "IBM 3270"
-                               :slant 'normal
-                               :height 160)))
+(cond ((member "Andale Mono" (font-family-list))
+       (set-face-attribute 'default nil :family "Andale Mono"))
       ((member "Source Code Pro" (font-family-list))
-       (set-face-attribute 'default nil
-                           :family "Source Code Pro"
-                           :slant 'normal
-                           :height 160))
+       (set-face-attribute 'default nil :family "Source Code Pro"))
       ((member "DejaVu Sans Mono" (font-family-list))
-       (set-face-attribute 'default nil
-                           :family "DejaVu Sans Mono"
-                           :slant 'normal
-                           :height 160))
+       (set-face-attribute 'default nil :family "DejaVu Sans Mono"))
       ((member "Inconsolata" (font-family-list))
-       (set-face-attribute 'default nil
-                           :family "Inconsolata"
-                           :slant 'normal
-                           :height 160))
+       (set-face-attribute 'default nil :family "Inconsolata"))
       (t (set-face-attribute 'default nil :family "Courier")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -243,6 +230,10 @@
 
 ;; Ledger Mode
 (use-package ledger-mode
+  :ensure t)
+
+;; Twittering mode
+(use-package twittering-mode
   :ensure t)
 
 ;; Themes!
@@ -491,7 +482,10 @@
 
 ;; Load a theme in graphics mode.
 (when (display-graphic-p)
-  (load-theme 'sanityinc-tomorrow-night t))
+  ;; (load-theme 'sanityinc-tomorrow-night t)
+  (load-theme 'wombat t)
+
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Website Configuration
@@ -733,7 +727,7 @@
  '(org-bullets-bullet-list (quote ("§" "¶" "⁕" "•")))
  '(package-selected-packages
    (quote
-    (multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
+    (twittering-mode multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
@@ -759,3 +753,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'downcase-region 'disabled nil)
