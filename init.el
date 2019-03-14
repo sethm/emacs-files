@@ -232,10 +232,6 @@
 (use-package ledger-mode
   :ensure t)
 
-;; Twittering mode
-(use-package twittering-mode
-  :ensure t)
-
 ;; Themes!
 (use-package cyberpunk-theme
   :ensure t)
@@ -727,7 +723,7 @@
  '(org-bullets-bullet-list (quote ("§" "¶" "⁕" "•")))
  '(package-selected-packages
    (quote
-    (twittering-mode multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
+    (multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
