@@ -22,4 +22,6 @@ network-security.data
 history
 image-dired
 transient
+mastodon.*
+emojis
 *.elc

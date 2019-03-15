@@ -17,6 +17,8 @@
 
 ;;; Code:
 
+(setq user-mail-address "web@loomcom.com")
+
 (setq inhibit-startup-message t)
 (setq inhibit-splash-screen t)
 (when (display-graphic-p)
@@ -231,6 +233,17 @@
 ;; Ledger Mode
 (use-package ledger-mode
   :ensure t)
+
+(use-package emojify
+  :ensure t)
+
+;; Mastodon
+(use-package mastodon
+  :ensure t
+  :hook (mastodon-mode . visual-line-mode)
+  :config
+  (setq mastodon-instance-url "https://mastodon.sdf.org")
+  (mastodon-discover))
 
 ;; Themes!
 (use-package cyberpunk-theme
@@ -723,7 +736,7 @@
  '(org-bullets-bullet-list (quote ("❂" "☉" "●" "•")))
  '(package-selected-packages
    (quote
-    (multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
+    (emojify mastodon multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative
