@@ -31,6 +31,10 @@
 (when (eq window-system 'ns)
   (add-to-list 'frameset-filter-alist '(ns-transparent-titlebar . :never))
   (add-to-list 'frameset-filter-alist '(ns-appearance . :never))
+  (defvar mac-option-modifier)
+  (defvar mac-command-modifier)
+  (defvar mac-function-modifier)
+  (defvar mac-right-option-modifier)
   (setq mac-option-modifier 'none
         mac-command-modifier 'meta
         mac-function-modifier 'hyper
@@ -233,17 +237,6 @@
 ;; Ledger Mode
 (use-package ledger-mode
   :ensure t)
-
-(use-package emojify
-  :ensure t)
-
-;; Mastodon
-(use-package mastodon
-  :ensure t
-  :hook (mastodon-mode . visual-line-mode)
-  :config
-  (setq mastodon-instance-url "https://mastodon.sdf.org")
-  (mastodon-discover))
 
 ;; Themes!
 (use-package cyberpunk-theme
