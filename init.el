@@ -134,12 +134,10 @@
 ;; fonts exist on different platforms. I try to apply these in order
 ;; of preference.
 
-(cond ((member "Droid Sans Mono Slashed" (font-family-list))
-       (set-face-attribute 'default nil :family "Droid Sans Mono Slashed"))
+(cond ((member "Source Code Pro" (font-family-list))
+       (set-face-attribute 'default nil :family "Source Code Pro"))
       ((member "Andale Mono" (font-family-list))
        (set-face-attribute 'default nil :family "Andale Mono"))
-      ((member "Source Code Pro" (font-family-list))
-       (set-face-attribute 'default nil :family "Source Code Pro"))
       ((member "DejaVu Sans Mono" (font-family-list))
        (set-face-attribute 'default nil :family "DejaVu Sans Mono"))
       ((member "Inconsolata" (font-family-list))
