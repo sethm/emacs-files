@@ -246,12 +246,18 @@
 (when (file-exists-p (expand-file-name "~/.emacs.d/local/org-agenda-setup.el"))
   (load "org-agenda-setup.el"))
 
-;; I use excorporate to sync my work Exchange calendar with emacs
-(use-package excorporate
-  :ensure t
-  :init (when (file-exists-p (expand-file-name "~/.emacs.d/local/excorporate-setup.el"))
-          (load "excorporate-setup.el")))
+;; ;; I use excorporate to sync my work Exchange calendar with emacs
 
+;; ;; Allow diary to include other files (for excorporate mode, mostly)
+;; (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
+;; (add-hook 'diary-list-entries-hook 'diary-include-other-diary-files)
+;; (add-hook 'diary-mark-entries-hook 'diary-mark-included-diary-files)
+
+;; (use-package excorporate
+;;   :ensure t
+;;   :after org
+;;   :config (when (file-exists-p (expand-file-name "~/.emacs.d/local/excorporate-setup.el"))
+;;             (load "excorporate-setup.el")))
 
 ;; Ledger Mode
 (use-package ledger-mode
@@ -541,6 +547,7 @@
  'org-babel-load-languages '((C . t)
                              (emacs-lisp . t)
                              (dot . t)))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Global Key Bindings
