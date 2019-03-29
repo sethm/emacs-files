@@ -232,11 +232,6 @@
   (package-install 'use-package))
 (require 'use-package)
 
-;; buffer-expose is not available on melpa or elpa (yet!)
-(use-package buffer-expose
-  :load-path "~/.emacs.d/lisp/buffer-expose"
-  :config (buffer-expose-mode 1))
-
 ;; Trying out multi-term
 (use-package multi-term
   :ensure t)
@@ -250,6 +245,13 @@
 ;; Org agenda setup varies by machine
 (when (file-exists-p (expand-file-name "~/.emacs.d/local/org-agenda-setup.el"))
   (load "org-agenda-setup.el"))
+
+;; I use excorporate to sync my work Exchange calendar with emacs
+(use-package excorporate
+  :ensure t
+  :init (when (file-exists-p (expand-file-name "~/.emacs.d/local/excorporate-setup.el"))
+          (load "excorporate-setup.el")))
+
 
 ;; Ledger Mode
 (use-package ledger-mode
@@ -748,7 +750,7 @@
  '(org-deadline-warning-days 14)
  '(package-selected-packages
    (quote
-    (emojify mastodon multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
+    (excorporate emojify mastodon multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
  '(safe-local-variable-values
    (quote
     ((eval face-remap-add-relative

@@ -25,3 +25,5 @@ transient
 mastodon.*
 emojis
 *.elc
+diary
+excorporate
