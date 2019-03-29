@@ -114,6 +114,10 @@
 (when (eq window-system 'x)
   (normal-erase-is-backspace-mode 1))
 
+;; keep a list of recently opened files
+(recentf-mode 1)
+(setq-default recent-save-file "~/.emacs.d/recentf")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Exec Path
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -143,6 +147,8 @@
       ((member "Inconsolata" (font-family-list))
        (set-face-attribute 'default nil :family "Inconsolata"))
       (t (set-face-attribute 'default nil :family "Courier")))
+
+(set-face-attribute 'default nil :height 140)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages
@@ -246,18 +252,16 @@
 (when (file-exists-p (expand-file-name "~/.emacs.d/local/org-agenda-setup.el"))
   (load "org-agenda-setup.el"))
 
-;; ;; I use excorporate to sync my work Exchange calendar with emacs
+;; I use excorporate to sync my work Exchange calendar with emacs
 
-;; ;; Allow diary to include other files (for excorporate mode, mostly)
-;; (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
-;; (add-hook 'diary-list-entries-hook 'diary-include-other-diary-files)
-;; (add-hook 'diary-mark-entries-hook 'diary-mark-included-diary-files)
-
-;; (use-package excorporate
-;;   :ensure t
-;;   :after org
-;;   :config (when (file-exists-p (expand-file-name "~/.emacs.d/local/excorporate-setup.el"))
-;;             (load "excorporate-setup.el")))
+(use-package excorporate
+  :ensure t
+  :after org
+  ;; Disabled until I can get updating working correctly.
+  :disabled t
+  :config
+  (when (file-exists-p (expand-file-name "~/.emacs.d/local/excorporate-setup.el"))
+    (load "excorporate-setup.el")))
 
 ;; Ledger Mode
 (use-package ledger-mode
@@ -752,7 +756,8 @@
  '(custom-safe-themes
    (quote
     ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "d1ede12c09296a84d007ef121cd72061c2c6722fcb02cb50a77d9eae4138a3ff" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "59e82a683db7129c0142b4b5a35dbbeaf8e01a4b81588f8c163bd255b76f4d21" "bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
- '(org-agenda-tags-column -90)
+ '(helm-ff-file-name-history-use-recentf t)
+ '(org-agenda-tags-column -100)
  '(org-bullets-bullet-list (quote ("❂" "☉" "●" "•")))
  '(org-deadline-warning-days 14)
  '(package-selected-packages
