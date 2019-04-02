@@ -257,8 +257,6 @@
 (use-package excorporate
   :ensure t
   :after org
-  ;; Disabled until I can get updating working correctly.
-  :disabled t
   :config
   (when (file-exists-p (expand-file-name "~/.emacs.d/local/excorporate-setup.el"))
     (load "excorporate-setup.el")))
