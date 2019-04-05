@@ -26,4 +26,4 @@ mastodon.*
 emojis
 *.elc
 diary
-excorporate
+/excorporate
