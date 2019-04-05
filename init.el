@@ -149,7 +149,7 @@
        (set-face-attribute 'default nil :family "Inconsolata"))
       (t (set-face-attribute 'default nil :family "Courier")))
 
-(set-face-attribute 'default nil :height 140)
+(set-face-attribute 'default nil :height 160)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
