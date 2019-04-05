@@ -161,8 +161,10 @@
 
 (require 'password-cache)
 
+(setq epg-pgp-program "gpg")
 (setq password-cache-expiry (* 15 60))
 (setq epa-file-cache-passphrase-for-symmetric-encryption t)
+(setq epa-pinentry-mode 'loopback)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages
