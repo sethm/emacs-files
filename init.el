@@ -149,7 +149,7 @@
        (set-face-attribute 'default nil :family "Inconsolata"))
       (t (set-face-attribute 'default nil :family "Courier")))
 
-(set-face-attribute 'default nil :height 160)
+(set-face-attribute 'default nil :height 140)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -261,6 +261,7 @@
 ;; I need nice org bullets.
 (use-package org-bullets
   :ensure t
+  :disabled t
   :commands (org-bullets-mode)
   :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
@@ -535,10 +536,7 @@
 
 ;; Load a theme in graphics mode.
 (when (display-graphic-p)
-  ;; (load-theme 'sanityinc-tomorrow-night t)
-  (load-theme 'wombat t)
-
-  )
+  (load-theme 'sanityinc-tomorrow-bright t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Website Configuration
@@ -776,34 +774,14 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auth-source-debug t)
- '(custom-safe-themes
-   (quote
-    ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "d1ede12c09296a84d007ef121cd72061c2c6722fcb02cb50a77d9eae4138a3ff" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "59e82a683db7129c0142b4b5a35dbbeaf8e01a4b81588f8c163bd255b76f4d21" "bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
  '(helm-ff-file-name-history-use-recentf t)
  '(org-agenda-tags-column -100)
- '(org-bullets-bullet-list (quote ("❂" "☉" "●" "•")))
  '(org-deadline-warning-days 14)
  '(org-ellipsis "…")
  '(org-table-shrunk-column-indicator "")
  '(package-selected-packages
    (quote
     (excorporate emojify mastodon multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
- '(safe-local-variable-values
-   (quote
-    ((eval face-remap-add-relative
-           (quote org-level-3)
-           (quote
-            (:foreground "#B62D65" :slant italic :weight semi-bold)))
-     (eval face-remap-add-relative
-           (quote org-level-2)
-           (quote
-            (:foreground "#E27E8D" :overline t :weight semi-bold)))
-     (eval face-remap-add-relative
-           (quote org-level-1)
-           (quote
-            (:background "grey80" :foreground "grey10" :weight ultra-bold :height 1.25)))
-     (eval org-content 2)
-     (eval visual-line-mode t))))
  '(semantic-c-dependency-system-include-path
    (quote
     ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0" "/Users/seth/Projects/simh" "/Users/seth/Projects/simh/3B2"))))
@@ -812,5 +790,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-level-1 ((t (:inherit default :foreground "#bdbdb1" :weight bold :height 1.25)))))
+ '(deadline-soon-face ((t (:foreground "#ff0000" :underline nil :slant italic :weight bold))))
+ '(org-level-1 ((t (:inherit default :foreground "DeepPink3" :weight bold :height 1.25))))
+ '(org-level-2 ((t (:inherit default :foreground "goldenrod2" :weight normal :height 1.15))))
+ '(org-level-3 ((t (:inherit default :foreground "chartreuse2" :weight bold :height 1.0))))
+ '(org-level-4 ((t (:inherit default :foreground "magenta3" :weight normal :height 1.0))))
+ '(org-scheduled-today ((t (:foreground "#b9ca4a" :weight bold :height 1.0))))
+ '(org-special-keyword ((t (:foreground "yellow3" :weight bold))))
+ '(org-todo ((t (:foreground "tan2" :inverse-video t :box (:line-width 1 :color "tan2") :weight bold)))))
 (put 'downcase-region 'disabled nil)
