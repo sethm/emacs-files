@@ -258,6 +258,12 @@
 (use-package multi-term
   :ensure t)
 
+;; Replace scrollbars with a modeline scroller
+(use-package sml-modeline
+  :ensure t
+  :init
+  (sml-modeline-mode))
+
 ;; I need nice org bullets.
 (use-package org-bullets
   :ensure t
@@ -781,7 +787,7 @@
  '(org-table-shrunk-column-indicator "")
  '(package-selected-packages
    (quote
-    (excorporate emojify mastodon multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
+    (sml-modeline excorporate emojify mastodon multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
  '(semantic-c-dependency-system-include-path
    (quote
     ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0" "/Users/seth/Projects/simh" "/Users/seth/Projects/simh/3B2"))))
