@@ -22,7 +22,9 @@
 (setq inhibit-startup-message t)
 (setq inhibit-splash-screen t)
 (when (display-graphic-p)
-  (scroll-bar-mode -1)
+  ;; ;; Could it be? Am I turning my scroll-bar back on?
+  ;; (scroll-bar-mode -1)
+  (scroll-bar-mode t)
   (tool-bar-mode -1)
   (tooltip-mode -1)
   (menu-bar-mode -1))
@@ -237,6 +239,9 @@
         (0.25 . deadline-distant-face)
         (0.0  . deadline-distant-face)))
 
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n@)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
+
 ;;
 ;; Emacs built-in package management and the Marmalade repo.
 ;;
@@ -267,7 +272,6 @@
 ;; I need nice org bullets.
 (use-package org-bullets
   :ensure t
-  :disabled t
   :commands (org-bullets-mode)
   :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
