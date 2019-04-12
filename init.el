@@ -259,6 +259,10 @@
   (package-install 'use-package))
 (require 'use-package)
 
+;; Enable mu4e alerts
+(use-package mu4e-alert
+  :ensure t)
+
 ;; Trying out multi-term
 (use-package multi-term
   :ensure t)
@@ -792,7 +796,7 @@
  '(org-table-shrunk-column-indicator "")
  '(package-selected-packages
    (quote
-    (sml-modeline excorporate emojify mastodon multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
+    (mu4e-alert sml-modeline excorporate emojify mastodon multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
  '(semantic-c-dependency-system-include-path
    (quote
     ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0" "/Users/seth/Projects/simh" "/Users/seth/Projects/simh/3B2" "/Users/seth/Projects/conv/lib/SoftFloat-2c/softfloat/bits64/386-Mac-CLANG"))))
