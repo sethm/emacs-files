@@ -1,4 +1,4 @@
-;;; init.el --- Initialization file for Emacs
+';;; init.el --- Initialization file for Emacs
 ;;;
 ;;; Commentary:
 ;;;
@@ -27,7 +27,7 @@
   (scroll-bar-mode t)
   (tool-bar-mode -1)
   (tooltip-mode -1)
-  (menu-bar-mode -1))
+  (menu-bar-mode t))
 
 ;; Make the title bar not ugly in OS X, and enable keys I like
 (when (eq window-system 'ns)
@@ -37,7 +37,7 @@
   (defvar mac-command-modifier)
   (defvar mac-function-modifier)
   (defvar mac-right-option-modifier)
-  (setq mac-option-modifier 'none
+  (setq mac-option-modifier 'super
         mac-command-modifier 'meta
         mac-function-modifier 'hyper
         mac-right-option-modifier 'super))
@@ -542,7 +542,8 @@
           (lambda () (setq flycheck-clang-include-path
                            (list
                             (expand-file-name "~/Projects/simh/")
-                            (expand-file-name "~/Projects/simh/3B2/")))))
+                            (expand-file-name "~/Projects/simh/3B2/")
+                            (expand-file-name "~/Projects/conv/lib/SoftFloat-2c/softfloat/bits64/386-Mac-CLANG")))))
 
 ;; Load a theme in graphics mode.
 (when (display-graphic-p)
@@ -794,13 +795,15 @@
     (sml-modeline excorporate emojify mastodon multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
  '(semantic-c-dependency-system-include-path
    (quote
-    ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0" "/Users/seth/Projects/simh" "/Users/seth/Projects/simh/3B2"))))
+    ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0" "/Users/seth/Projects/simh" "/Users/seth/Projects/simh/3B2" "/Users/seth/Projects/conv/lib/SoftFloat-2c/softfloat/bits64/386-Mac-CLANG"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(deadline-soon-face ((t (:foreground "#ff0000" :underline nil :slant italic :weight bold))))
+ '(mode-line ((t (:background "#535353" :foreground "#eaeaea" :box (:line-width 1 :color "#689a69a") :weight normal))))
+ '(mode-line-inactive ((t (:inherit mode-line :background "#2a2a2a" :foreground "#525252" :box (:line-width 1 :color "#2a2a2a") :slant italic :weight normal))))
  '(org-level-1 ((t (:inherit default :foreground "DeepPink3" :weight bold :height 1.25))))
  '(org-level-2 ((t (:inherit default :foreground "goldenrod2" :weight normal :height 1.15))))
  '(org-level-3 ((t (:inherit default :foreground "chartreuse2" :weight bold :height 1.0))))
