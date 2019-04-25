@@ -63,6 +63,7 @@
 (show-paren-mode t)
 
 ;; Tramp wants these to be happy.  Memory is practically FREE now anyway
+(setq tramp-default-method "ssh")
 (setq max-lisp-eval-depth 4000)		; default is 400
 (setq max-specpdl-size 5000)		; default is 1000
 
