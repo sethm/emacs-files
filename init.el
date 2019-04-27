@@ -74,8 +74,13 @@
 ;; I hate trailing whitespace
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+(setq-default tab-width 4)
+
 ;; I prefer tabs to be expanded into spaces by default
 (setq-default indent-tabs-mode nil)
+
+;; Shell mode tab widths should be 4, not 8
+(setq-default sh-basic-offset 4)
 
 ;; Enable upcase-region function (why is this disabled by default??)
 (put 'upcase-region 'disabled nil)
@@ -96,7 +101,10 @@
 
 (if (not (file-exists-p "~/.emacs.d/backups/"))
     (make-directory "~/.emacs.d/backups/" t))
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups/")))
+(setq backup-directory-alist
+      '(("." . "~/.emacs.d/backups/")))
+(setq auto-save-file-name-transforms
+      '((".*" "~/.emacs.d/backups/" t)))
 (setq backup-by-copying t)
 (setq auto-save-default t)
 
