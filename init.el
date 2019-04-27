@@ -262,7 +262,8 @@
 
 ;; Enable mu4e alerts
 (use-package mu4e-alert
-  :ensure t)
+  :ensure t
+  :after mu4e)
 
 ;; Trying out multi-term
 (use-package multi-term
