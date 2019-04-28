@@ -249,7 +249,7 @@
         (0.0  . deadline-distant-face)))
 
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n@)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
+      '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d@)" "CANCELED(c@)")))
 
 ;;
 ;; Emacs built-in package management and the Marmalade repo.
