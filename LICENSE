@@ -1,23 +1,4 @@
-# My Emacs Configuration
-
-This is my Emacs configuration. It's been written and rewritten and
-refactored and migrated and changed and updated since the late '90s.
-
-A lot of this stuff is pretty specific to my personal needs, but feel free to
-steal ideas.
-
-## Getting Started
-
-    $ git clone git@github.com:sethm/emacs-files.git ~/.emacs.d
-    $ cd ~/.emacs.d
-    $ git submodule init
-    $ git submodule updaet
-    $ cd ~/.emacs.d/lisp/org-mode
-    $ make
-
-## License
-
-Copyright 1995–2019, Seth J. Morabito &lt;web@loomcom.com&gt;
+Copyright 1995–2019, Seth J. Morabito <web@loomcom.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
