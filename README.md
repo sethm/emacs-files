@@ -3,15 +3,29 @@
 This is my Emacs configuration. It's been written and rewritten and
 refactored and migrated and changed and updated since the late '90s.
 
-A lot of this stuff is pretty specific to my personal needs, but feel free to
-steal ideas.
+I keep this setup in git because I like to keep it up to date across
+all the computers I use — work laptop, home workstation, home laptop,
+development servers, etc.
+
+A lot of this stuff is pretty specific to my personal needs, but feel
+free to steal ideas.
+
+## Structure
+
+- The main init file is `~/.emacs.d/init.el`.
+- Files found in `~/.emacs.d/local` are ignore by Git, but added to
+  the load path.
+- Files found in `~/.emacs.d/lisp` are checked into Git, and added to
+  the load path.
+- I keep `org-mode` as a submodule in `~/.emacs.d/lisp/org-mode`,
+  which I try to keep up to date with the current stable release.
 
 ## Getting Started
 
     $ git clone git@github.com:sethm/emacs-files.git ~/.emacs.d
     $ cd ~/.emacs.d
     $ git submodule init
-    $ git submodule updaet
+    $ git submodule update
     $ cd ~/.emacs.d/lisp/org-mode
     $ make
 
