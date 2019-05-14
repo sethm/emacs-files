@@ -270,7 +270,7 @@
 
 ;; Enable mu4e alerts
 (use-package mu4e-alert
-  :ensure t
+  :defer t
   :after mu4e)
 
 ;; Trying out multi-term
