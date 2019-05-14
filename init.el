@@ -160,7 +160,7 @@
        (set-face-attribute 'default nil :family "Inconsolata"))
       (t (set-face-attribute 'default nil :family "Courier")))
 
-(set-face-attribute 'default nil :height 140)
+(set-face-attribute 'default nil :height 120)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -818,6 +818,7 @@
  '(deadline-soon-face ((t (:foreground "#ff0000" :underline nil :slant italic :weight bold))))
  '(mode-line ((t (:background "#535353" :foreground "#eaeaea" :box (:line-width 1 :color "#689a69a") :weight normal))))
  '(mode-line-inactive ((t (:inherit mode-line :background "#2a2a2a" :foreground "#525252" :box (:line-width 1 :color "#2a2a2a") :slant italic :weight normal))))
+ '(mu4e-header-highlight-face ((t (:inherit region :background "#3C3D37" :foreground "light gray" :underline nil :weight normal))))
  '(org-level-1 ((t (:inherit default :foreground "DeepPink3" :weight bold :height 1.25))))
  '(org-level-2 ((t (:inherit default :foreground "goldenrod2" :weight normal :height 1.15))))
  '(org-level-3 ((t (:inherit default :foreground "chartreuse2" :weight bold :height 1.0))))
