@@ -71,9 +71,6 @@
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
-;; I hate trailing whitespace
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
 (setq-default tab-width 4)
 
 ;; I prefer tabs to be expanded into spaces by default
@@ -194,10 +191,13 @@
 (add-to-list 'load-path "~/.emacs.d/lisp/org-mode/contrib/lisp/")
 (add-to-list 'load-path "~/.emacs.d/local")
 
-;; If there is a file named 'local-init.el', load it.
-(when (and (require 'mu4e nil 'noerror)
-           (file-exists-p (expand-file-name "~/.emacs.d/local/local-init.el")))
-  (load "local-init.el"))
+;; Load my mu4e configuration if and only if mu4e is installed,
+;; and the file `~/.emacs.d/local/mail-and-news.el' exists. Additionally,
+;; turn on visual-line-mode when viewing messages.
+(when (require 'mu4e nil 'noerror)
+  (when (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el"))
+    (load "mail-and-news.el"))
+  (add-hook 'mu4e-view-mode-hook 'visual-line-mode))
 
 ;;
 ;; Org Mode.
