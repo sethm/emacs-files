@@ -22,8 +22,6 @@
 (setq inhibit-startup-message t)
 (setq inhibit-splash-screen t)
 (when (display-graphic-p)
-  ;; ;; Could it be? Am I turning my scroll-bar back on?
-  ;; (scroll-bar-mode -1)
   (scroll-bar-mode t)
   (tool-bar-mode -1)
   (tooltip-mode -1)
@@ -147,17 +145,17 @@
 ;; fonts exist on different platforms. I try to apply these in order
 ;; of preference.
 
-(cond ((member "DejaVu Sans Mono" (font-family-list))
-       (set-face-attribute 'default nil :family "DejaVu Sans Mono"))
-      ((member "Andale Mono" (font-family-list))
-       (set-face-attribute 'default nil :family "Andale Mono"))
-      ((member "Source Code Pro" (font-family-list))
-       (set-face-attribute 'default nil :family "Source Code Pro"))
+(cond ((member "Triplicate T4c" (font-family-list))
+       (set-face-attribute 'default nil :family "Triplicate T4c" :height 120))
       ((member "Inconsolata" (font-family-list))
-       (set-face-attribute 'default nil :family "Inconsolata"))
-      (t (set-face-attribute 'default nil :family "Courier")))
-
-(set-face-attribute 'default nil :height 120)
+       (set-face-attribute 'default nil :family "Inconsolata" :height 140))
+      ((member "DejaVu Sans Mono" (font-family-list))
+       (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 140))
+      ((member "Andale Mono" (font-family-list))
+       (set-face-attribute 'default nil :family "Andale Mono" :height 140))
+      ((member "Source Code Pro" (font-family-list))
+       (set-face-attribute 'default nil :family "Source Code Pro" :height 140))
+      (t (set-face-attribute 'default nil :family "Courier" :height 140)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -206,7 +204,6 @@
 ;; system, mostly for stability. I like to know exactly what
 ;; version I'm using at all times.
 ;;
-
 
 (require 'org)
 (require 'org-drill)
@@ -271,7 +268,11 @@
 ;; Enable mu4e alerts
 (use-package mu4e-alert
   :defer t
-  :after mu4e)
+  :after mu4e
+  :config
+  (setq mu4e-alert-interesting-mail-query
+        "flag:unread AND NOT flag:trashed AND NOT maildir/Spam")
+  (mu4e-alert-enable-mode-line-display))
 
 ;; Trying out multi-term
 (use-package multi-term
@@ -313,20 +314,23 @@
   :ensure t)
 
 ;; Themes!
-(use-package cyberpunk-theme
-  :ensure t)
+;; (use-package monotropic-theme
+;;   :ensure t)
 
-(use-package solarized-theme
-  :ensure t)
+;; (use-package cyberpunk-theme
+;;   :ensure t)
 
-(use-package monokai-theme
-  :ensure t)
+;; (use-package solarized-theme
+;;   :ensure t)
 
-(use-package monokai-alt-theme
-  :ensure t)
+;; (use-package monokai-theme
+;;   :ensure t)
 
-(use-package color-theme-sanityinc-tomorrow
-  :ensure t)
+;; (use-package monokai-alt-theme
+;;   :ensure t)
+
+;; (use-package color-theme-sanityinc-tomorrow
+;;   :ensure t)
 
 ;; Graphviz
 (use-package graphviz-dot-mode
@@ -560,8 +564,10 @@
                             (expand-file-name "~/Projects/conv/lib/SoftFloat-2c/softfloat/bits64/386-Mac-CLANG")))))
 
 ;; Load a theme in graphics mode.
-(when (display-graphic-p)
-  (load-theme 'sanityinc-tomorrow-bright t))
+;; (when (display-graphic-p)
+;;   ;; (load-theme 'sanityinc-tomorrow-bright t)
+;;   (load-theme 'whiteboard t)
+;;   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Website Configuration
@@ -806,24 +812,24 @@
  '(org-table-shrunk-column-indicator "")
  '(package-selected-packages
    (quote
-    (mu4e-alert sml-modeline excorporate emojify mastodon multi-term spacemacs-theme color-theme-sanityinc-tomorrow monokai-alt-theme monokai-theme solarized-theme cyberpunk-theme web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode doom-themes ledger-mode org-bullets use-package)))
+    (mu4e-alert sml-modeline excorporate emojify mastodon multi-term web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode ledger-mode org-bullets use-package)))
  '(semantic-c-dependency-system-include-path
    (quote
     ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0" "/Users/seth/Projects/simh" "/Users/seth/Projects/simh/3B2" "/Users/seth/Projects/conv/lib/SoftFloat-2c/softfloat/bits64/386-Mac-CLANG"))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(deadline-soon-face ((t (:foreground "#ff0000" :underline nil :slant italic :weight bold))))
- '(mode-line ((t (:background "#535353" :foreground "#eaeaea" :box (:line-width 1 :color "#689a69a") :weight normal))))
- '(mode-line-inactive ((t (:inherit mode-line :background "#2a2a2a" :foreground "#525252" :box (:line-width 1 :color "#2a2a2a") :slant italic :weight normal))))
- '(mu4e-header-highlight-face ((t (:inherit region :background "#3C3D37" :foreground "light gray" :underline nil :weight normal))))
- '(org-level-1 ((t (:inherit default :foreground "DeepPink3" :weight bold :height 1.25))))
- '(org-level-2 ((t (:inherit default :foreground "goldenrod2" :weight normal :height 1.15))))
- '(org-level-3 ((t (:inherit default :foreground "chartreuse2" :weight bold :height 1.0))))
- '(org-level-4 ((t (:inherit default :foreground "magenta3" :weight normal :height 1.0))))
- '(org-scheduled-today ((t (:foreground "#b9ca4a" :weight bold :height 1.0))))
- '(org-special-keyword ((t (:foreground "yellow3" :weight bold))))
- '(org-todo ((t (:foreground "tan2" :inverse-video t :box (:line-width 1 :color "tan2") :weight bold)))))
-(put 'downcase-region 'disabled nil)
+;; (custom-set-faces
+;;  ;; custom-set-faces was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(deadline-soon-face ((t (:foreground "#ff0000" :underline nil :slant italic :weight bold))))
+;;  '(mu4e-header-highlight-face ((t (:inherit region :background "#3C3D37" :foreground "light gray" :underline nil :weight normal))))
+;;  '(org-level-1 ((t (:inherit default :foreground "DeepPink3" :weight bold :height 1.25))))
+;;  '(org-level-2 ((t (:inherit default :foreground "goldenrod2" :weight normal :height 1.15))))
+;;  '(org-level-3 ((t (:inherit default :foreground "chartreuse2" :weight bold :height 1.0))))
+;;  '(org-level-4 ((t (:inherit default :foreground "magenta3" :weight normal :height 1.0))))
+;;  '(org-scheduled-today ((t (:foreground "#b9ca4a" :weight bold :height 1.0))))
+;;  '(org-special-keyword ((t (:foreground "yellow3" :weight bold))))
+;;  '(org-todo ((t (:foreground "tan2" :inverse-video t :box (:line-width 1 :color "tan2") :weight bold)))))
+
+(provide 'init)
+;;; init.el ends here
