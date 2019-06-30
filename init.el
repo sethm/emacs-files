@@ -564,10 +564,8 @@
                             (expand-file-name "~/Projects/conv/lib/SoftFloat-2c/softfloat/bits64/386-Mac-CLANG")))))
 
 ;; Load a theme in graphics mode.
-;; (when (display-graphic-p)
-;;   ;; (load-theme 'sanityinc-tomorrow-bright t)
-;;   (load-theme 'whiteboard t)
-;;   )
+(when (display-graphic-p)
+  (load-theme 'sanityinc-tomorrow-night t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Website Configuration
@@ -830,6 +828,13 @@
 ;;  '(org-scheduled-today ((t (:foreground "#b9ca4a" :weight bold :height 1.0))))
 ;;  '(org-special-keyword ((t (:foreground "yellow3" :weight bold))))
 ;;  '(org-todo ((t (:foreground "tan2" :inverse-video t :box (:line-width 1 :color "tan2") :weight bold)))))
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 
 (provide 'init)
 ;;; init.el ends here

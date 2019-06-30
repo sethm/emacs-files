@@ -42,7 +42,7 @@
 (setq loomcom-footer
       (concat
        "<div id=\"footer\">\n"
-       "<p>Copyright 2018 by Seth Morabito. \n"
+       "<p>Copyright 2019 by Seth Morabito. \n"
        "Proudly published with "
        "<a href=\"https://www.gnu.org/software/emacs/\">Emacs</a> and "
        "<a href=\"https://orgmode.org/\">Org Mode</a>"
