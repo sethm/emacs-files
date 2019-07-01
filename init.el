@@ -83,10 +83,9 @@
 ;; Show the time and date in the bar
 (setq display-time-day-and-date t)
 
-;; ;; Desktop saving
-;; ;; (temporarily disabled... I'm not sure I like this.)
-;; (defvar desktop-dirname user-emacs-directory)
-;; (desktop-save-mode 1)
+;; Desktop saving
+(defvar desktop-dirname user-emacs-directory)
+(desktop-save-mode 1)
 
 ;; Always wrap split windows
 (setq truncate-partial-width-windows nil)
