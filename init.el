@@ -1,4 +1,4 @@
-';;; init.el --- Initialization file for Emacs
+;;; init.el --- Initialization file for Emacs
 ;;;
 ;;; Commentary:
 ;;;
@@ -6,26 +6,28 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Emacs Initialization File
 ;; Author: Seth Morabito <web@loomcom.com>
-;; Last Updated: 30-January-2019
+;; Last Updated: 08-JUL-2019
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Global options
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Minimize the UI
-
 ;;; Code:
 
+;; Personal identification
+
 (setq user-mail-address "web@loomcom.com")
+
+;; Minimize the UI
 
 (setq inhibit-startup-message t)
 (setq inhibit-splash-screen t)
 (when (display-graphic-p)
-  (scroll-bar-mode t)
+  (scroll-bar-mode -1)
   (tool-bar-mode -1)
   (tooltip-mode -1)
-  (menu-bar-mode t))
+  (menu-bar-mode -1))
 
 ;; Make the title bar not ugly in OS X, and enable keys I like
 (when (eq window-system 'ns)
@@ -84,8 +86,8 @@
 (setq display-time-day-and-date t)
 
 ;; Desktop saving
-(defvar desktop-dirname user-emacs-directory)
-(desktop-save-mode 1)
+; (defvar desktop-dirname user-emacs-directory)
+; (desktop-save-mode 1)
 
 ;; Always wrap split windows
 (setq truncate-partial-width-windows nil)
@@ -144,17 +146,34 @@
 ;; fonts exist on different platforms. I try to apply these in order
 ;; of preference.
 
-(cond ((member "Triplicate T4c" (font-family-list))
-       (set-face-attribute 'default nil :family "Triplicate T4c" :height 120))
+(cond ((member "Input Mono" (font-family-list))
+       (set-face-attribute 'default nil
+                           :family "Input Mono"
+                           :weight 'light
+                           :height 160))
+      ((member "Triplicate T4c" (font-family-list))
+       (set-face-attribute 'default nil
+                           :family "Triplicate T4c"
+                           :height 120))
       ((member "Inconsolata" (font-family-list))
-       (set-face-attribute 'default nil :family "Inconsolata" :height 140))
+       (set-face-attribute 'default nil
+                           :family "Inconsolata"
+                           :height 140))
       ((member "DejaVu Sans Mono" (font-family-list))
-       (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 140))
+       (set-face-attribute 'default nil
+                           :family "DejaVu Sans Mono"
+                           :height 140))
       ((member "Andale Mono" (font-family-list))
-       (set-face-attribute 'default nil :family "Andale Mono" :height 140))
+       (set-face-attribute 'default nil
+                           :family "Andale Mono"
+                           :height 140))
       ((member "Source Code Pro" (font-family-list))
-       (set-face-attribute 'default nil :family "Source Code Pro" :height 140))
-      (t (set-face-attribute 'default nil :family "Courier" :height 140)))
+       (set-face-attribute 'default nil
+                           :family "Source Code Pro"
+                           :height 140))
+      (t (set-face-attribute 'default nil
+                             :family "Courier"
+                             :height 140)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -562,9 +581,12 @@
                             (expand-file-name "~/Projects/simh/3B2/")
                             (expand-file-name "~/Projects/conv/lib/SoftFloat-2c/softfloat/bits64/386-Mac-CLANG")))))
 
-;; Load a theme in graphics mode.
-(when (display-graphic-p)
-  (load-theme 'sanityinc-tomorrow-night t))
+
+;; If running in graphics mode, load sanityinc-tomorrow-night.
+;; Otherwise, load wombat.
+(if (display-graphic-p)
+    (load-theme 'sanityinc-tomorrow-night t)
+  (load-theme 'wombat t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Website Configuration
