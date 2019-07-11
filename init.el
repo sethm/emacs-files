@@ -227,6 +227,15 @@
 (require 'org-drill)
 (require 'ox-rss)
 
+(add-to-list 'org-latex-classes
+             '("koma-article"
+               "\\documentclass{scrartcl}"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
 (org-link-set-parameters
  "youtube"
  :follow (lambda (id)
@@ -301,6 +310,11 @@
   :ensure t
   :init
   (sml-modeline-mode))
+
+;; Use tabbar mode
+(use-package tabbar
+  :config (tabbar-mode t)
+  :ensure t)
 
 ;; I need nice org bullets.
 (use-package org-bullets
@@ -831,7 +845,7 @@
  '(org-table-shrunk-column-indicator "")
  '(package-selected-packages
    (quote
-    (mu4e-alert sml-modeline excorporate emojify mastodon multi-term web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode ledger-mode org-bullets use-package)))
+    (tabbar mu4e-alert sml-modeline excorporate emojify mastodon multi-term web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode ledger-mode org-bullets use-package)))
  '(semantic-c-dependency-system-include-path
    (quote
     ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0" "/Users/seth/Projects/simh" "/Users/seth/Projects/simh/3B2" "/Users/seth/Projects/conv/lib/SoftFloat-2c/softfloat/bits64/386-Mac-CLANG"))))
