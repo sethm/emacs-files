@@ -1,22 +1,34 @@
 #+AUTHOR: Seth Morabito
 #+EMAIL:  web@loomcom.com
 #+TITLE:  GNU Emacs Configuration File
-#+DATE:   <2019-07-11 Thu 19:21>
-#+OPTIONS: toc:2
+#+DATE:   11 July 2019
+#+OPTIONS: toc:2 ':t
 #+STARTUP: showall
+
+* Introduction
+
+  This document contains my entire GNU Emacs configuration file in
+  /"Literate Programming"/ style. Literate Programming strives to
+  invert the normal programming paradigm; Instead of source code
+  scattered with comments, Literate Programming encourages document to
+  be written in prose, with source code scattered about. The source
+  code is interpreted, while the human readable prose is ignored.
 
 * Basic Setup
 
 ** Identifying Myself
 
+   I begin by explicitly identifying myself and setting my full name
+   and email address.
+
    #+BEGIN_SRC emacs-lisp
-     (setq user-mail-address "web@loomcom.com")
      (setq user-full-name "Seth Morabito")
+     (setq user-mail-address "web@loomcom.com")
    #+END_SRC
 
 ** Reducing Clutter
 
-   I like to immediately reduce what I consider to be visual
+   Next, I like to immediately reduce what I consider to be visual
    clutter. Your milage may vary, but for me this means turning off
    startup messages, the splash screen, scroll bars, tool bar,
    tooltips, and the menu.
@@ -58,8 +70,6 @@
    #+BEGIN_SRC emacs-lisp
      (setq kept-old-versions 2)
      (setq kept-new-versions 5)
-
-     ;; Silently delete old versions, don't interrupt saving and ask if it's OK.
      (setq delete-old-versions t)
    #+END_SRC
 
@@ -321,7 +331,6 @@
 *** Linux GTK
 
     #+BEGIN_SRC emacs-lisp
-    ;; Linux GTK as the client
     (global-set-key (kbd "C-<left>")  'quiet-windmove-left)
     (global-set-key (kbd "C-<right>") 'quiet-windmove-right)
     (global-set-key (kbd "C-<up>")    'quiet-windmove-up)
@@ -334,7 +343,6 @@
 *** Shortcut for "Goto Line"
 
     #+BEGIN_SRC emacs-lisp
-    ;; Other global keys
     (global-set-key "\C-xl" 'goto-line)
 
     #+END_SRC
@@ -401,8 +409,8 @@
 ** Window Frame
 
    By default, the Emacs frame (what you or I would call a window)
-   title is 'user@host'. I prefer the frame title to show the actual
-   name of the currently selected buffer.
+   title is *user@host*. I much prefer the frame title to show the
+   actual name of the currently selected buffer.
 
    #+BEGIN_SRC emacs-lisp
     (setq-default frame-title-format "%b")
@@ -493,7 +501,6 @@
    And, finally, bind those functions to the right keys.
 
    #+BEGIN_SRC emacs-lisp
-    ;; Make fonts bigger and smaller
     (global-set-key (kbd "C-+")  'embiggen-default-face)
     (global-set-key (kbd "C--")  'ensmallen-default-face)
    #+END_SRC
@@ -644,7 +651,6 @@
                       (expand-file-name
                        "~/.emacs.d/local/mail-and-news.el")))
             (load "mail-and-news.el")
-            ;; Turn on visual-line-mode in mu4e!
             (add-hook 'mu4e-view-mode-hook 'visual-line-mode))
    #+END_SRC
 
@@ -658,7 +664,7 @@
        :config
        (require 'cl)
        (require 'org-drill)
-       (require 'ox-rss)
+       (require 'ox-latex)
        (setq org-agenda-tags-column -100)
        (setq org-deadline-warning-days 14)
        (setq org-table-shrunk-column-indicator ""))
@@ -850,7 +856,6 @@
 ** Email Alerts
 
    #+BEGIN_SRC emacs-lisp
-     ;; Enable mu4e alerts
      (use-package mu4e-alert
        :defer t
        :after mu4e
@@ -1120,16 +1125,15 @@
        :ensure t)
    #+END_SRC
 
-   Next, configure Rust Mode.
+   Next, configure Rust Mode. Note that the hooks are set up in the
+   =init:= block intentionally. There is a dependency load order
+   problem that prevents them from being =hook:= calls.
 
    #+BEGIN_SRC emacs-lisp
      (use-package rust-mode
        :ensure t
        :defer t
        :bind (("C-c TAB" . rust-format-buffer))
-       ;; Note that the hooks are set up here in an 'init:' block
-       ;; intentionally! There is a dependency load order problem
-       ;; that prevents these from being 'hook:' calls.
        :init
        (add-hook 'rust-mode-hook #'flycheck-mode)
        :hook

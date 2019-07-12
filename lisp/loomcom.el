@@ -5,7 +5,6 @@
 
 (require 'org)
 (require 'ox-html)
-(require 'ox-rss)
 
 ;;; Code:
 
@@ -35,7 +34,6 @@
        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n"
        "<link rel=\"icon\" type=\"image/png\" href=\"/images/icon/favicon-32x32.png\" />\n"
        "<link rel=\"apple-touch-icon-precomposed\" href=\"/images/icon/apple-touch-icon.png\" />\n"
-       "<link rel=\"alternate\" type=\"application/rss+xml\" href=\"https://loomcom.com/blog/index.xml\" />\n"
        "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/faces.css\">\n"
        "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">\n"))
 
@@ -96,48 +94,6 @@ LIST  The group of pages."
             "#+END_pagination\n\n"
             (string-join (mapcar #'car (cdr list)) "\n\n"))))
 
-;; Filter for 'pagination', 'published', and 'read more' blocks. This
-;; feels like a gross kludge, and I'd like to find a better way to
-;; handle this.
-(defun loomcom--rss-special-block-filter (contents backend info)
-  "Filter out special blocks from RSS content.
-
-CONTENTS  The contents to search in.
-BACKEND  (Unused).
-INFO  (Unused)."
-  (if (or (string-match "<div class=\"pagination\">" contents)
-          (string-match "<div class=\"published\">" contents)
-          (string-match "<div class=\"morelink\">" contents))
-      ""
-    contents))
-
-;; Create our special RSS backend to filter out special blocks.
-(org-export-define-derived-backend 'loomcom-rss 'rss
-  :filters-alist '((:filter-special-block . loomcom--rss-special-block-filter)))
-
-;; Stolen directly from ox-rss.el, but 'rss changed to 'loomcom-rss.
-;; This exists only so that we can filter out special blocks!
-(defun org-rss-publish-to-loomcom-rss (plist filename pub-dir)
-  "Publish an org file to RSS.
-
-FILENAME is the filename of the Org file to be published.  PLIST
-is the property list for the given project.  PUB-DIR is the
-publishing directory.
-
-Return output file name."
-  (let ((bf (get-file-buffer filename)))
-    (if bf
-	  (with-current-buffer bf
-	    (org-icalendar-create-uid filename 'warn-user)
-	    (org-rss-add-pubdate-property)
-	    (write-file filename))
-      (find-file filename)
-      (org-icalendar-create-uid filename 'warn-user)
-      (org-rss-add-pubdate-property)
-      (write-file filename) (kill-buffer)))
-  (org-publish-org-to
-   'loomcom-rss filename (concat "." org-rss-extension) plist pub-dir))
-
 (defun loomcom--sitemap-entry (entry project)
   "Sitemap (Blog Main Page) Entry Formatter.
 
@@ -147,7 +103,6 @@ PROJECT  The project structure."
     (format (string-join
              '("* [[file:%s][%s]]\n"
                "  :PROPERTIES:\n"
-               "  :RSS_PERMALINK: %s\n"
                "  :PUBDATE: %s\n"
                "  :END:\n"
                "#+BEGIN_published\n"
@@ -156,7 +111,6 @@ PROJECT  The project structure."
                "%s"))
             entry
             (org-publish-find-title entry project)
-            (concat (file-name-sans-extension entry) ".html")
             (format-time-string (cdr org-time-stamp-formats) (org-publish-find-date entry project))
             (format-time-string "%A, %B %_d %Y at %l:%M %p %Z" (org-publish-find-date entry project))
             (let* ((preview (loomcom--get-preview entry))
@@ -275,7 +229,7 @@ SITEMAP-FILENAME  The filename to use as the default index."
 
 (setq org-publish-project-alist
       `(("loomcom"
-         :components ("blog" "rss" "pages" "res" "images"))
+         :components ("blog" "pages" "res" "images"))
 
         ("blog"
          :base-directory ,loomcom-blog-org-dir
@@ -308,23 +262,6 @@ SITEMAP-FILENAME  The filename to use as the default index."
          :sitemap-filename "index.org"
          :sitemap-title "Seth Morabito ∴ A Weblog"
          :sitemap-sort-files anti-chronologically)
-
-        ("rss"
-         :base-directory ,loomcom-blog-org-dir
-         :base-extension "org"
-         :exclude ".*"
-         :include ("index.org")
-         :rss-image-url "https://loomcom.com/images/loomcom_logo_sm.png"
-         :rss-link-home "https://loomcom.com/blog/"
-         :html-link-home "https://loomcom.com/blog/"
-         :html-link-use-abs-url t
-         :author "Seth Morabito"
-         :email "web@loomcom.com"
-         :rss-extension "xml"
-         :publishing-directory ,loomcom-blog-www-dir
-         :publishing-function (org-rss-publish-to-loomcom-rss)
-         :section-numbers nil
-         :table-of-contents nil)
 
         ("pages"
          :base-directory ,loomcom-org-dir
