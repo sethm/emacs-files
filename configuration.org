@@ -824,12 +824,6 @@
                                 (expand-file-name "~/Projects/conv/lib/SoftFloat-2c/softfloat/bits64/386-Mac-CLANG")))))
 
 
-    ;; If running in graphics mode, load sanityinc-tomorrow-night.
-    ;; Otherwise, load wombat.
-    (if (display-graphic-p)
-        (load-theme 'sanityinc-tomorrow-night t)
-      (load-theme 'wombat t))
-
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; Website Configuration
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

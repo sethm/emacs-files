@@ -12,22 +12,25 @@ free to steal ideas.
 
 ## Structure
 
-- The main init file is `~/.emacs.d/init.el`.
-- Files found in `~/.emacs.d/local` are ignore by Git, but added to
-  the load path.
-- Files found in `~/.emacs.d/lisp` are checked into Git, and added to
-  the load path.
-- I keep `org-mode` as a submodule in `~/.emacs.d/lisp/org-mode`,
-  which I try to keep up to date with the current stable release.
+My Emacs configuration is kept in *Literate Configuration* style.
+This means that my configuration is a human-readable document that
+puts comments first, and embeds the actual configuration elisp as code
+snippets.
+
+The main file is called [configuration.org](configuration.org), and
+is in `org-mode` format.
+
+Files found in `~/.emacs.d/local` are ignore by Git, but added to
+the load path.
+
+Files found in `~/.emacs.d/lisp` are checked into Git, and added to
+the load path.
 
 ## Getting Started
 
     $ git clone git@github.com:sethm/emacs-files.git ~/.emacs.d
-    $ cd ~/.emacs.d
-    $ git submodule init
-    $ git submodule update
-    $ cd ~/.emacs.d/lisp/org-mode
-    $ make
+
+And that's it. That's all there should be to it.
 
 ## License
 
