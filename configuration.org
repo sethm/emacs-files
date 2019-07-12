@@ -2,6 +2,7 @@
 #+EMAIL:  web@loomcom.com
 #+TITLE:  GNU Emacs Configuration File
 #+DATE:   <2019-07-11 Thu 19:21>
+#+OPTIONS: toc:2
 #+STARTUP: showall
 
 * Basic Setup
@@ -10,6 +11,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (setq user-mail-address "web@loomcom.com")
+     (setq user-full-name "Seth Morabito")
    #+END_SRC
 
 ** Reducing Clutter
@@ -227,6 +229,116 @@
      (setq epa-pinentry-mode 'loopback)
    #+END_SRC
 
+** Window Navigation
+
+   I frequently split my Emacs windows both horizontally and
+   vertically. Navigation between windows with =C-x o= is tedious, so
+   I have mandated the following keys for navigation:
+
+   - =C-<left>= :: Navigate to the window to the left of the current
+                   window.
+   - =C-<right>= :: Navigate to the window to the right of the current
+                    window.
+   - =C-<up>= :: Navigate to the window above the current window.
+   - =C-<down>= :: Navigate to the window below the current window.
+
+   This is harder than it sounds, for a number of reasons.
+
+   First, by default, if you try to navigate to a window that doesn't
+   exist (for example, if you're in the left-most window and try to
+   move left again), Emacs will throw an error and complain. To work
+   around this, I define a function called =quiet-windmove= that will
+   take a direction to move, and swallow errors.
+
+   #+BEGIN_SRC emacs-lisp
+    (defun quiet-windmove (direction)
+      "Catch all errors and silently return nil.
+    ,* DIRECTION is a symbol, 'left, 'right, 'up, or 'down."
+      (condition-case nil
+          (cond ((eq direction 'left)
+                 (windmove-left))
+                ((eq direction 'right)
+                 (windmove-right))
+                ((eq direction 'up)
+                 (windmove-up))
+                ((eq direction 'down)
+                 (windmove-down)))
+        (error nil)))
+   #+END_SRC
+
+   Next, for convenience, I define a bunch of short functions
+   to move in the cardinal directions.
+
+   #+BEGIN_SRC emacs-lisp
+    (defun quiet-windmove-left ()
+      "Navigate to the window immediately to the left the current one."
+      (interactive) (quiet-windmove 'left))
+
+    (defun quiet-windmove-right ()
+      "Navigate to the window immediately to the right the current one."
+      (interactive) (quiet-windmove 'right))
+
+    (defun quiet-windmove-up ()
+      "Navigate to the window immediately above the current one."
+      (interactive) (quiet-windmove 'up))
+
+    (defun quiet-windmove-down ()
+      "Navigate to the window immediately below the current one."
+      (interactive) (quiet-windmove 'down))
+
+   #+END_SRC
+
+   And then, finally, bind the keys to the functions to do the
+   movement.
+
+   Again, there's a problem. MacOS, Linux GTK, Linux terminal, and
+   Windows all may (or may not) provide different keycodes for
+   the arrow keys. Oh boy!
+
+*** MacOS
+
+    #+BEGIN_SRC emacs-lisp
+    (global-set-key (read-kbd-macro "M-[ 5 D") 'quiet-windmove-left)
+    (global-set-key (read-kbd-macro "M-[ 5 C") 'quiet-windmove-right)
+    (global-set-key (read-kbd-macro "M-[ 5 A") 'quiet-windmove-up)
+    (global-set-key (read-kbd-macro "M-[ 5 B") 'quiet-windmove-down)
+    (global-set-key (read-kbd-macro "M-[ D") 'quiet-windmove-left)
+    (global-set-key (read-kbd-macro "M-[ C") 'quiet-windmove-right)
+    (global-set-key (read-kbd-macro "M-[ A") 'quiet-windmove-up)
+    (global-set-key (read-kbd-macro "M-[ B") 'quiet-windmove-down)
+    #+END_SRC
+
+*** Linux Terminal
+
+    #+BEGIN_SRC emacs-lisp
+    (global-set-key (read-kbd-macro "M-[ 1 ; 5 D") 'quiet-windmove-left)
+    (global-set-key (read-kbd-macro "M-[ 1 ; 5 C") 'quiet-windmove-right)
+    (global-set-key (read-kbd-macro "M-[ 1 ; 5 A") 'quiet-windmove-up)
+    (global-set-key (read-kbd-macro "M-[ 1 ; 5 B") 'quiet-windmove-down)
+
+    #+END_SRC
+
+*** Linux GTK
+
+    #+BEGIN_SRC emacs-lisp
+    ;; Linux GTK as the client
+    (global-set-key (kbd "C-<left>")  'quiet-windmove-left)
+    (global-set-key (kbd "C-<right>") 'quiet-windmove-right)
+    (global-set-key (kbd "C-<up>")    'quiet-windmove-up)
+    (global-set-key (kbd "C-<down>")  'quiet-windmove-down)
+
+    #+END_SRC
+
+** Other Key Bindings
+
+*** Shortcut for "Goto Line"
+
+    #+BEGIN_SRC emacs-lisp
+    ;; Other global keys
+    (global-set-key "\C-xl" 'goto-line)
+
+    #+END_SRC
+
 ** Miscellaneous Settings
 
    Turn off the infernal bell, both visual and audible.
@@ -307,6 +419,62 @@
     (set-face-attribute 'org-block nil
                         :background "#000001"
                         :foreground "#ffffff")
+   #+END_SRC
+
+** Changing Font Size on the Fly
+
+   By default, you can increase or decrease the font face size in a
+   single window with =C-x C-+= or =C-x C--=, respectively.  This is
+   fine, but it applies to the /current window only/. I like to map
+   =C-+= and =C--= to functions that will change the height of the
+   default face in ALL windows.
+
+   First, I create a base function to do the change by a certain
+   amount in a certain direction.
+
+   #+BEGIN_SRC emacs-lisp
+    (defun change-face-size (dir-func &optional delta)
+      "Increase or decrease font size in all frames and windows.
+
+    ,* DIR-FUNC is a direction function (embiggen-default-face) or
+      (ensmallen-default-face)
+    ,* DELTA is an amount to increase.  By default, the value is 10."
+      (progn
+        (set-face-attribute
+         'default nil :height
+         (funcall dir-func (face-attribute 'default :height) delta))))
+
+   #+END_SRC
+
+   Then, I create two little helper functions to bump the size up or
+   down.
+
+   #+BEGIN_SRC emacs-lisp
+     (defun embiggen-default-face (&optional delta)
+       "Increase the default font.
+
+     ,* DELTA is the amount (in point units) to increase the font size.
+       If not specified, the dfault is 10."
+       (interactive)
+       (let ((incr (or delta 10)))
+         (change-face-size '+ incr)))
+
+     (defun ensmallen-default-face (&optional delta)
+       "Decrease the default font.
+
+     ,* DELTA is the amount (in point units) to decrease the font size.
+       If not specified, the default is 10."
+       (interactive)
+       (let ((incr (or delta 10)))
+         (change-face-size '- incr)))
+   #+END_SRC
+
+   And, finally, bind those functions to the right keys.
+
+   #+BEGIN_SRC emacs-lisp
+    ;; Make fonts bigger and smaller
+    (global-set-key (kbd "C-+")  'embiggen-default-face)
+    (global-set-key (kbd "C--")  'ensmallen-default-face)
    #+END_SRC
 
 ** Shell Colors
@@ -392,8 +560,6 @@
 
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.emacs.d/lisp")
-     ;; (add-to-list 'load-path "~/.emacs.d/lisp/org-mode/lisp/")
-     ;; (add-to-list 'load-path "~/.emacs.d/lisp/org-mode/contrib/lisp/")
      (add-to-list 'load-path "~/.emacs.d/local")
    #+END_SRC
 
@@ -414,7 +580,8 @@
      (package-initialize)
    #+END_SRC
 
-** Bootstrapping Packages
+   And, finally, if the =use-package= package is not installed,
+   install it immediately.
 
    #+BEGIN_SRC emacs-lisp
      (unless (package-installed-p 'use-package)
@@ -425,8 +592,9 @@
 
 ** Slime
 
-   I don't load Slime as a package. Instead, I prefer to load it from
-   Quicklisp, if and only if Quicklisp is installed.
+   Our first package is a little bit of an exception. I don't load
+   Slime as a package. Instead, I prefer to load it from Quicklisp, if
+   and only if Quicklisp is installed.
 
    #+BEGIN_SRC emacs-lisp
      (when (file-exists-p (expand-file-name "~/quicklisp/slime-helper.el"))
@@ -436,337 +604,336 @@
 
 ** Email
 
-   I read email in emacs using =mu4e=, which is installed locally.
-   Since this configuration is shared between computers, and not all
-   of my computers have =mu4e= installed, this configuration will only
-   be applied if =mu4e= is successfully loaded.
+   The second package is also a bit of an exception. I read email in
+   emacs using =mu4e=, which is installed locally. Since this
+   configuration is shared between computers, and not all of my
+   computers have =mu4e= installed, this configuration will only be
+   applied if =mu4e= is successfully loaded.
 
    Note, too, that I load mail configuration from the file
+
+
    =~/.emacs.d/local/mail-and-news.el=.  This is specifically so that
    I don't have to check my sensitive account information into a
    public source code repository.
 
    #+BEGIN_SRC emacs-lisp
-     (when (and (require 'mu4e nil 'noerror)
-                (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el")))
-       (load "mail-and-news.el")
-       ;; Turn on visual-line-mode in mu4e!
-       (add-hook 'mu4e-view-mode-hook 'visual-line-mode))
+          (when (and (require 'mu4e nil 'noerror)
+                     (file-exists-p
+                      (expand-file-name
+                       "~/.emacs.d/local/mail-and-news.el")))
+            (load "mail-and-news.el")
+            ;; Turn on visual-line-mode in mu4e!
+            (add-hook 'mu4e-view-mode-hook 'visual-line-mode))
    #+END_SRC
 
 ** Org Mode
 
-*** Configuration
+   Next is =org-mode=, which I use constantly, day in and day out.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package org
+       :ensure org-plus-contrib
+       :config
+       (require 'cl)
+       (require 'org-drill)
+       (require 'ox-rss)
+       (setq org-agenda-tags-column -100)
+       (setq org-deadline-warning-days 14)
+       (setq org-table-shrunk-column-indicator ""))
+   #+END_SRC
+
+   I have a lot of custom configuration for =org-mode=.
+
+*** Org-Babel Language Integration
+
+    I want to be able to support C, Emacs Lisp, and GraphViz blocks in org-babel.
 
     #+BEGIN_SRC emacs-lisp
-      (defun my--config-org-mode ()
-        (progn
-          (org-link-set-parameters
-           "youtube"
-           :follow (lambda (id)
+      (org-babel-do-load-languages
+       'org-babel-load-languages '((C . t)
+                                   (emacs-lisp . t)
+                                   (dot . t)))
+    #+END_SRC
+
+*** Adding YouTube Links
+
+    This block adds a link handler for YouTube links in =org-mode=
+    buffers.
+
+    #+BEGIN_SRC emacs-lisp
+      (defvar youtube-iframe-format
+        (concat "<iframe width=\"440\""
+                " height=\"335\""
+                " src=\"https://www.youtube.com/embed/%s\""
+                " frameborder=\"0\""
+                " allowfullscreen>%s</iframe>"))
+
+      (org-link-set-parameters
+       "youtube"
+       :follow (lambda (id)
                  (browse-url
-              (concat "https://www.youtube.com/embed/" id)))
-           :export (lambda (path desc backend)
+                  (concat "https://www.youtube.com/embed/" id)))
+       :export (lambda (path desc backend)
                  (cl-case backend
-               (html (format youtube-iframe-format
-                         path (or desc "")))
-               (latex (format "\href{%s}{%s}"
-                      path (or desc "video"))))))
+                   (html (format youtube-iframe-format
+                                 path (or desc "")))
+                   (latex (format "\href{%s}{%s}"
+                                  path (or desc "video"))))))
+    #+END_SRC
 
-          (setq org-pretty-entities t
+*** HTML Export Tweaks
+
+    I prefer to insert periods after section numbers when exporting
+    =org-mode= files to HTML. This tweak enables that.
+
+    #+BEGIN_SRC emacs-lisp
+      (defun my-html-filter-headline-yesdot (text backend info)
+        "Ensure dots in headlines.
+      ,* TEXT is the text being exported.
+      ,* BACKEND is the backend (e.g. 'html).
+      ,* INFO is ignored."
+        (when (org-export-derived-backend-p backend 'html)
+          (save-match-data
+            (when (let ((case-fold-search t))
+                    (string-match
+                     (rx (group "<span class=\"section-number-" (+ (char digit)) "\">"
+                                (+ (char digit ".")))
+                         (group "</span>"))
+                     text))
+              (replace-match "\\1.\\2"
+                             t nil text)))))
+
+      (eval-after-load 'ox
+        '(progn
+           (add-to-list 'org-export-filter-headline-functions
+                        'my-html-filter-headline-yesdot)))
+    #+END_SRC
+
+*** Display Options
+
+    I turn on Pretty Entities, which allows Emacs, in graphics mode,
+    to render unicode symbols, math symbols, and so on. I also set
+    a custom ellipsis character that will be shown when sections or
+    blocks are collapsed.
+
+    #+BEGIN_SRC emacs-lisp
+      (setq org-pretty-entities t
             org-ellipsis "▼")
+    #+END_SRC
 
-          (add-hook 'org-mode-hook
+*** Org Agenda Setup
+
+    I make frequent use of =org-agenda= to track my time.
+
+    I add a quick and easy way to get into =org-agenda= from any
+    =org-mode= buffer by pressing =C-c a=.
+
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'org-mode-hook
                 (lambda ()
-              (local-set-key
-               (kbd "C-c a") 'org-agenda)))
+                  (local-set-key
+                   (kbd "C-c a") 'org-agenda)))
+    #+END_SRC
 
-          (setq org-agenda-custom-commands
+    Next, I add a custom =org-agenda= command to show the next three
+    weeks.
+
+    #+BEGIN_SRC emacs-lisp
+      (setq org-agenda-custom-commands
             '(("N" "Next Three Weeks" agenda ""
                ((org-agenda-span 21)
                 (org-agenda-start-on-weekday 0)))))
+    #+END_SRC
 
-          (add-to-list 'org-latex-classes
-                       '("koma-article"
-                         "\\documentclass{scrartcl}"
-                         ("\\section{%s}" . "\\section*{%s}")
-                         ("\\subsection{%s}" . "\\subsection*{%s}")
-                         ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                         ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                         ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    Then, I define some faces and use them for deadlines
+    in =org-agenda=.
 
-          (defface deadline-soon-face
-            '((t (:foreground "#ff0000"
-                              :weight bold
-                              :slant italic
-                              :underline t))) t)
-          (defface deadline-near-face
-            '((t (:foreground "#ffa500"
-                              :weight bold
-                              :slant italic))) t)
-          (defface deadline-distant-face
-            '((t (:foreground "#ffff00"
-                              :weight bold
-                              :slant italic))) t)
+    #+BEGIN_SRC emacs-lisp
+      (defface deadline-soon-face
+        '((t (:foreground "#ff0000"
+                          :weight bold
+                          :slant italic
+                          :underline t))) t)
+      (defface deadline-near-face
+        '((t (:foreground "#ffa500"
+                          :weight bold
+                          :slant italic))) t)
+      (defface deadline-distant-face
+        '((t (:foreground "#ffff00"
+                          :weight bold
+                          :slant italic))) t)
 
-          (setq org-agenda-deadline-faces
+      (setq org-agenda-deadline-faces
             '((0.75 . deadline-soon-face)
               (0.5  . deadline-near-face)
               (0.25 . deadline-distant-face)
               (0.0  . deadline-distant-face)))
-
-          (setq org-todo-keywords
-            '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d@)" "CANCELED(c@)")))))
     #+END_SRC
 
-*** Loading
+    And finally, I set my =org-todo-keywords= so that I can manage my
+    TODO states the way I like to.
+
+    The syntax =@= following a definition indicates that a state needs
+    a note with a timestamp, while a =!= indicates that it needs only
+    a timestamp.
+
+    The =(a/b)= syntax indicates that action =a= should happen on
+    entry, and =b= should happen on exit. For example, =WAIT(w@/!)=
+    means that the workflow state =WAIT= can be accessed by the short
+    form =w=, and that a timestamp with a note should be recorded on
+    entry, but only a timestamp should be recorded on exit.
+
+    The vertical separator =|= separates keywords that need further
+    actions from those that are end states.
 
     #+BEGIN_SRC emacs-lisp
-      (use-package org
-        :ensure org-plus-contrib
-        :config
-        (require 'cl)
-        (require 'org-drill)
-        (require 'ox-rss)
-        (my--config-org-mode))
+      (setq org-todo-keywords
+            '((sequence
+               "TODO(t)"
+               "NEXT(n)"
+               "WAIT(w@/!)"
+               "|"
+               "DONE(d@)"
+               "CANCELED(c@)")))
     #+END_SRC
 
-* Untweaked
+    And here, as a last step, I can load any additional optional
+    =org-agenda= setup I want. This is largely because I use this
+    configuration for both my home and my work computers, and my
+    home and work workflows are different.
 
-  Break this up after migrating over.
+    #+BEGIN_SRC emacs-lisp
+      (when (file-exists-p
+             (expand-file-name
+              "~/.emacs.d/local/org-agenda-setup.el"))
+        (load "org-agenda-setup.el"))
+    #+END_SRC
 
-  #+BEGIN_SRC emacs-lisp
-    ;; Enable mu4e alerts
-    (use-package mu4e-alert
-      :defer t
-      :after mu4e
-      :config
-      (setq mu4e-alert-interesting-mail-query
-            "flag:unread AND NOT flag:trashed AND NOT maildir/Spam")
-      (mu4e-alert-enable-mode-line-display))
+*** Export Settings
 
-    ;; Trying out multi-term
-    (use-package multi-term
-      :ensure t)
+    This adds support the \LaTeX{} class =koma-article= on \LaTeX{}
+    export.
 
-    ;; Replace scrollbars with a modeline scroller
-    (use-package sml-modeline
-      :ensure t
-      :init
-      (sml-modeline-mode))
+    #+BEGIN_SRC emacs-lisp
+      (add-to-list 'org-latex-classes
+                   '("koma-article"
+                     "\\documentclass{scrartcl}"
+                     ("\\section{%s}" . "\\section*{%s}")
+                     ("\\subsection{%s}" . "\\subsection*{%s}")
+                     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                     ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    #+END_SRC
 
-    ;; Use tabbar mode
-    (use-package tabbar
-      :config (tabbar-mode t)
-      :ensure t)
+** Email Alerts
 
-    ;; I need nice org bullets.
-    (use-package org-bullets
-      :ensure t
-      :commands (org-bullets-mode)
-      :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+   #+BEGIN_SRC emacs-lisp
+     ;; Enable mu4e alerts
+     (use-package mu4e-alert
+       :defer t
+       :after mu4e
+       :config
+       (setq mu4e-alert-interesting-mail-query
+             "flag:unread AND NOT flag:trashed AND NOT maildir/Spam")
+       (mu4e-alert-enable-mode-line-display))
+   #+END_SRC
 
-    ;; Org agenda setup varies by machine
-    (when (file-exists-p (expand-file-name "~/.emacs.d/local/org-agenda-setup.el"))
-      (load "org-agenda-setup.el"))
+** Scrollbar Replacement
 
-    (use-package auth-source
-      :ensure t
-      :config
-      (setq auth-sources '("~/.authinfo.gpg")))
+   #+BEGIN_SRC emacs-lisp
+     (use-package sml-modeline
+       :ensure t
+       :init
+       (sml-modeline-mode))
+   #+END_SRC
 
-    ;; I use excorporate to sync my work Exchange calendar with emacs
+** Org Bullets
 
-    (use-package excorporate
-      :load-path "lisp/excorporate"
-      :ensure t
-      :after org
-      :config
-      (when
-          (file-exists-p
-           (expand-file-name
-            "~/.emacs.d/local/excorporate-setup.el"))
-        (load "excorporate-setup.el")))
+   #+BEGIN_SRC emacs-lisp
+     (use-package org-bullets
+       :ensure t
+       :commands (org-bullets-mode)
+       :init
+       (add-hook
+        'org-mode-hook
+        (lambda () (org-bullets-mode 1))))
+   #+END_SRC
 
-    ;; Ledger Mode
-    (use-package ledger-mode
-      :ensure t)
+** Tab Bar
 
-    ;; Graphviz
-    (use-package graphviz-dot-mode
-      :ensure t)
+   #+BEGIN_SRC emacs-lisp
+     (use-package tabbar
+       :config (tabbar-mode t)
+       :ensure t)
+   #+END_SRC
 
-    ;; Treemacs
-    (use-package treemacs
-      :ensure t
-      :defer t
-      :config
-      (setq treemacs-width 30))
+** Support for Encrypted Authinfo
 
-    ;; magit
-    (use-package magit
-      :ensure t)
+   #+BEGIN_SRC emacs-lisp
+     (use-package auth-source
+       :ensure t
+       :config
+       (setq auth-sources '("~/.authinfo.gpg")))
+   #+END_SRC
 
-    ;; web-mode
-    (use-package web-mode
-      :ensure t
-      :defer t)
+** Microsoft Exchange Integration
 
-    ;; PHP
-    (use-package php-mode
-      :ensure t
-      :defer t)
+   At work (but not at home), I connect to an Exchange server
+   and integrate my meetings with Emacs. Once again, a local
+   configuration allows me to have sensitive information like
+   Exchange URLs separate from my main Emacs config.
 
-    ;; Haskell
-    (use-package haskell-mode
-      :ensure t
-      :defer t)
+   #+BEGIN_SRC emacs-lisp
+     (use-package excorporate
+       :load-path "lisp/excorporate"
+       :ensure t
+       :after org
+       :config
+       (when
+           (file-exists-p
+            (expand-file-name
+             "~/.emacs.d/local/excorporate-setup.el"))
+         (load "excorporate-setup.el")))
+   #+END_SRC
 
-    ;; Helm mode
-    (use-package helm
-      :ensure t
-      :bind (("C-x C-f" . helm-find-files)
-             ("C-x f" . helm-recentf)
-             ("C-x b" . helm-buffers-list)
-             ("M-x" . helm-M-x))
-      :config
-      (setq helm-candidate-number-limit 50
-            helm-fuzzy-matching t
-            helm-split-window-inside-p t
-            helm-move-to-line-cycle-in-source t
-            helm-scroll-amount 8
-            helm-echo-input-in-header-line t
-            helm-autoresize-max-height 0
-            helm-autoresize-min-height 20)
-      (helm-mode 1))
+** Ledger Mode
 
-    ;; Cargo mode
-    (use-package cargo
-      :ensure t
-      :config
-      (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
-      (setq exec-path (append exec-path '("~/.cargo/bin"))))
+   #+BEGIN_SRC emacs-lisp
+     (use-package ledger-mode
+       :ensure t)
+   #+END_SRC
 
-    ;; Rust mode
+** GraphViz (dot) Mode
 
-    (setq exec-path (append exec-path '("~/.cargo/bin")))
+   #+BEGIN_SRC emacs-lisp
+     (use-package graphviz-dot-mode
+       :ensure t)
+   #+END_SRC
 
-    (use-package rust-mode
-      :ensure t
-      :defer t
-      :bind (("C-c TAB" . rust-format-buffer))
-      ;; Note that the hooks are set up here in an 'init:' block
-      ;; intentionally! There is a dependency load order problem
-      ;; that prevents these from being 'hook:' calls.
-      :init
-      (add-hook 'rust-mode-hook #'flycheck-mode)
-      :hook
-      (prog-mode . electric-pair-mode)
-      :config
-      (use-package racer
-        :ensure t
-        :defer t)
-      (use-package flycheck
-        :ensure t))
+** Git Integration
 
-    (use-package flycheck
-      :ensure t
-      :hook (prog-mode . flycheck-mode))
+   #+BEGIN_SRC emacs-lisp
+     (use-package magit
+       :ensure t)
+   #+END_SRC
 
-    (use-package company
-      :ensure t
-      :hook (prog-mode . company-mode)
-      :config
-      (setq company-idle-delay 1)
-      (setq company-tooltip-align-annotations t)
-      (setq company-minimum-prefix-length 1))
+   #+BEGIN_SRC emacs-lisp
+     (use-package git-gutter
+       :ensure t
+       :init
+       (global-git-gutter-mode +1))
+   #+END_SRC
 
-    (use-package lsp-mode
-      :ensure t
-      :config (require 'lsp-clients))
+** Snippets
 
-    (use-package lsp-ui
-      :ensure t)
+   Snippets build in support for typing a few keys, pressing tab, and
+   getting a complete template inserted into your buffer. I use these
+   heavily. In addition to the built-in snippets that come from the
+   =yasnippet-snippets= package, I have some custom snippets defined
+   in the =snippets= directory.
 
-    (use-package toml-mode
-      :ensure t)
-
-    (use-package rust-mode
-      :ensure t
-      :hook (rust-mode . lsp)
-      :config
-      (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common))
-
-    (use-package cargo
-      :ensure t
-      :hook (rust-mode . cargo-minor-mode))
-
-    (use-package flycheck-rust
-      :ensure t
-      :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-
-    ;; CEDET
-    (use-package cedet
-      :ensure t
-      :init
-      (semantic-mode 1)
-      (global-semantic-decoration-mode 1)
-      (global-semantic-stickyfunc-mode 1)
-      (global-semantic-idle-summary-mode 1)
-      (global-semantic-idle-local-symbol-highlight-mode 1)
-      (global-semantic-highlight-func-mode 1)
-      :bind (:map semantic-mode-map
-                  ("C-c , >" . semantic-ia-fast-jump)))
-
-    ;; git gutter
-    (use-package git-gutter
-      :ensure t
-      :init
-      (global-git-gutter-mode +1))
-
-    ;; Typescript mode
-    (use-package typescript-mode
-      :ensure t)
-
-    ;; Paredit mode
-    (use-package paredit
-      :ensure t
-      :defer t
-      :init
-      (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
-      (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
-      (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-      (add-hook 'ielm-mode-hook #'enable-paredit-mode)
-      (add-hook 'lisp-mode-hook #'enable-paredit-mode)
-      (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-      (add-hook 'scheme-mode-hook #'enable-paredit-mode)
-      :config
-      ;; Paredit key bindings
-      ;; --------------------
-      ;; Paredit messes with my navigation, so I redefine several
-      ;; paredit mode keys. Essentially, this changes C-<left>
-      ;; and C-<right> into S-C-<left> and S-C-<right>, on multiple
-      ;; platforms.
-      (define-key paredit-mode-map (kbd "C-<left>") nil)
-      (define-key paredit-mode-map (kbd "C-<right>") nil)
-      (define-key paredit-mode-map (kbd "C-S-<left>")
-        'paredit-forward-barf-sexp)
-      (define-key paredit-mode-map (kbd "C-S-<right>")
-        'paredit-forward-slurp-sexp)
-      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 D")
-        'paredit-forward-barf-sexp)
-      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 C")
-        'paredit-forward-slurp-sexp)
-      (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 d")
-        'paredit-forward-barf-sexp)
-      (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 c")
-        'paredit-forward-slurp-sexp)
-      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 D")
-        'paredit-forward-barf-sexp)
-      (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C")
-        'paredit-forward-slurp-sexp))
-
-    ;; yasnipets
+   #+BEGIN_SRC emacs-lisp
     (use-package yasnippet
       :ensure t
       :diminish yas-minor-mode
@@ -779,173 +946,240 @@
       :defer t
       :after yasnippet
       :config (yasnippet-snippets-initialize))
+   #+END_SRC
 
-    ;; htmlize
-    (use-package htmlize
-      :ensure t)
+** Development Support
 
-    ;; mu4e - local, may or may not be installed
-    (when (and (require 'mu4e nil 'noerror)
-               (file-exists-p (expand-file-name "~/.emacs.d/local/mail-and-news.el")))
-      (load "mail-and-news.el"))
+   I really like paredit, especially for Lisp, but I don't like the
+   default key bindings, so I tweak them heavily. Primarily, the
+   problem is that I use =C-<left>= and =C-<right>= to navigate
+   between windows in Emacs, so I don't want to use them for
+   Paredit. Instead, I remap these to =C-S-<left>= and =C-S-<right>=,
+   respectively. One issue is that =<left>= and =<right>= may differ
+   depending on the platform I'm on, so there are several alternate
+   definitions here to make sure it works on all platforms.  What a
+   pain.
 
-    ;; I prefer to insert periods after section numbers
-    ;; when exporting org-mode to HTML
-    (defun my-html-filter-headline-yesdot (text backend info)
-      "Ensure dots in headlines.
-    ,* TEXT is the text being exported.
-    ,* BACKEND is the backend (e.g. 'html).
-    ,* INFO is ignored."
-      (when (org-export-derived-backend-p backend 'html)
-        (save-match-data
-          (when (let ((case-fold-search t))
-                  (string-match
-                   (rx (group "<span class=\"section-number-" (+ (char digit)) "\">"
-                              (+ (char digit ".")))
-                       (group "</span>"))
-                   text))
-            (replace-match "\\1.\\2"
-                           t nil text)))))
+   #+BEGIN_SRC emacs-lisp
+     (use-package paredit
+       :ensure t
+       :defer t
+       :init
+       (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
+       (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+       (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+       (add-hook 'ielm-mode-hook #'enable-paredit-mode)
+       (add-hook 'lisp-mode-hook #'enable-paredit-mode)
+       (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+       (add-hook 'scheme-mode-hook #'enable-paredit-mode)
+       :config
+       (define-key paredit-mode-map (kbd "C-<left>") nil)
+       (define-key paredit-mode-map (kbd "C-<right>") nil)
+       (define-key paredit-mode-map (kbd "C-S-<left>")
+         'paredit-forward-barf-sexp)
+       (define-key paredit-mode-map (kbd "C-S-<right>")
+         'paredit-forward-slurp-sexp)
+       (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 D")
+         'paredit-forward-barf-sexp)
+       (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 C")
+         'paredit-forward-slurp-sexp)
+       (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 d")
+         'paredit-forward-barf-sexp)
+       (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 c")
+         'paredit-forward-slurp-sexp)
+       (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 D")
+         'paredit-forward-barf-sexp)
+       (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C")
+         'paredit-forward-slurp-sexp))
 
-    (eval-after-load 'ox
-      '(progn
-         (add-to-list 'org-export-filter-headline-functions
-                      'my-html-filter-headline-yesdot)))
+   #+END_SRC
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; Additional Configuration
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   Flycheck enables syntax checking for many different languages.
 
-    (add-hook 'c-mode-hook
-              (lambda () (setq flycheck-clang-include-path
-                               (list
-                                (expand-file-name "~/Projects/simh/")
-                                (expand-file-name "~/Projects/simh/3B2/")
-                                (expand-file-name "~/Projects/conv/lib/SoftFloat-2c/softfloat/bits64/386-Mac-CLANG")))))
+   #+BEGIN_SRC emacs-lisp
+     (use-package flycheck
+       :ensure t
+       :hook (prog-mode . flycheck-mode))
+   #+END_SRC
 
+   Company enables autocompletion.
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; Website Configuration
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   #+BEGIN_SRC emacs-lisp
+     (use-package company
+       :ensure t
+       :hook (prog-mode . company-mode)
+       :config
+       (setq company-idle-delay 1)
+       (setq company-tooltip-align-annotations t)
+       (setq company-minimum-prefix-length 1))
+   #+END_SRC
 
-    ;;
-    ;; Inspired 100% by https://ogbe.net/blog/blogging_with_org.html
-    ;;
+   CEDET provides a lot of nice support for C and C++ development.
 
-    (defvar youtube-iframe-format
-      (concat "<iframe width=\"440\""
-              " height=\"335\""
-              " src=\"https://www.youtube.com/embed/%s\""
-              " frameborder=\"0\""
-              " allowfullscreen>%s</iframe>"))
+   #+BEGIN_SRC emacs-lisp
+     (use-package cedet
+       :ensure t
+       :init
+       (semantic-mode 1)
+       (global-semantic-decoration-mode 1)
+       (global-semantic-stickyfunc-mode 1)
+       (global-semantic-idle-summary-mode 1)
+       (global-semantic-idle-local-symbol-highlight-mode 1)
+       (global-semantic-highlight-func-mode 1)
+       :bind (:map semantic-mode-map
+                   ("C-c , >" . semantic-ia-fast-jump)))
+   #+END_SRC
 
-    (load "loomcom.el")
+   I have a few custom directories that I always want Flycheck to
+   search, so I set those here.
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; MISC
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   #+BEGIN_SRC emacs-lisp
+     (setq flycheck-clang-include-path
+           (list
+            (expand-file-name "~/Projects/simh/")
+            (expand-file-name "~/Projects/simh/3B2/")))
+   #+END_SRC
 
-    ;; Fixup inline images
-    (defun loomcom/fix-inline-images ()
-      "Redisplay inline images."
-      (when org-inline-image-overlays
-        (org-redisplay-inline-images)))
+   And finally, LSP adds advanced features for languages and tools
+   that have Language Server Protocol support.
 
-    (add-hook 'org-babel-after-execute-hook 'loomcom/fix-inline-images)
+   #+BEGIN_SRC emacs-lisp
+     (use-package lsp-mode
+       :ensure t
+       :config (require 'lsp-clients))
 
-    (org-babel-do-load-languages
-     'org-babel-load-languages '((C . t)
-                                 (emacs-lisp . t)
-                                 (dot . t)))
+     (use-package lsp-ui
+       :ensure t)
+   #+END_SRC
 
+** Web Development
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; Global Key Bindings
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   Web Mode offers a very nice integrated experience for editing HTML,
+   JavaScript, and CSS.
 
-    ;; I like to navigate windows with C-<arrow-key>. These global
-    ;; bindings do that for me.
+   #+BEGIN_SRC emacs-lisp
+     (use-package web-mode
+       :ensure t
+       :defer t)
+   #+END_SRC
 
-    ;; `quit-windmove' exists so that I can accidentally try to move
-    ;; somewhere that doesn't exist without Emacs freaking out.
+   I almost never use PHP, but it's nice to have when you really,
+   really need it.
 
-    (defun quiet-windmove-left ()
-      "Navigate to the window immediately to the left the current one."
-      (interactive) (quiet-windmove 'left))
+   #+BEGIN_SRC emacs-lisp
+     (use-package php-mode
+       :ensure t
+       :defer t)
+   #+END_SRC
 
-    (defun quiet-windmove-right ()
-      "Navigate to the window immediately to the right the current one."
-      (interactive) (quiet-windmove 'right))
+   #+BEGIN_SRC emacs-lisp
+     (use-package typescript-mode
+       :ensure t)
+   #+END_SRC
 
-    (defun quiet-windmove-up ()
-      "Navigate to the window immediately above the current one."
-      (interactive) (quiet-windmove 'up))
+   #+BEGIN_SRC emacs-lisp
+     (use-package htmlize
+       :ensure t)
+   #+END_SRC
 
-    (defun quiet-windmove-down ()
-      "Navigate to the window immediately below the current one."
-      (interactive) (quiet-windmove 'down))
+** Haskell
 
-    (defun quiet-windmove (direction)
-      "Catch all errors and silently return nil.
-    ,* DIRECTION is a symbol, 'left, 'right, 'up, or 'down."
-      (condition-case nil
-          (cond ((eq direction 'left)
-                 (windmove-left))
-                ((eq direction 'right)
-                 (windmove-right))
-                ((eq direction 'up)
-                 (windmove-up))
-                ((eq direction 'down)
-                 (windmove-down)))
-        (error nil)))
+   #+BEGIN_SRC emacs-lisp
+     (use-package haskell-mode
+       :ensure t
+       :defer t)
+   #+END_SRC
 
-    ;; 2. Configure window movement keys.
+** Rust
 
-    ;; OS X as the client
-    (global-set-key (read-kbd-macro "M-[ 5 D") 'quiet-windmove-left)
-    (global-set-key (read-kbd-macro "M-[ 5 C") 'quiet-windmove-right)
-    (global-set-key (read-kbd-macro "M-[ 5 A") 'quiet-windmove-up)
-    (global-set-key (read-kbd-macro "M-[ 5 B") 'quiet-windmove-down)
-    (global-set-key (read-kbd-macro "M-[ D") 'quiet-windmove-left)
-    (global-set-key (read-kbd-macro "M-[ C") 'quiet-windmove-right)
-    (global-set-key (read-kbd-macro "M-[ A") 'quiet-windmove-up)
-    (global-set-key (read-kbd-macro "M-[ B") 'quiet-windmove-down)
+   Rust's Cargo configuration files use TOML.
 
-    ;; Linux as the client
-    (global-set-key (read-kbd-macro "M-[ 1 ; 5 D") 'quiet-windmove-left)
-    (global-set-key (read-kbd-macro "M-[ 1 ; 5 C") 'quiet-windmove-right)
-    (global-set-key (read-kbd-macro "M-[ 1 ; 5 A") 'quiet-windmove-up)
-    (global-set-key (read-kbd-macro "M-[ 1 ; 5 B") 'quiet-windmove-down)
+   #+BEGIN_SRC emacs-lisp
+     (use-package toml-mode
+       :ensure t)
+   #+END_SRC
 
-    ;; Linux GTK as the client
-    (global-set-key (kbd "C-<left>")  'quiet-windmove-left)
-    (global-set-key (kbd "C-<right>") 'quiet-windmove-right)
-    (global-set-key (kbd "C-<up>")    'quiet-windmove-up)
-    (global-set-key (kbd "C-<down>")  'quiet-windmove-down)
+   Next, configure Rust Mode.
 
-    ;; Other global keys
-    (global-set-key "\C-xl" 'goto-line)
+   #+BEGIN_SRC emacs-lisp
+     (use-package rust-mode
+       :ensure t
+       :defer t
+       :bind (("C-c TAB" . rust-format-buffer))
+       ;; Note that the hooks are set up here in an 'init:' block
+       ;; intentionally! There is a dependency load order problem
+       ;; that prevents these from being 'hook:' calls.
+       :init
+       (add-hook 'rust-mode-hook #'flycheck-mode)
+       :hook
+       (prog-mode . electric-pair-mode)
+       (rust-mode . lsp)
+       :config
+       (define-key rust-mode-map (kbd "TAB")
+         #'company-indent-or-complete-common)
+       (use-package racer
+         :ensure t
+         :defer t)
+       (use-package flycheck
+         :ensure t))
+   #+END_SRC
 
-    ;; Make fonts bigger and smaller
-    (global-set-key (kbd "C-+")  'embiggen-default-face)
-    (global-set-key (kbd "C--")  'ensmallen-default-face)
+   #+BEGIN_SRC emacs-lisp
+     (use-package cargo
+       :ensure t
+       :hook (rust-mode . cargo-minor-mode)
+       :after rust-mode
+       :config
+       (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
+       (setq exec-path (append exec-path '("~/.cargo/bin"))))
+   #+END_SRC
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; Functions
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   #+BEGIN_SRC emacs-lisp
+     (use-package flycheck-rust
+       :ensure t
+       :after rust
+       :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+   #+END_SRC
 
-    ;;
-    ;; Rsync my ~/Projects/loomcom/www/ directory to my website.
-    ;;
-    (defun loomcom-rsync-www ()
-      "Rsync my working directory to my public web directory."
-      (interactive)
-      (let ((publish-dir (expand-file-name "~/Projects/loomcom/www/"))
-            (remote-dir "loomcom.com:/var/www/loomcom/"))
-        (when (file-exists-p publish-dir)
-          (shell-command
-           (format "rsync -avz --delete --delete-after %s %s" publish-dir remote-dir)))))
+** Emacs Helm
 
+   #+BEGIN_SRC emacs-lisp
+     (use-package helm
+       :ensure t
+       :bind (("C-x C-f" . helm-find-files)
+              ("C-x f" . helm-recentf)
+              ("C-x b" . helm-buffers-list)
+              ("M-x" . helm-M-x))
+       :config
+       (setq helm-candidate-number-limit 50
+             helm-fuzzy-matching t
+             helm-split-window-inside-p t
+             helm-move-to-line-cycle-in-source t
+             helm-scroll-amount 8
+             helm-echo-input-in-header-line t
+             helm-autoresize-max-height 0
+             helm-autoresize-min-height 20
+             helm-ff-file-name-history-use-recentf t)
+       (helm-mode 1))
+   #+END_SRC
+
+* Loom Communications Homepage
+
+  I keep my homepage entirely in =org-mode=. Configuration is stored
+  mostly in the separate file =loomcom.el=. There is a little bit of
+  extra stuff here, however.
+
+  First, I have a few helper functions for publishing.
+
+** Publish the site locally
+
+   =org-publish= has one fatal flaw: It opens a /lot/ of buffers, and
+   if =global-git-gutter-mode= or =magit-file-mode= are enabled (as
+   they usually are), Emacs grinds to a halt. So, in order to publish
+   efficiently, those modes /must/ be turned off. We can turn them
+   back on after publishing is complete.
+
+   #+BEGIN_SRC emacs-lisp
     (defun loomcom-publish-local ()
       "Publish my website, but do not push to the server."
       (interactive)
@@ -956,142 +1190,51 @@
       (global-git-gutter-mode +1)
       (magit-file-mode +1)
       (add-hook 'find-file-hooks 'vc-find-file-hook))
+   #+END_SRC
 
-    ;;
-    ;; I publish my entire site with emacs and org-mode. org-publish is
-    ;; horribily slow unless you disable a few modes, so I use this
-    ;; function to accomplish things.
-    ;;
+** Push published files to the server
+
+   Once files have been published to local disk, they need to be
+   rsynced to the server.
+
+   #+BEGIN_SRC emacs-lisp
+    (defun loomcom-rsync-www ()
+      "Rsync my working directory to my public web directory."
+      (interactive)
+      (let ((publish-dir (expand-file-name "~/Projects/loomcom/www/"))
+            (remote-dir "loomcom.com:/var/www/loomcom/"))
+        (when (file-exists-p publish-dir)
+          (shell-command
+           (format "rsync -avz --delete --delete-after %s %s" publish-dir remote-dir)))))
+   #+END_SRC
+
+** Do a complete publishing cycle
+
+   Finally, here's a function that will publish my webpage from start
+   to finish.
+
+   #+BEGIN_SRC emacs-lisp
     (defun loomcom-publish ()
       "Publish my website."
       (interactive)
       (loomcom-publish-local)
       (loomcom-rsync-www))
+   #+END_SRC
 
-    (defun indent-buffer ()
-      "Indent current buffer according to major mode."
-      (interactive)
-      (indent-region (point-min) (point-max)))
+** Miscellaneous Tweaks
 
-    ;;
-    ;; Stupid convenience functions to increase or decrease the default
-    ;; font face height at runtime, without saving it.
-    ;;
-    ;; Note that C-+ and C-- do already change the face size of the
-    ;; _current window only_, not all windows in all frames. That's
-    ;; why I added these
-    ;;
+   #+BEGIN_SRC emacs-lisp
+    (defun loomcom/fix-inline-images ()
+      "Redisplay inline images."
+      (when org-inline-image-overlays
+        (org-redisplay-inline-images)))
 
-    (defun change-face-size (dir-func &optional delta)
-      "Increase or decrease font size in all frames and windows.
+    (add-hook 'org-babel-after-execute-hook
+              'loomcom/fix-inline-images)
+   #+END_SRC
 
-    ,* DIR-FUNC is a direction function (embiggen-default-face) or
-      (ensmallen-default-face)
-    ,* DELTA is an amount to increase.  By default, the value is 10."
-      (progn
-        (set-face-attribute
-         'default nil :height
-         (funcall dir-func (face-attribute 'default :height) delta))))
+** Load the main config
 
-    (defun embiggen-default-face (&optional delta)
-      "Increase the default font.
-
-    ,* DELTA is the amount (in point units) to increase the font size.
-      If not specified, the dfault is 10."
-      (interactive)
-      (let ((incr (or delta 10)))
-        (change-face-size '+ incr)))
-
-    (defun ensmallen-default-face (&optional delta)
-      "Decrease the default font.
-
-    ,* DELTA is the amount (in point units) to decrease the font size.
-      If not specified, the default is 10."
-      (interactive)
-      (let ((incr (or delta 10)))
-        (change-face-size '- incr)))
-
-    ;;
-    ;; Some fun functions
-    ;;
-
-    (defun insert-clisp-project ()
-      "Insert a Common Lisp template into the current buffer."
-      (interactive)
-      (goto-char 0)
-      (let* ((file (file-name-nondirectory (buffer-file-name)))
-             (package (file-name-sans-extension file)))
-        (insert ";;;; " file "\n\n")
-        (insert "(defpackage #:" package "\n  (:use #:cl))\n\n")
-        (insert "(in-package #:" package ")\n\n")))
-
-    (defun insert-html5 ()
-      "Insert an HTML5 template."
-      (interactive)
-      (goto-char 0)
-      (let* ((file (file-name-nondirectory (buffer-file-name)))
-             (title (file-name-sans-extension file)))
-        (insert "<!doctype html>\n")
-        (insert "<html lang=\"en\">\n")
-        (insert "<head>\n")
-        (insert "  <meta charset=\"utf-8\">\n")
-        (insert "  <title>The HTML5 Herald</title>\n")
-        (insert "  <meta name=\"description\" content=\"The HTML5 Herald\">\n")
-        (insert "  <meta name=\"author\" content=\"SitePoint\">\n")
-        (insert "  <link rel=\"stylesheet\" href=\"css/styles.css?v=1.0\">\n")
-        (insert "  <!--[if lt IE 9]>\n")
-        (insert "  <script src=\"http://html5shiv.googlecode.com/svn/trunk/html5.js\"></script>\n")
-        (insert "  <![endif]--> \n")
-        (insert "</head>\n")
-        (insert "<body>\n")
-        (insert "  <script src=\"js/scripts.js\"></script>\n")
-        (insert "</body>\n")
-        (insert "</html>\n")))
-
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; Emacs custom-set-variable and custom-set-faces below.
-    ;; DO NOT HAND EDIT!
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;;
-    ;;
-    (custom-set-variables
-     ;; custom-set-variables was added by Custom.
-     ;; If you edit it by hand, you could mess it up, so be careful.
-     ;; Your init file should contain only one such instance.
-     ;; If there is more than one, they won't work right.
-     '(auth-source-debug t)
-     '(helm-ff-file-name-history-use-recentf t)
-     '(org-agenda-tags-column -100)
-     '(org-deadline-warning-days 14)
-     '(org-ellipsis "…")
-     '(org-table-shrunk-column-indicator "")
-     '(package-selected-packages
-       (quote
-        (confluence tabbar mu4e-alert sml-modeline excorporate emojify mastodon multi-term web-mode php-mode htmlize yasnippet-snippets yasnippet paredit typescript-mode git-gutter flycheck-rust toml-mode lsp-ui lsp-mode company flycheck racer cargo helm haskell-mode magit treemacs graphviz-dot-mode ledger-mode org-bullets use-package)))
-     '(semantic-c-dependency-system-include-path
-       (quote
-        ("/usr/include" "/usr/include/gtk-3.0" "/usr/include/glib-2.0" "/Users/seth/Projects/simh" "/Users/seth/Projects/simh/3B2" "/Users/seth/Projects/conv/lib/SoftFloat-2c/softfloat/bits64/386-Mac-CLANG"))))
-    ;; (custom-set-faces
-    ;;  ;; custom-set-faces was added by Custom.
-    ;;  ;; If you edit it by hand, you could mess it up, so be careful.
-    ;;  ;; Your init file should contain only one such instance.
-    ;;  ;; If there is more than one, they won't work right.
-    ;;  '(deadline-soon-face ((t (:foreground "#ff0000" :underline nil :slant italic :weight bold))))
-    ;;  '(mu4e-header-highlight-face ((t (:inherit region :background "#3C3D37" :foreground "light gray" :underline nil :weight normal))))
-    ;;  '(org-level-1 ((t (:inherit default :foreground "DeepPink3" :weight bold :height 1.25))))
-    ;;  '(org-level-2 ((t (:inherit default :foreground "goldenrod2" :weight normal :height 1.15))))
-    ;;  '(org-level-3 ((t (:inherit default :foreground "chartreuse2" :weight bold :height 1.0))))
-    ;;  '(org-level-4 ((t (:inherit default :foreground "magenta3" :weight normal :height 1.0))))
-    ;;  '(org-scheduled-today ((t (:foreground "#b9ca4a" :weight bold :height 1.0))))
-    ;;  '(org-special-keyword ((t (:foreground "yellow3" :weight bold))))
-    ;;  '(org-todo ((t (:foreground "tan2" :inverse-video t :box (:line-width 1 :color "tan2") :weight bold)))))
-
-    (custom-set-faces
-     ;; custom-set-faces was added by Custom.
-     ;; If you edit it by hand, you could mess it up, so be careful.
-     ;; Your init file should contain only one such instance.
-     ;; If there is more than one, they won't work right.
-     '(org-block-begin-line ((t (:inherit org-meta-line :foreground "gray35"))))
-     '(org-document-title ((t (:foreground "#de935f" :weight bold :height 1.0))))
-     '(org-level-1 ((t (:inherit outline-1 :underline t :weight bold :height 1.6)))))
-  #+END_SRC
+   #+BEGIN_SRC emacs-lisp
+    (load "loomcom.el")
+   #+END_SRC

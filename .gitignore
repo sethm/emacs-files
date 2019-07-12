@@ -1,5 +1,8 @@
 *~
 configuration.el
+configuration.pdf
+configuration.tex
+configuration.html
 .lsp*
 .org*
 .cache
