@@ -395,7 +395,7 @@
        (set-face-attribute 'default nil
                            :family "Input Mono"
                            :weight 'light
-                           :height 140))
+                           :height 120))
    #+END_SRC
 
 ** Window Frame
@@ -420,6 +420,27 @@
                         :background "#000001"
                         :foreground "#ffffff")
    #+END_SRC
+
+   Then I customize a bit more about org-mode.
+
+   #+BEGIN_SRC emacs-lisp
+     (set-face-attribute 'org-block-begin-line nil
+                         :inherit 'org-meta-line
+                         :foreground "gray35")
+     (set-face-attribute 'org-block-end-line nil
+                         :inherit 'org-meta-line
+                         :foreground "gray35")
+     (set-face-attribute 'org-document-title nil
+                         :foreground "#de935f"
+                         :weight 'bold
+                         :height 1.0)
+     (set-face-attribute 'org-level-1 nil
+                         :inherit 'outline-1
+                         :underline t
+                         :weight 'bold
+                         :height 1.6)
+   #+END_SRC
+
 
 ** Changing Font Size on the Fly
 
@@ -1198,14 +1219,17 @@
    rsynced to the server.
 
    #+BEGIN_SRC emacs-lisp
-    (defun loomcom-rsync-www ()
-      "Rsync my working directory to my public web directory."
-      (interactive)
-      (let ((publish-dir (expand-file-name "~/Projects/loomcom/www/"))
-            (remote-dir "loomcom.com:/var/www/loomcom/"))
-        (when (file-exists-p publish-dir)
-          (shell-command
-           (format "rsync -avz --delete --delete-after %s %s" publish-dir remote-dir)))))
+     (defun loomcom-rsync-www ()
+       "Rsync my working directory to my public web directory."
+       (interactive)
+       (let ((publish-dir (expand-file-name "~/Projects/loomcom/www/"))
+             (remote-dir "loomcom.com:/var/www/loomcom/"))
+         (when (file-exists-p publish-dir)
+           (shell-command
+            (format
+             "rsync -avz --delete --delete-after %s %s"
+             publish-dir
+             remote-dir)))))
    #+END_SRC
 
 ** Do a complete publishing cycle
@@ -1238,3 +1262,30 @@
    #+BEGIN_SRC emacs-lisp
     (load "loomcom.el")
    #+END_SRC
+
+* Frame Placement
+
+  Define a helper function that will center the frame on its display.
+
+  #+BEGIN_SRC emacs-lisp
+    (defun center-frame-in-display ()
+      (interactive)
+      (let* ((col-width (/ (frame-pixel-width) (frame-width)))
+         (row-height (/ (frame-pixel-height) (frame-height)))
+         (half-width (* (/ (frame-width) 2) col-width))
+         (half-height (* (/ (frame-height) 2) row-height))
+         (center-x (/ (display-pixel-width) 2))
+         (center-y (/ (display-pixel-height) 2)))
+    (set-frame-position
+     (selected-frame)
+     (- center-x half-width)
+     (- center-y half-height))))
+  #+END_SRC
+
+  Then, resize and center the frame.
+
+  #+BEGIN_SRC emacs-lisp
+    (set-frame-width (selected-frame) 98)
+    (set-frame-height (selected-frame) 56)
+    (center-frame-in-display)
+  #+END_SRC
