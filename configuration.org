@@ -618,6 +618,18 @@
      (require 'use-package)
    #+END_SRC
 
+** Auto Update
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package auto-package-update
+       :ensure t
+       :config
+       (setq auto-package-update-delete-old-versions t)
+       (setq auto-package-update-hide-results t)
+       (auto-package-update-maybe))
+   #+END_SRC
+
+
 ** Slime
 
    Our first package is a little bit of an exception. I don't load
@@ -660,10 +672,9 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package org
-       :ensure org-plus-contrib
+       :ensure t
        :config
        (require 'cl)
-       (require 'org-drill)
        (require 'ox-latex)
        (setq org-agenda-tags-column -100)
        (setq org-deadline-warning-days 14)
@@ -852,6 +863,31 @@
                      ("\\paragraph{%s}" . "\\paragraph*{%s}")
                      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
     #+END_SRC
+
+*** Org Agenda
+
+   Org Agenda is a great way of tracking time and progress on various
+   projects and repeatable tasks. It's built into org-mode.
+
+   This first bit defines what files to consult when building an
+   agenda (I keep all of my agenda files under owncloud for syncing
+   purposes).
+
+   #+BEGIN_SRC emacs-lisp
+     (setq org-agenda-files
+           (file-expand-wildcards "~/ownCloud/Notes/*.org"))
+   #+END_SRC
+
+   And next, I define where to keep archived agenda items. By default,
+   these would go into a file called
+   =<original-file-name>.org_archive=, but I don't like that
+   behavior. Instead, I put them into a subdirectory and don't add the
+   =.org_archive= extension, preferring just to keep =.org= instead.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq org-archive-location
+           (concat "~/ownCloud/Notes/Archive/%s::"))
+   #+END_SRC
 
 ** Email Alerts
 
