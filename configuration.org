@@ -960,8 +960,7 @@
 
 *** Export Settings
 
-    This adds support the \LaTeX{} class =koma-article= on \LaTeX{}
-    export.
+    This adds support the LaTeX class =koma-article= on LaTeX export.
 
     #+BEGIN_SRC emacs-lisp
       (add-to-list 'org-latex-classes
