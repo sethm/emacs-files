@@ -398,14 +398,6 @@
 
 * Appearance
 
-** Theme
-
-   Load the default theme.
-
-   #+BEGIN_SRC emacs-lisp
-    (load-theme 'wombat t)
-   #+END_SRC
-
 ** Default Face
 
    I have become enamored of the /"Input Mono"/ family of fonts.
@@ -431,29 +423,13 @@
 
 ** Face Tweaks
 
-   To make org blocks stand out a bit, I prefer to set some custom
-   colors. These may need to be tweaked whenever using a different
-   theme.
+   There are a few minor thing I like to tweak related to Org Mode.
+   The theme handles the rest.
 
    #+BEGIN_SRC emacs-lisp
-    (set-face-attribute 'org-block nil
-                        :background "#000001"
-                        :foreground "#ffffff")
-   #+END_SRC
-
-   Then I customize a bit more about org-mode.
-
-   #+BEGIN_SRC emacs-lisp
-     (set-face-attribute 'org-block-begin-line nil
-                         :inherit 'org-meta-line
-                         :foreground "gray35")
-     (set-face-attribute 'org-block-end-line nil
-                         :inherit 'org-meta-line
-                         :foreground "gray35")
      (set-face-attribute 'org-document-title nil
-                         :foreground "#de935f"
-                         :weight 'bold
-                         :height 1.0)
+                         :weight 'bold)
+
      (set-face-attribute 'org-level-1 nil
                          :inherit 'outline-1
                          :underline t
@@ -997,6 +973,17 @@
      (setq org-archive-location
            (concat "~/ownCloud/Notes/Archive/%s::"))
    #+END_SRC
+
+** Themes
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package leuven-theme
+       :ensure t
+       :defer t
+       :init
+       (load-theme 'leuven t))
+   #+END_SRC
+
 
 ** Email Alerts
 
