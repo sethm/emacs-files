@@ -1334,15 +1334,55 @@
        (helm-mode 1))
    #+END_SRC
 
-* Loom Communications Homepage
+* Webpage Publishing
 
-  I keep my homepage entirely in =org-mode=. Configuration is stored
-  mostly in the separate file =loomcom.el=. There is a little bit of
-  extra stuff here, however.
+  I keep my main homepage ([[https://loomcom.com/][https://loomcom.com/]]) entirely in
+  =org-mode=. This section details how =org-publish= is used to
+  transform a mass of Org files into a website.
 
-  First, I have a few helper functions for publishing.
+** Basic Setup
 
-** Publish the site locally
+   First I define a few paths and a pointer to the header file, for
+   conveninience.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq loomcom-project-dir "~/Projects/loomcom/")
+     (setq loomcom-org-dir (concat loomcom-project-dir "org/"))
+     (setq loomcom-www-dir (concat loomcom-project-dir "www/"))
+     (setq loomcom-blog-org-dir (concat loomcom-org-dir "blog/"))
+     (setq loomcom-blog-www-dir (concat loomcom-www-dir "blog/"))
+     (setq loomcom-header-file
+           (concat loomcom-project-dir "org/header.html"))
+     (setq loomcom-posts-per-page 12)
+   #+END_SRC
+
+   Next, I define some additional tags to be used in headers and
+   footers.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq loomcom-head
+           (concat
+            "<meta name=\"twitter:site\" content=\"@twylo\" />\n"
+            "<meta name=\"twitter:creator\" content=\"@twylo\" />\n"
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n"
+            "<link rel=\"icon\" type=\"image/png\" href=\"/images/icon/favicon-32x32.png\" />\n"
+            "<link rel=\"apple-touch-icon-precomposed\" href=\"/images/icon/apple-touch-icon.png\" />\n"
+            "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/faces.css\">\n"
+            "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">\n"))
+
+     (setq loomcom-footer
+           (concat
+            "<div id=\"footer\">\n"
+            "<p>Copyright 2019 by Seth Morabito. \n"
+            "Proudly published with "
+            "<a href=\"https://www.gnu.org/software/emacs/\">Emacs</a> and "
+            "<a href=\"https://orgmode.org/\">Org Mode</a>"
+            "</div>"))
+   #+END_SRC
+
+   Now, it's on to the helper functions.
+
+** Helper Function: Publishing The Site Locally
 
    =org-publish= has one fatal flaw: It opens a /lot/ of buffers, and
    if =global-git-gutter-mode= or =magit-file-mode= are enabled (as
@@ -1363,7 +1403,7 @@
       (add-hook 'find-file-hooks 'vc-find-file-hook))
    #+END_SRC
 
-** Push published files to the server
+** Helper Function: Pushing Published Files to the Server
 
    Once files have been published to local disk, they need to be
    rsynced to the server.
@@ -1372,7 +1412,7 @@
      (defun loomcom-rsync-www ()
        "Rsync my working directory to my public web directory."
        (interactive)
-       (let ((publish-dir (expand-file-name "~/Projects/loomcom/www/"))
+       (let ((publish-dir loomcom-www-dir)
              (remote-dir "loomcom.com:/var/www/loomcom/"))
          (when (file-exists-p publish-dir)
            (shell-command
@@ -1382,10 +1422,10 @@
              remote-dir)))))
    #+END_SRC
 
-** Do a complete publishing cycle
+** Helper Function: Do a Complete Publishing Cycle
 
-   Finally, here's a function that will publish my webpage from start
-   to finish.
+   And here's a function that will publish my webpage from start to
+   finish.
 
    #+BEGIN_SRC emacs-lisp
     (defun loomcom-publish ()
@@ -1395,22 +1435,325 @@
       (loomcom-rsync-www))
    #+END_SRC
 
-** Miscellaneous Tweaks
+** Helper Function: Build a Preview for a Blog Page
+
+   When I publish a post to my blog, I want the ability to publish a
+   summary of the post to the main blog index page, followed by a
+   /"Read More..."/ link that will take you to the full article.
+
+   This helper function builds the preview string by returning
+   anything in the post up to the first line that reads
+   =#+BEGIN_more=.
 
    #+BEGIN_SRC emacs-lisp
-    (defun loomcom/fix-inline-images ()
-      "Redisplay inline images."
-      (when org-inline-image-overlays
-        (org-redisplay-inline-images)))
+     (defun loomcom--get-preview (filename)
+       "Get a preview string for a file.
+     This function returns a list, '(<needs-more> <preview-string>),
+     where <needs-more> is nil or non-nil, and indicates whether
+     a \"Read More →\" link is needed.
 
-    (add-hook 'org-babel-after-execute-hook
-              'loomcom/fix-inline-images)
+     FILENAME The file to get a preview for."
+       (with-temp-buffer
+         (insert-file-contents (concat loomcom-blog-org-dir filename))
+         (goto-char (point-min))
+         (let ((content-start (or
+                               ;; Look for the first non-keyword line
+                               (and (re-search-forward "^[^#]" nil t)
+                                    (match-beginning 0))
+                               ;; Failing that, assume we're malformed and
+                               ;; have no content
+                               (buffer-size)))
+               (marker (or
+                        (and (re-search-forward "^#\\+BEGIN_more$" nil t)
+                             (match-beginning 0))
+                        (buffer-size))))
+           ;; Return a pair of '(needs-more preview-string)
+           (list (not (= marker (buffer-size)))
+                 (buffer-substring content-start marker)))))
+   #+END_src
+
+** Helper Function: Insert A Page Header
+
+   #+BEGIN_SRC emacs-lisp
+
+     (defun loomcom--header (_)
+       "Insert the header of the page."
+       (with-temp-buffer
+         (insert-file-contents loomcom-header-file)
+         (buffer-string)))
+
    #+END_SRC
 
-** Load the main config
+** Building a Sitemap for a Group of Pages
+
+   My blog uses a paginated index, which is actually not supported by default
+   in =org-publish=, so I do a lot of work to tweak it here.
+
+   The first thing I do is define a function that will return a sitemap for a
+   single page.
 
    #+BEGIN_SRC emacs-lisp
-    (load "loomcom.el")
+     (defun loomcom--sitemap-for-group (title previous-page next-page list)
+       "Generate the sitemap for one group of pages.
+
+     TITLE  The title of the page
+     PREVIOUS-PAGE  The previous index page to link to.
+     NEXT-PAGE  The next index page to link to.
+     LIST  The group of pages."
+       (let ((previous-link (if previous-page
+                                (format "[[%s][← Previous Page]]" previous-page)
+                              ""))
+             (next-link (if next-page
+                            (format "[[%s][Next Page →]]" next-page)
+                          "")))
+         (concat "#+TITLE: " title "\n\n"
+                 "#+BEGIN_pagination\n"
+                 (format "- %s\n" previous-link)
+                 (format "- %s\n" next-link)
+                 "#+END_pagination\n\n"
+                 (string-join (mapcar #'car (cdr list)) "\n\n"))))
+   #+END_SRC
+
+   Next, a function that will return a single entry in the sitemap.
+   This is the actual entry that shows up on the index page!
+
+   #+BEGIN_SRC emacs-lisp
+     (defun loomcom--sitemap-entry (entry project)
+       "Sitemap (Blog Main Page) Entry Formatter.
+
+     ENTRY  The sitemap entry to format.
+     PROJECT  The project structure."
+       (when (not (directory-name-p entry))
+         (format (string-join
+                  '("* [[file:%s][%s]]\n"
+                    "  :PROPERTIES:\n"
+                    "  :PUBDATE: %s\n"
+                    "  :END:\n"
+                    "#+BEGIN_published\n"
+                    "%s\n"
+                    "#+END_published\n"
+                    "%s"))
+                 entry
+                 (org-publish-find-title entry project)
+                 (format-time-string (cdr org-time-stamp-formats) (org-publish-find-date entry project))
+                 (format-time-string "%A, %B %_d %Y at %l:%M %p %Z" (org-publish-find-date entry project))
+                 (let* ((preview (loomcom--get-preview entry))
+                        (needs-more (car preview))
+                        (preview-text (cadr preview)))
+                   (if needs-more
+                       (format
+                        (concat
+                         "%s\n\n"
+                         "#+BEGIN_morelink\n"
+                         "[[file:%s][Read More →]]\n"
+                         "#+END_morelink\n")
+                        preview-text entry)
+                     (format "%s" preview-text))))))
+
+   #+END_SRC
+
+   Then we define a function that will take a subset of all the blog
+   posts that are to be published, and turn them into a list.
+
+   #+BEGIN_SRC emacs-lisp
+     (defun loomcom--sitemap-files-to-lisp (files project)
+       "Convert a group of entries into a list.
+
+     FILES  The group of entries to list-ify.
+     PROJECT  The project structure."
+       (let ((root (expand-file-name
+                    (file-name-as-directory
+                     (org-publish-property :base-directory project)))))
+         (cons 'unordered
+               (mapcar
+                (lambda (f)
+                  (list (loomcom--sitemap-entry (file-relative-name f root) project)))
+                files))))
+   #+END_SRC
+
+   And here is the function that takes the entire set of articles to
+   be published, and turns them into groups of =n= elements.
+
+   #+BEGIN_SRC emacs-lisp
+     (defun loomcom--group (source n)
+       "Group a list by 'n' elements.
+
+     SOURCE  The list.
+     N  The number to group the list by."
+       (if (not (endp (nthcdr n source)))
+           (cons (subseq source 0 n)
+                 (loomcom--group (nthcdr n source) n))
+         (list source)))
+   #+END_SRC
+
+   Next, there's a helper function to find the date of an entry.  This
+   mainly exists to help performance, because the sorting algorithm
+   used to sort all the blog entries is very expensive and gets called
+   n^2 times. Without this little helper and date cache, things would
+   be a lot slower.
+
+   #+BEGIN_SRC emacs-lisp
+     ;;
+     ;; We keep a local cache of filename to date. This speeds up
+     ;; publishing tremendously, because org-publish-find-date is very
+     ;; expensive, and the sorting predicate we use calls it n^2 times.
+     ;;
+     (setq loomcom-sitemap-file-dates (make-hash-table))
+
+     (defun loomcom--find-date (file-name project)
+       "Find the date for a file and cache it.
+
+     FILE-NAME  The file in which to find a date.
+     PROJECT  The project structure."
+       (let ((maybe-date (gethash file-name loomcom-sitemap-file-dates nil)))
+         (if maybe-date
+             maybe-date
+           (let ((new-date (org-publish-find-date file-name project)))
+             (puthash file-name new-date loomcom-sitemap-file-dates)
+             new-date))))
+   #+END_SRC
+
+   Then, the meat of the matter. This is a complete rewrite of the
+   default =org-publish-sitemap= function that comes built into Org Mode.
+   It redefines the behavior to add support for publishing a multi-page
+   sitemap.
+
+   #+BEGIN_SRC emacs-lisp
+     ;; Un-define the original version of 'org-publish-sitemap'
+     (fmakunbound 'org-publish-sitemap)
+
+     ;; Define our own version.
+     (defun org-publish-sitemap (project &optional sitemap-filename)
+       "Publish the blog.
+
+     This is actually a heavily modified and customized version of the
+     function by the same name in ox-publish.el.  It allows the
+     generation of a sitemap with multiple pages.
+
+     PROJECT  The project structure.
+     SITEMAP-FILENAME  The filename to use as the default index."
+       (let* ((base (file-name-sans-extension (or sitemap-filename "index.org")))
+              (root (file-name-as-directory (expand-file-name
+                                             (concat loomcom-org-dir "blog/"))))
+              (title (or (org-publish-property :sitemap-title project)
+                         (concat "Sitemap for project " (car project))))
+              (sort-predicate
+               (lambda (a b)
+                 (let* ((adate (loomcom--find-date a project))
+                        (bdate (loomcom--find-date b project))
+                        (A (+ (lsh (car adate) 16) (cadr adate)))
+                        (B (+ (lsh (car bdate) 16) (cadr bdate))))
+                   (>= A B))))
+              (file-filter (lambda (f) (not (string-match (format "%s.*\\.org" base) f))))
+              (files (seq-filter file-filter (org-publish-get-base-files project))))
+         (message (format "Generating blog indexes for %s" title))
+         (let* ((pages (sort files sort-predicate))
+                (page-groups (loomcom--group pages loomcom-posts-per-page))
+                (page-number 0))
+           (dolist (group page-groups page-number)
+             (let ((fname (if (eq 0 page-number)
+                              (concat root (format "%s.org" base))
+                            (concat root (format "%s_%d.org" base page-number))))
+                   (previous-page (cond ((eq 0 page-number) nil)
+                                        ((eq 1 page-number) (concat root (format "%s.org" base)))
+                                        (t (concat root (format "%s_%d.org" base (- page-number 1))))))
+                   (next-page (if (eq (- (length page-groups) 1) page-number)
+                                  nil
+                                (concat root (format "%s_%d.org" base (+ page-number 1))))))
+               (setq page-number (+ 1 page-number))
+               (with-temp-file fname
+                 (insert
+                  (loomcom--sitemap-for-group
+                   title
+                   previous-page
+                   next-page
+                   (loomcom--sitemap-files-to-lisp group project)))))))))
+   #+END_SRC
+
+   And finally, at long last, the actual configuration for Org Publish
+   that defines the project.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq org-publish-timestamp-directory (concat loomcom-project-dir "cache/"))
+     (setq org-publish-project-alist
+           `(("loomcom"
+              :components ("blog" "pages" "res" "images"))
+
+             ("blog"
+              :base-directory ,loomcom-blog-org-dir
+              :base-extension "org"
+              :publishing-directory ,loomcom-blog-www-dir
+              :publishing-function org-html-publish-to-html
+              :with-author t
+              :author "Seth Morabito"
+              :email "web@loomcom.com"
+              :with-creator nil
+              :with-date t
+              :section-numbers nil
+              :with-title t
+              :with-toc nil
+              :with-drawers t
+              :with-sub-superscript nil
+              :html-doctype "html5"
+              :html-link-home "https://loomcom.com/"
+              :html-link-use-abs-url t
+              :html-head ,loomcom-head
+              :html-head-extra nil
+              :html-head-include-default-style nil
+              :html-head-include-scripts nil
+              :html-viewport nil
+              :html-link-up ""
+              :html-link-home ""
+              :html-preamble loomcom--header
+              :html-postamble ,loomcom-footer
+              :auto-sitemap t
+              :sitemap-filename "index.org"
+              :sitemap-title "Seth Morabito ∴ A Weblog"
+              :sitemap-sort-files anti-chronologically)
+
+             ("pages"
+              :base-directory ,loomcom-org-dir
+              :base-extension "org"
+              :exclude ".*blog/.*"
+              :publishing-directory ,loomcom-www-dir
+              :publishing-function org-html-publish-to-html
+              :section-numbers nil
+              :recursive t
+              :with-title t
+              :with-toc nil
+              :with-drawers t
+              :with-sub-superscript nil
+              :with-author t
+              :author "Seth Morabito"
+              :email "web@loomcom.com"
+              :with-creator nil
+              :with-date t
+              :html-link-home "/"
+              :html-head nil
+              :html-doctype "html5"
+              :html-head ,loomcom-head
+              :html-head-extra nil
+              :html-head-include-default-style nil
+              :html-head-include-scripts nil
+              :html-link-up ""
+              :html-link-home ""
+              :html-preamble loomcom--header
+              :html-postamble ,loomcom-footer
+              :html-viewport nil)
+
+             ("res"
+              :base-directory ,loomcom-org-dir
+              :base-extension "css\\|js\\|woff2\\|woff\\|ttf"
+              :recursive t
+              :publishing-directory ,loomcom-www-dir
+              :publishing-function org-publish-attachment)
+
+             ("images"
+              :base-directory ,loomcom-org-dir
+              :base-extension "png\\|jpg\\|gif\\|pdf"
+              :recursive t
+              :publishing-directory ,loomcom-www-dir
+              :publishing-function org-publish-attachment)))
    #+END_SRC
 
 * Frame Placement
