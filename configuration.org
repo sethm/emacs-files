@@ -2,7 +2,7 @@
 #+EMAIL:  web@loomcom.com
 #+TITLE:  GNU Emacs Configuration File
 #+DATE:   11 July 2019
-#+OPTIONS: toc:2 ':t
+#+OPTIONS: toc:1 ':t
 #+STARTUP: showall
 
 * Introduction
@@ -10,13 +10,25 @@
   This document contains my entire GNU Emacs configuration file in
   /"Literate Programming"/ style. Literate Programming strives to
   invert the normal programming paradigm; Instead of source code
-  scattered with comments, Literate Programming encourages document to
-  be written in prose, with source code scattered about. The source
-  code is interpreted, while the human readable prose is ignored.
+  scattered with comments, Literate Programming encourages code to be
+  written as a human readable document, in prose, with source code
+  blocks embedded inside of it. The source code later interpreted,
+  while the human readable prose is ignored.
+
+  The magic here is provided by =org-babel=, which provides a method
+  for extracting and evaluating Emacs Lisp expressions inside an
+  =org-mode= file.
+
+  The only line that needs to be in your =~/.emacs.d/init.el= file, then,
+  is this:
+
+  #+BEGIN_EXAMPLE
+    (org-babel-load-file "~/.emacs.d/configuration.org")
+  #+END_EXAMPLE
 
 * Basic Setup
 
-** Identifying Myself
+** Identity
 
    I begin by explicitly identifying myself and setting my full name
    and email address.
@@ -596,9 +608,9 @@
 
    #+BEGIN_SRC emacs-lisp
      (require 'package)
-     ; (setq package-enable-at-startup nil)
+     (setq package-enable-at-startup t)
      (setq package-archives '(("org" . "https://orgmode.org/elpa/")
-                              ("gnu" . "https://elpa.gnu.org/packages/")
+                              ("gnu" . "https://elpa.loomcom.com/")
                               ("melpa" . "https://melpa.org/packages/")))
    #+END_SRC
 
@@ -608,8 +620,8 @@
      (package-initialize)
    #+END_SRC
 
-   And, finally, if the =use-package= package is not installed,
-   install it immediately.
+   And then, if the =use-package= package is not installed, install it
+   immediately.
 
    #+BEGIN_SRC emacs-lisp
      (unless (package-installed-p 'use-package)
@@ -672,7 +684,8 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package org
-       :ensure t
+       :pin org
+       :ensure org-plus-contrib
        :config
        (require 'cl)
        (require 'ox-latex)
@@ -949,7 +962,8 @@
    #+BEGIN_SRC emacs-lisp
      (use-package excorporate
        :load-path "lisp/excorporate"
-       :ensure t
+       :ensure url-http-ntlm
+       :ensure fsm
        :after org
        :config
        (when

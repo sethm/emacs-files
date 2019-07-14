@@ -21,7 +21,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (auto-package-update helm flycheck-rust racer cargo rust-mode toml-mode haskell-mode htmlize typescript-mode php-mode web-mode lsp-ui lsp-mode company flycheck paredit yasnippet-snippets yasnippet git-gutter magit graphviz-dot-mode ledger-mode excorporate tabbar org-bullets sml-modeline org-plus-contrib use-package))))
+    (lsp fsm url-http-ntlm spinner-mode spinner lsp-ui lsp-mode excorporate yasnippet-snippets web-mode use-package typescript-mode toml-mode tabbar sml-modeline racer php-mode paredit org-bullets org magit ledger-mode htmlize helm haskell-mode graphviz-dot-mode git-gutter flycheck-rust company cargo auto-package-update))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
