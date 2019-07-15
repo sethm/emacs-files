@@ -19,12 +19,29 @@
   for extracting and evaluating Emacs Lisp expressions inside an
   =org-mode= file.
 
-  The only line that needs to be in your =~/.emacs.d/init.el= file, then,
-  is this:
+  There is one more thing: Emacs comes with a built-in version of Org
+  Mode that is out of date and obsolete. Because of that, I provide my
+  own checkout of Org Mode as a submodule. The first two lines of my
+  =init.el= file then add this submodule to the load path. This is
+  required to use the submodule version of org mode. My =init.el=
+  looks like this:
 
   #+BEGIN_EXAMPLE
+    (add-to-list 'load-path "~/.emacs.d/org-mode/lisp")
+    (add-to-list 'load-path "~/.emacs.d/org-mode/contrib/lisp")
+
     (org-babel-load-file "~/.emacs.d/configuration.org")
   #+END_EXAMPLE
+
+  To finish the bootstrap, all you need to do is:
+
+  #+BEGIN_EXAMPLE
+  $ cd ~/.emacs.d
+  $ git submodule init
+  $ cd ~/.emacs.d/org-mode
+  $ make
+  #+END_EXAMPLE
+
 
 * Basic Setup
 
@@ -423,8 +440,22 @@
 
 ** Face Tweaks
 
-   There are a few minor thing I like to tweak related to Org Mode.
-   The theme handles the rest.
+   There are a few minor thing I like to tweak.
+
+   First, I like my blocks to stand out.
+
+   #+BEGIN_SRC emacs-lisp
+     (set-face-attribute 'org-block-begin-line nil
+                         :foreground "black"
+                         :background "gray35")
+
+     (set-face-attribute 'org-block-end-line nil
+                         :foreground "black"
+                         :background "gray35")
+
+   #+END_SRC
+
+   And next, I like to give my Org Mode faces a bit of a tweak.
 
    #+BEGIN_SRC emacs-lisp
      (set-face-attribute 'org-document-title nil
@@ -757,8 +788,8 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package org
-       :pin org
-       :ensure org-plus-contrib
+       :load-path "~/.emacs.d/org-mode/lisp"
+       :ensure t
        :config
        (require 'cl)
        (require 'ox-latex)
@@ -768,6 +799,29 @@
    #+END_SRC
 
    I have a lot of custom configuration for =org-mode=.
+
+*** Main Notes File
+
+    My main Org Mode notes file can be opened with a simple shortcut.
+
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "C-c o") 
+                      (lambda ()
+                        (interactive)
+                        (find-file "~/ownCloud/Notes/notes.org")))
+
+    #+END_SRC
+
+*** Org Capture
+
+    To capture new notes, I configure Org Capture with a quick
+    key binding of =C-c c=, and tell it what file I like to capture
+    notes in.
+
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "C-c c") 'org-capture)
+      (setq org-default-notes-file "~/ownCloud/Notes/notes.org")
+    #+END_SRC
 
 *** Org-Babel Language Integration
 
@@ -977,11 +1031,11 @@
 ** Themes
 
    #+BEGIN_SRC emacs-lisp
-     (use-package leuven-theme
+     (use-package afternoon-theme
        :ensure t
        :defer t
        :init
-       (load-theme 'leuven t))
+       (load-theme 'afternoon t))
    #+END_SRC
 
 
