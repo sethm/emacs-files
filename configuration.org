@@ -446,13 +446,16 @@
 
    #+BEGIN_SRC emacs-lisp
      (set-face-attribute 'org-block-begin-line nil
-                         :foreground "black"
-                         :background "gray35")
+                         :height 1.0
+                         :foreground "grey45"
+                         :background "gray30")
 
      (set-face-attribute 'org-block-end-line nil
-                         :foreground "black"
-                         :background "gray35")
+                         :foreground "grey45"
+                         :background "gray30")
 
+     (set-face-attribute 'org-block nil
+                         :background "grey20")
    #+END_SRC
 
    And next, I like to give my Org Mode faces a bit of a tweak.
@@ -491,7 +494,6 @@
         (set-face-attribute
          'default nil :height
          (funcall dir-func (face-attribute 'default :height) delta))))
-
    #+END_SRC
 
    Then, I create two little helper functions to bump the size up or
@@ -800,27 +802,13 @@
 
    I have a lot of custom configuration for =org-mode=.
 
-*** Main Notes File
-
-    My main Org Mode notes file can be opened with a simple shortcut.
-
-    #+BEGIN_SRC emacs-lisp
-      (global-set-key (kbd "C-c o") 
-                      (lambda ()
-                        (interactive)
-                        (find-file "~/ownCloud/Notes/notes.org")))
-
-    #+END_SRC
-
 *** Org Capture
 
     To capture new notes, I configure Org Capture with a quick
-    key binding of =C-c c=, and tell it what file I like to capture
-    notes in.
+    key binding of =C-c c=.
 
     #+BEGIN_SRC emacs-lisp
       (global-set-key (kbd "C-c c") 'org-capture)
-      (setq org-default-notes-file "~/ownCloud/Notes/notes.org")
     #+END_SRC
 
 *** Org-Babel Language Integration
@@ -900,9 +888,25 @@
             org-ellipsis "▼")
     #+END_SRC
 
-*** Org Agenda Setup
+*** Export Settings
 
-    I make frequent use of =org-agenda= to track my time.
+    This adds support the LaTeX class =koma-article= on LaTeX export.
+
+    #+BEGIN_SRC emacs-lisp
+      (add-to-list 'org-latex-classes
+                   '("koma-article"
+                     "\\documentclass{scrartcl}"
+                     ("\\section{%s}" . "\\section*{%s}")
+                     ("\\subsection{%s}" . "\\subsection*{%s}")
+                     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                     ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    #+END_SRC
+
+*** Org Agenda
+
+   Org Agenda is a great way of tracking time and progress on various
+   projects and repeatable tasks. It's built into org-mode.
 
     I add a quick and easy way to get into =org-agenda= from any
     =org-mode= buffer by pressing =C-c a=.
@@ -924,8 +928,8 @@
                 (org-agenda-start-on-weekday 0)))))
     #+END_SRC
 
-    Then, I define some faces and use them for deadlines
-    in =org-agenda=.
+    Then, I define some faces and use them for deadlines in
+    =org-agenda=.
 
     #+BEGIN_SRC emacs-lisp
       (defface deadline-soon-face
@@ -949,8 +953,8 @@
               (0.0  . deadline-distant-face)))
     #+END_SRC
 
-    And finally, I set my =org-todo-keywords= so that I can manage my
-    TODO states the way I like to.
+    Then I set my =org-todo-keywords= so that I can manage my workflow
+    states the way I like to.
 
     The syntax =@= following a definition indicates that a state needs
     a note with a timestamp, while a =!= indicates that it needs only
@@ -976,56 +980,27 @@
                "CANCELED(c@)")))
     #+END_SRC
 
-    And here, as a last step, I can load any additional optional
-    =org-agenda= setup I want. This is largely because I use this
-    configuration for both my home and my work computers, and my
-    home and work workflows are different.
+   And finally, I set some file locations. This is a bit convoluted
+   because I use Agenda both for work and for home. At work, I keep a
+   file called =~/.org-agenda-setup.el= that contains my agenda files
+   and archive location information. At home, I just use what's baked
+   into this file.
 
-    #+BEGIN_SRC emacs-lisp
-      (when (file-exists-p
-             (expand-file-name
-              "~/.emacs.d/local/org-agenda-setup.el"))
-        (load "org-agenda-setup.el"))
-    #+END_SRC
-
-*** Export Settings
-
-    This adds support the LaTeX class =koma-article= on LaTeX export.
-
-    #+BEGIN_SRC emacs-lisp
-      (add-to-list 'org-latex-classes
-                   '("koma-article"
-                     "\\documentclass{scrartcl}"
-                     ("\\section{%s}" . "\\section*{%s}")
-                     ("\\subsection{%s}" . "\\subsection*{%s}")
-                     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                     ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-    #+END_SRC
-
-*** Org Agenda
-
-   Org Agenda is a great way of tracking time and progress on various
-   projects and repeatable tasks. It's built into org-mode.
-
-   This first bit defines what files to consult when building an
-   agenda (I keep all of my agenda files under owncloud for syncing
-   purposes).
+   Also note that I like to keep archived Agenda items in a separate
+   directory, rather than the default behavior of renaming them to
+   =<original-file-name>.org_archive=.
 
    #+BEGIN_SRC emacs-lisp
-     (setq org-agenda-files
-           (file-expand-wildcards "~/ownCloud/Notes/*.org"))
-   #+END_SRC
-
-   And next, I define where to keep archived agenda items. By default,
-   these would go into a file called
-   =<original-file-name>.org_archive=, but I don't like that
-   behavior. Instead, I put them into a subdirectory and don't add the
-   =.org_archive= extension, preferring just to keep =.org= instead.
-
-   #+BEGIN_SRC emacs-lisp
-     (setq org-archive-location
-           (concat "~/ownCloud/Notes/Archive/%s::"))
+     (if (file-exists-p "~/.org-agenda-setup.el")
+         (load "~/.org-agenda-setup.el")
+       (progn
+         (global-set-key (kbd "C-c o")
+                         (lambda ()
+                           (interactive)
+                           (find-file "~/ownCloud/Notes/notes.org")))
+         (setq org-agenda-files (file-expand-wildcards "~/ownCloud/Notes/*.org")
+               org-archive-location (concat "~/ownCloud/Notes/Archive/%s::")
+               org-default-notes-file "~/ownCloud/Notes/notes.org")))
    #+END_SRC
 
 ** Themes
@@ -1037,7 +1012,6 @@
        :init
        (load-theme 'afternoon t))
    #+END_SRC
-
 
 ** Email Alerts
 
