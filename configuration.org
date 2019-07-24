@@ -1112,6 +1112,16 @@
        (global-git-gutter-mode +1))
    #+END_SRC
 
+** YAML
+
+   YAML mode is useful for editing Docker files.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package yaml-mode
+       :ensure t)
+   #+END_SRC
+
+
 ** Snippets
 
    Snippets build in support for typing a few keys, pressing tab, and
