@@ -1438,13 +1438,19 @@
        "Rsync my working directory to my public web directory."
        (interactive)
        (let ((publish-dir loomcom-www-dir)
-             (remote-dir "loomcom.com:/var/www/loomcom/"))
+             (master-dir "neon.loomcom.com:/var/www/loomcom/")
+	     (beta-dir "neon.loomcom.com:/var/www/beta/"))
          (when (file-exists-p publish-dir)
            (shell-command
             (format
              "rsync -avz --delete --delete-after %s %s"
              publish-dir
-             remote-dir)))))
+             master-dir))
+	   (shell-command
+	    (format
+	     "rsync -avz --delete --delete-after %s %s"
+	     publish-dir
+	     beta-dir)))))
    #+END_SRC
 
 ** Helper Function: Do a Complete Publishing Cycle
