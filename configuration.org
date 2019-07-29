@@ -1206,7 +1206,7 @@
        :ensure t
        :hook (prog-mode . company-mode)
        :config
-       (setq company-idle-delay 1)
+       (setq company-idle-delay 2000)
        (setq company-tooltip-align-annotations t)
        (setq company-minimum-prefix-length 1))
    #+END_SRC
@@ -1246,7 +1246,9 @@
        :config (require 'lsp-clients))
 
      (use-package lsp-ui
-       :ensure t)
+       :ensure t
+       :config
+       (setq lsp-ui-doc-delay 1.2))
    #+END_SRC
 
 ** Web Development
@@ -1307,6 +1309,7 @@
        :bind (("C-c TAB" . rust-format-buffer))
        :init
        (add-hook 'rust-mode-hook #'flycheck-mode)
+       (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
        :hook
        (prog-mode . electric-pair-mode)
        (rust-mode . lsp)
