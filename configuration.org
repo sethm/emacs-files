@@ -171,35 +171,6 @@
     (c-set-offset 'brace-list-intro '+)
    #+END_SRC
 
-** Whitespace Cleanup
-
-   At one point, I used a save hook that automatically deleted
-   trailing whitespace. While noble, this was a bad idea,
-   especially when working in shared projects! It could lead
-   to unwanted changes making their way into version control.
-   So, instead, these settings will highlight trailing whitespace
-   so that I can clean it up on a case-by-case basis.
-
-   #+BEGIN_SRC emacs-lisp
-     (require 'whitespace)
-     (setq-default show-trailing-whitespace t)
-   #+END_SRC
-
-   ... however, there is one exception! The minibuffer
-   and the help buffer are not editable, and shouldn't
-   have trailing whitespace called out.
-
-   #+BEGIN_SRC emacs-lisp
-     (defun no-trailing-whitespace ()
-       (setq show-trailing-whitespace nil))
-
-     (add-hook 'minibuffer-setup-hook
-               'no-trailing-whitespace)
-
-     (add-hook 'help-mode-hook
-               'no-trailing-whitespace)
-   #+END_SRC
-
 ** Tramp
 
    /Tramp/ is a useful mode that allows editing files remotely.
@@ -698,6 +669,20 @@
        (setq mu4e-html2text-command 'shr-html2text)
    #+END_SRC
 
+   Then, I want to configure how =shr= handles color in HTML
+   email.
+
+   #+BEGIN_SRC emacs-lisp
+     (require 'mu4e-contrib)
+     (setq mu4e-html2text-command 'mu4e-shr2text)
+     ;; (setq shr-color-visible-luminance-min 60)
+     (setq shr-color-visible-luminance-min 20)
+     (setq shr-color-visible-distance-min 5)
+     ;; (setq shr-use-colors t)
+     (advice-add #'shr-colorize-region :around
+                 (defun shr-no-colourise-region (&rest ignore)))
+   #+END_SRC
+
    Next, I set up a bunch of basic =mu4e= settings. This tells it
    where to look for mail, and how to send mail via SMTP.
 
@@ -797,7 +782,8 @@
        (require 'ox-latex)
        (setq org-agenda-tags-column -100)
        (setq org-deadline-warning-days 14)
-       (setq org-table-shrunk-column-indicator ""))
+       (setq org-table-shrunk-column-indicator "")
+       (setq org-adapt-indentation nil))
    #+END_SRC
 
    I have a lot of custom configuration for =org-mode=.
@@ -1242,7 +1228,8 @@
      (setq flycheck-clang-include-path
            (list
             (expand-file-name "~/Projects/simh/")
-            (expand-file-name "~/Projects/simh/3B2/")))
+            (expand-file-name "~/Projects/simh/3B2/")
+            (expand-file-name "~/Projects/emsdk/fastcomp/emscripten/system/include")))
    #+END_SRC
 
    And finally, LSP adds advanced features for languages and tools
