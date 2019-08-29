@@ -295,7 +295,6 @@
     (defun quiet-windmove-down ()
       "Navigate to the window immediately below the current one."
       (interactive) (quiet-windmove 'down))
-
    #+END_SRC
 
    And then, finally, bind the keys to the functions to do the
@@ -413,23 +412,7 @@
 
    There are a few minor thing I like to tweak.
 
-   First, I like my blocks to stand out.
-
-   #+BEGIN_SRC emacs-lisp
-     (set-face-attribute 'org-block-begin-line nil
-                         :height 1.0
-                         :foreground "grey45"
-                         :background "gray30")
-
-     (set-face-attribute 'org-block-end-line nil
-                         :foreground "grey45"
-                         :background "gray30")
-
-     (set-face-attribute 'org-block nil
-                         :background "grey20")
-   #+END_SRC
-
-   And next, I like to give my Org Mode faces a bit of a tweak.
+   I like to give my Org Mode faces a bit of a tweak.
 
    #+BEGIN_SRC emacs-lisp
      (set-face-attribute 'org-document-title nil
@@ -621,7 +604,6 @@
        (auto-package-update-maybe))
    #+END_SRC
 
-
 ** Slime
 
    Our first package is a little bit of an exception. I don't load
@@ -631,7 +613,7 @@
    #+BEGIN_SRC emacs-lisp
      (when (file-exists-p (expand-file-name "~/quicklisp/slime-helper.el"))
        (load (expand-file-name "~/quicklisp/slime-helper.el"))
-       (defvar inferior-lisp-program "sbcl"))
+       (setq inferior-lisp-program "sbcl"))
    #+END_SRC
 
 ** Email
@@ -783,7 +765,7 @@
        (setq org-agenda-tags-column -100)
        (setq org-deadline-warning-days 14)
        (setq org-table-shrunk-column-indicator "")
-       (setq org-adapt-indentation nil))
+       (setq org-adapt-indentation t))
    #+END_SRC
 
    I have a lot of custom configuration for =org-mode=.
@@ -983,20 +965,20 @@
          (global-set-key (kbd "C-c o")
                          (lambda ()
                            (interactive)
-                           (find-file "~/ownCloud/Notes/notes.org")))
-         (setq org-agenda-files (file-expand-wildcards "~/ownCloud/Notes/*.org")
-               org-archive-location (concat "~/ownCloud/Notes/Archive/%s::")
-               org-default-notes-file "~/ownCloud/Notes/notes.org")))
+                           (find-file "~/Nextcloud/Notes/notes.org")))
+         (setq org-agenda-files (file-expand-wildcards "~/Nextcloud/Notes/*.org")
+               org-archive-location (concat "~/Nextcloud/Notes/Archive/%s::")
+               org-default-notes-file "~/Nextcloud/Notes/notes.org")))
    #+END_SRC
 
 ** Themes
 
    #+BEGIN_SRC emacs-lisp
-     (use-package afternoon-theme
-       :ensure t
-       :defer t
-       :init
-       (load-theme 'afternoon t))
+     ; (use-package afternoon-theme
+     ;   :ensure t
+     ;   :defer t
+     ;   :init
+     ;   (load-theme 'afternoon t))
    #+END_SRC
 
 ** Email Alerts
@@ -1039,6 +1021,80 @@
        :config (tabbar-mode t)
        :ensure t)
    #+END_SRC
+
+** IRC
+
+   I like to use ERC for talking on IRC. This configuration was completely
+   stolen from =u/rmberYou= on Reddit, [[https://www.reddit.com/r/emacs/comments/8ml6na/tip_how_to_make_erc_fun_to_use/][who shared it in the r/emacs community]].
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package erc
+       :ensure t
+       :custom
+       (erc-autojoin-channels-alist
+        '(("irc.freenode.net" "#emacs" "#org-mode" "##3b2")))
+       (erc-autojoin-timing 'ident)
+       (erc-fill-function 'erc-fill-static)
+       (erc-fill-static-center 22)
+       (erc-hide-list '("JOIN" "PART" "QUIT"))
+       (erc-lurker-hide-list '("JOIN" "PART" "QUIT"))
+       (erc-lurker-threshold-time 43200)
+       (erc-prompt-for-nickserv-password nil)
+       (erc-server-reconnect-attempts 5)
+       (erc-server-reconnect-timeout 3)
+       (erc-track-exclude-types '("JOIN" "MODE" "NICK" "PART" "QUIT"
+                                  "324" "329" "332" "333" "353" "477"))
+       :config
+       (add-to-list 'erc-modules 'notifications)
+       (add-to-list 'erc-modules 'spelling)
+       (erc-services-mode 1)
+       (erc-update-modules))
+
+     (use-package erc-hl-nicks
+       :ensure t
+       :after erc)
+
+     (use-package erc-image
+       :ensure t
+       :after erc)
+
+     (defun my/erc-start-or-switch ()
+       "Connects to ERC, or switch to last active buffer."
+       (interactive)
+       (if (get-buffer "irc.freenode.net:6667")
+           (erc-track-switch-buffer 1)
+         (when (y-or-n-p "Start ERC? ")
+           (erc :server "irc.freenode.net" :port 6667 :nick "Twylo"))))
+
+     (defun my/erc-notify (nickname message)
+       "Displays a notification message for ERC."
+       (let* ((channel (buffer-name))
+              (nick (erc-hl-nicks-trim-irc-nick nickname))
+              (title (if (string-match-p (concat "^" nickname) channel)
+                         nick
+                       (concat nick " (" channel ")")))
+              (msg (s-trim (s-collapse-whitespace message))))
+         (alert (concat nick ": " msg) :title title)))
+
+     (defun my/erc-count-users ()
+       "Displays the number of users connected on the current channel."
+       (interactive)
+       (if (get-buffer "irc.freenode.net:6667")
+           (let ((channel (erc-default-target)))
+             (if (and channel (erc-channel-p channel))
+                 (message "%d users are online on %s"
+                          (hash-table-count erc-channel-users)
+                          channel)
+               (user-error "The current buffer is not a channel")))
+         (user-error "You must first start ERC")))
+
+     (defun my/erc-preprocess (string)
+       "Avoids channel flooding."
+       (setq str
+             (string-trim
+              (replace-regexp-in-string "\n+" " " str))))
+   #+END_SRC
+
 
 ** Support for Encrypted Authinfo
 
@@ -1436,19 +1492,13 @@
        "Rsync my working directory to my public web directory."
        (interactive)
        (let ((publish-dir loomcom-www-dir)
-             (master-dir "neon.loomcom.com:/var/www/loomcom/")
-	     (beta-dir "neon.loomcom.com:/var/www/beta/"))
+             (remote-dir "neon.loomcom.com:/var/www/loomcom/"))
          (when (file-exists-p publish-dir)
            (shell-command
             (format
              "rsync -avz --delete --delete-after %s %s"
              publish-dir
-             master-dir))
-	   (shell-command
-	    (format
-	     "rsync -avz --delete --delete-after %s %s"
-	     publish-dir
-	     beta-dir)))))
+             remote-dir)))))
    #+END_SRC
 
 ** Helper Function: Do a Complete Publishing Cycle
