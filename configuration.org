@@ -417,12 +417,6 @@
    #+BEGIN_SRC emacs-lisp
      (set-face-attribute 'org-document-title nil
                          :weight 'bold)
-
-     (set-face-attribute 'org-level-1 nil
-                         :inherit 'outline-1
-                         :underline t
-                         :weight 'bold
-                         :height 1.6)
    #+END_SRC
 
 
@@ -623,7 +617,6 @@
    configuration is shared between computers, and not all of my
    computers have =mu4e= installed, this configuration will only be
    applied if =mu4e= is successfully loaded.
-
 
    First, we attempt to require =mu4e=.
 
