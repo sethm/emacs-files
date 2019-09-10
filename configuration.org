@@ -42,7 +42,6 @@
   $ make
   #+END_EXAMPLE
 
-
 * Basic Setup
 
 ** Identity
@@ -396,6 +395,15 @@
                            :weight 'light
                            :height 120))
    #+END_SRC
+
+** Regions
+
+   #+BEGIN_SRC emacs-lisp
+     (set-face-attribute 'region nil
+                         :background "#ffff00"
+                         :foreground "#000000")
+   #+END_SRC
+
 
 ** Window Frame
 
@@ -958,10 +966,10 @@
          (global-set-key (kbd "C-c o")
                          (lambda ()
                            (interactive)
-                           (find-file "~/Nextcloud/Notes/notes.org")))
+                           (find-file "~/Nextcloud/Notes/tasks.org")))
          (setq org-agenda-files (file-expand-wildcards "~/Nextcloud/Notes/*.org")
                org-archive-location (concat "~/Nextcloud/Notes/Archive/%s::")
-               org-default-notes-file "~/Nextcloud/Notes/notes.org")))
+               org-default-notes-file "~/Nextcloud/Notes/tasks.org")))
    #+END_SRC
 
 ** Themes
@@ -1259,13 +1267,6 @@
    #+BEGIN_SRC emacs-lisp
      (use-package cedet
        :ensure t
-       :init
-       (semantic-mode 1)
-       (global-semantic-decoration-mode 1)
-       (global-semantic-stickyfunc-mode 1)
-       (global-semantic-idle-summary-mode 1)
-       (global-semantic-idle-local-symbol-highlight-mode 1)
-       (global-semantic-highlight-func-mode 1)
        :bind (:map semantic-mode-map
                    ("C-c , >" . semantic-ia-fast-jump)))
    #+END_SRC

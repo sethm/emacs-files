@@ -1,0 +1,15 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : <html> ... </html>
+#group : html
+# --
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>$1</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body id="home">
+  $0
+</body>
+</html>
