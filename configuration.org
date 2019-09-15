@@ -396,15 +396,6 @@
                            :height 120))
    #+END_SRC
 
-** Regions
-
-   #+BEGIN_SRC emacs-lisp
-     (set-face-attribute 'region nil
-                         :background "#ffff00"
-                         :foreground "#000000")
-   #+END_SRC
-
-
 ** Window Frame
 
    By default, the Emacs frame (what you or I would call a window)
@@ -415,18 +406,6 @@
     (setq-default frame-title-format "%b")
     (setq frame-title-format "%b")
    #+END_SRC
-
-** Face Tweaks
-
-   There are a few minor thing I like to tweak.
-
-   I like to give my Org Mode faces a bit of a tweak.
-
-   #+BEGIN_SRC emacs-lisp
-     (set-face-attribute 'org-document-title nil
-                         :weight 'bold)
-   #+END_SRC
-
 
 ** Changing Font Size on the Fly
 
@@ -943,10 +922,10 @@
             '((sequence
                "TODO(t)"
                "NEXT(n)"
-               "WAIT(w@/!)"
+               "WAIT(w/!)"
                "|"
-               "DONE(d@)"
-               "CANCELED(c@)")))
+               "DONE(d)"
+               "CANCELED(c)")))
     #+END_SRC
 
    And finally, I set some file locations. This is a bit convoluted
@@ -975,11 +954,17 @@
 ** Themes
 
    #+BEGIN_SRC emacs-lisp
-     ; (use-package afternoon-theme
-     ;   :ensure t
-     ;   :defer t
-     ;   :init
-     ;   (load-theme 'afternoon t))
+     (use-package doom-modeline
+       :ensure t
+       :defer t
+       :init
+       (doom-modeline-mode 1))
+
+     (use-package doom-themes
+       :ensure t
+       :defer t
+       :init
+       (load-theme 'doom-one t))
    #+END_SRC
 
 ** Email Alerts
@@ -1013,14 +998,6 @@
        (add-hook
         'org-mode-hook
         (lambda () (org-bullets-mode 1))))
-   #+END_SRC
-
-** Tab Bar
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package tabbar
-       :config (tabbar-mode t)
-       :ensure t)
    #+END_SRC
 
 ** IRC
