@@ -954,11 +954,13 @@
 ** Themes
 
    #+BEGIN_SRC emacs-lisp
+     (use-package all-the-icons
+       :ensure t)
+
      (use-package doom-modeline
        :ensure t
-       :defer t
-       :init
-       (doom-modeline-mode 1))
+       :hook
+       (after-init . doom-modeline-mode))
 
      (use-package doom-themes
        :ensure t
