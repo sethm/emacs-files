@@ -1335,7 +1335,6 @@
        (add-hook 'rust-mode-hook #'flycheck-mode)
        (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
        :hook
-       (prog-mode . electric-pair-mode)
        (rust-mode . lsp)
        :config
        (define-key rust-mode-map (kbd "TAB")
