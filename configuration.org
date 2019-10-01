@@ -953,6 +953,8 @@
 
 ** Themes
 
+   Note that after installing these, you should run =M-x all-the-icons-install-fonts=.
+
    #+BEGIN_SRC emacs-lisp
      (use-package all-the-icons
        :ensure t)
