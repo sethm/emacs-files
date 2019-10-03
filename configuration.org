@@ -382,6 +382,23 @@
        (normal-erase-is-backspace-mode 1))
    #+END_SRC
 
+   When functions are redefined with =defadvice=, a warning is
+   emitted. This is annoying, so I disable these warnings.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq ad-redefinition-action 'accept)
+   #+END_SRC
+
+   Tell Python mode to use Python 3
+
+   #+BEGIN_SRC emacs-lisp
+     (setq flycheck-python-pycompile-executable "python3")
+     (setq flycheck-python-flake8-executable "python3")
+     (setq flycheck-python-pylint-executable "python3")
+     (setq python-shell-interpreter "python3")
+   #+END_SRC
+
+
 * Appearance
 
 ** Default Face
@@ -998,6 +1015,10 @@
      (use-package org-bullets
        :ensure t
        :commands (org-bullets-mode)
+       :config
+       (setq org-bullets-bullet-list
+           '("●" "♦" "►" "•" "▸"))
+
        :init
        (add-hook
         'org-mode-hook
