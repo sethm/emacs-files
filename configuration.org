@@ -571,7 +571,7 @@
      (require 'package)
      (setq package-enable-at-startup t)
      (setq package-archives '(("org" . "https://orgmode.org/elpa/")
-                              ("gnu" . "https://elpa.loomcom.com/")
+                              ("gnu" . "https://elpa.gnu.org/")
                               ("melpa" . "https://melpa.org/packages/")))
    #+END_SRC
 
@@ -1106,27 +1106,6 @@
        :ensure t
        :config
        (setq auth-sources '("~/.authinfo.gpg")))
-   #+END_SRC
-
-** Microsoft Exchange Integration
-
-   At work (but not at home), I connect to an Exchange server
-   and integrate my meetings with Emacs. Once again, a local
-   configuration allows me to have sensitive information like
-   Exchange URLs separate from my main Emacs config.
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package excorporate
-       :load-path "lisp/excorporate"
-       :ensure url-http-ntlm
-       :ensure fsm
-       :after org
-       :config
-       (when
-           (file-exists-p
-            (expand-file-name
-             "~/.emacs.d/local/excorporate-setup.el"))
-         (load "excorporate-setup.el")))
    #+END_SRC
 
 ** Ledger Mode
