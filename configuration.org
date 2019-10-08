@@ -571,7 +571,7 @@
      (require 'package)
      (setq package-enable-at-startup t)
      (setq package-archives '(("org" . "https://orgmode.org/elpa/")
-                              ("gnu" . "https://elpa.gnu.org/")
+                              ("gnu" . "https://elpa.gnu.org/packages/")
                               ("melpa" . "https://melpa.org/packages/")))
    #+END_SRC
 
