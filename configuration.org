@@ -413,6 +413,20 @@
                            :height 120))
    #+END_SRC
 
+** Emacs 27
+
+   Beginning in Emacs 27, a new attribute, =:extend=, was added to faces.
+   It determines whether the background of a face will extend to the right
+   margin or not. It defaults to =nil=, but I prefer it to be set for some
+   things.
+
+   #+BEGIN_SRC emacs-lisp
+     (when (version< "27" emacs-version)
+       (set-face-attribute 'org-block nil :extend t)
+       (set-face-attribute 'org-block-begin-line nil :extend t)
+       (set-face-attribute 'org-block-end-line nil :extend t))
+   #+END_SRC
+
 ** Window Frame
 
    By default, the Emacs frame (what you or I would call a window)
@@ -1261,6 +1275,8 @@
             (expand-file-name "~/Projects/simh/")
             (expand-file-name "~/Projects/simh/3B2/")
             (expand-file-name "~/Projects/emsdk/fastcomp/emscripten/system/include")))
+
+     (setq flycheck-gcc-include-path flycheck-clang-include-path)
    #+END_SRC
 
    And finally, LSP adds advanced features for languages and tools
