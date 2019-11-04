@@ -28,9 +28,37 @@ the load path.
 
 ## Getting Started
 
+The process for bootstrapping all this stuff is complicated
+a little bit by the fact that I use the latest `org-mode`
+as a Git submodule. The full process for getting everything running
+is as follows:
+
+### Clone the Repository
+
     $ git clone git@github.com:sethm/emacs-files.git ~/.emacs.d
 
-And that's it. That's all there should be to it.
+### Update the `org-mode` Submodule
+
+    $ cd ~/.emacs.d
+    $ git submodule init
+    $ git submodule update
+
+### Build `org-mode`
+
+    $ cd ~/.emacs.d/org-mode
+    $ make
+
+
+### Install fonts
+
+By default, my setup uses a font called **Input Mono**. If you want my exact
+look and feel, you'll want to install it.It's free for personal use here:
+https://input.fontbureau.com/download/
+
+Then, the final step is done from within Emacs when it's running. This installs
+the final set of UI element fonts.
+
+    M-x all-the-icons-install-fonts
 
 ## License
 
