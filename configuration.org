@@ -421,7 +421,7 @@
    things.
 
    #+BEGIN_SRC emacs-lisp
-     (when (not (version< emacs-version "26"))
+     (when (version< "27" emacs-version)
        (set-face-attribute 'org-block nil :extend t)
        (set-face-attribute 'org-block-begin-line nil :extend t)
        (set-face-attribute 'org-block-end-line nil :extend t))
