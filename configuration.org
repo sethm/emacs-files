@@ -1003,7 +1003,7 @@
        :ensure t
        :defer t
        :init
-       (load-theme 'doom-one t))
+       (load-theme 'doom-moonlight t))
    #+END_SRC
 
 ** Email Alerts
@@ -1283,18 +1283,10 @@
      (setq flycheck-gcc-include-path flycheck-clang-include-path)
    #+END_SRC
 
-   And finally, LSP adds advanced features for languages and tools
-   that have Language Server Protocol support.
-
    #+BEGIN_SRC emacs-lisp
-     (use-package lsp-mode
+     (use-package eglot
        :ensure t
-       :config (require 'lsp-clients))
-
-     (use-package lsp-ui
-       :ensure t
-       :config
-       (setq lsp-ui-doc-delay 1.2))
+       :hook ((python-mode java-mode bash-mode rust-mode) . eglot-ensure))
    #+END_SRC
 
 ** Web Development
@@ -1446,8 +1438,7 @@
      (setq loomcom-footer
            (concat
             "<div id=\"footer\">\n"
-            "<p>Copyright 2019 by Seth Morabito. \n"
-            "Proudly published with "
+            "<p>Proudly published with "
             "<a href=\"https://www.gnu.org/software/emacs/\">Emacs</a> and "
             "<a href=\"https://orgmode.org/\">Org Mode</a>"
             "</div>"))
