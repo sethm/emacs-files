@@ -773,11 +773,15 @@
        :config
        (require 'cl)
        (require 'ox-latex)
+       (require 'org-drill)
        (setq org-agenda-tags-column -100)
        (setq org-deadline-warning-days 14)
        (setq org-table-shrunk-column-indicator "")
        (setq org-adapt-indentation t))
    #+END_SRC
+
+   #+RESULTS:
+   : t
 
    I have a lot of custom configuration for =org-mode=.
 

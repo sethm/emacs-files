@@ -1,0 +1,15 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : New Drill Entry
+# --
+* $1                                                                :drill:
+  :PROPERTIES:
+  :DRILL_CARD_TYPE: twosided
+  :END:
+  
+** $2
+
+   $3
+
+** $4
+
+   $5
