@@ -421,7 +421,7 @@
    things.
 
    #+BEGIN_SRC emacs-lisp
-     (when (version< "27" emacs-version)
+     (when (>= 27 emacs-major-version)
        (set-face-attribute 'org-block nil :extend t)
        (set-face-attribute 'org-block-begin-line nil :extend t)
        (set-face-attribute 'org-block-end-line nil :extend t))
@@ -871,6 +871,12 @@
             org-ellipsis "▼")
     #+END_SRC
 
+    I also really enjoy hiding emphasis markers.
+
+    #+BEGIN_SRC emacs-lisp
+      (setq org-hide-emphasis-markers t)
+    #+END_SRC
+
 *** Export Settings
 
     This adds support the LaTeX class =koma-article= on LaTeX export.
@@ -1036,7 +1042,6 @@
        :config
        (setq org-bullets-bullet-list
            '("●" "♦" "►" "•" "▸"))
-
        :init
        (add-hook
         'org-mode-hook
