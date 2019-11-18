@@ -19,7 +19,7 @@
   for extracting and evaluating Emacs Lisp expressions inside an
   =org-mode= file.
 
-  There is one more thing: Emacs comes with a built-in version of Org
+  *There is one more thing:* Emacs comes with a built-in version of Org
   Mode that is out of date and obsolete. Because of that, I provide my
   own checkout of Org Mode as a submodule. The first two lines of my
   =init.el= file then add this submodule to the load path. This is
@@ -42,7 +42,31 @@
   $ make
   #+END_EXAMPLE
 
+  The only other troublesome setup is to install the necessary
+  fonts to make /Doom Mode Line/ look pretty. That can be done
+  inside of a running emacs with the command:
+
+  #+BEGIN_EXAMPLE
+   M-x all-the-icons-install-fonts
+  #+END_EXAMPLE
+
 * Basic Setup
+
+** Where to store Customization
+
+   First things first. Because I use =org-babel= and literate
+   programming style for my config, I want my =init.el= file to be as
+   small as possible. For that reason, I want Emacs to put all of its
+   generated fluff into a separate file that is actually outside
+   the Emacs directory.
+
+   #+BEGIN_SRC emacs-lisp
+     (let ((local-custom-file "~/.emacs-custom.el"))
+        (when (not (file-exists-p local-custom-file))
+           (write-region "" nil local-custom-file))
+        (setq custom-file local-custom-file)
+        (load custom-file))
+   #+END_SRC
 
 ** Identity
 
@@ -64,11 +88,11 @@
    #+BEGIN_SRC emacs-lisp
      (setq inhibit-startup-message t)
      (setq inhibit-splash-screen t)
-     (display-graphic-p)
-     (scroll-bar-mode -1)
-     (tool-bar-mode -1)
-     (tooltip-mode -1)
-     (menu-bar-mode -1)
+     (when (display-graphic-p)
+       (scroll-bar-mode -1)
+       (tool-bar-mode -1)
+       (tooltip-mode -1)
+       (menu-bar-mode -1))
    #+END_SRC
 
 * Behavior
@@ -767,8 +791,12 @@
    Next is =org-mode=, which I use constantly, day in and day out.
 
    #+BEGIN_SRC emacs-lisp
+     (eval-and-compile
+       (setq org-load-paths '("~/.emacs.d/org-mode/lisp"
+                              "~/.emacs.d/org-mode/contrib/lisp")))
+
      (use-package org
-       :load-path "~/.emacs.d/org-mode/lisp"
+       :load-path org-load-paths
        :ensure t
        :config
        (require 'cl)
@@ -994,22 +1022,24 @@
 
 ** Themes
 
-   Note that after installing these, you should run =M-x all-the-icons-install-fonts=.
+   Note that after installing these, you should run 
+   =M-x all-the-icons-install-fonts=.
 
    #+BEGIN_SRC emacs-lisp
-     (use-package all-the-icons
-       :ensure t)
+     (when (display-graphic-p)
+       (use-package all-the-icons
+         :ensure t)
 
-     (use-package doom-modeline
-       :ensure t
-       :hook
-       (after-init . doom-modeline-mode))
+       (use-package doom-modeline
+         :ensure t
+         :hook
+         (after-init . doom-modeline-mode))
 
-     (use-package doom-themes
-       :ensure t
-       :defer t
-       :init
-       (load-theme 'doom-moonlight t))
+       (use-package doom-themes
+         :ensure t
+         :defer t
+         :init
+         (load-theme 'doom-moonlight t)))
    #+END_SRC
 
 ** Email Alerts

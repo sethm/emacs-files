@@ -9,10 +9,3 @@
 (add-to-list 'load-path "~/.emacs.d/org-mode/contrib/lisp")
 
 (org-babel-load-file "~/.emacs.d/configuration.org")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Anything below has been overridden by customization.
-;; DO NOT TOUCH IT.
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
