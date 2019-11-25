@@ -1380,19 +1380,15 @@
        :ensure t
        :defer t
        :bind (("C-c TAB" . rust-format-buffer))
-       :init
-       (add-hook 'rust-mode-hook #'flycheck-mode)
-       (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
-       :hook
-       (rust-mode . lsp)
        :config
+       (use-package flycheck-rust)
        (define-key rust-mode-map (kbd "TAB")
          #'company-indent-or-complete-common)
        (use-package racer
          :ensure t
-         :defer t)
-       (use-package flycheck
-         :ensure t))
+         :defer t))
+
+     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
@@ -1403,13 +1399,6 @@
        :config
        (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
        (setq exec-path (append exec-path '("~/.cargo/bin"))))
-   #+END_SRC
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package flycheck-rust
-       :ensure t
-       :after rust
-       :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
    #+END_SRC
 
 ** Emacs Helm
