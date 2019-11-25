@@ -1022,7 +1022,7 @@
 
 ** Themes
 
-   Note that after installing these, you should run 
+   Note that after installing these, you should run
    =M-x all-the-icons-install-fonts=.
 
    #+BEGIN_SRC emacs-lisp
@@ -1381,14 +1381,16 @@
        :defer t
        :bind (("C-c TAB" . rust-format-buffer))
        :config
-       (use-package flycheck-rust)
+       (use-package flycheck-rust
+         :ensure t)
        (define-key rust-mode-map (kbd "TAB")
          #'company-indent-or-complete-common)
        (use-package racer
          :ensure t
-         :defer t))
+         :defer t)
+       :hook
+       (flycheck-mode . flycheck-rust-setup))
 
-     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
