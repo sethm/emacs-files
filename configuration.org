@@ -125,6 +125,20 @@
      (setq delete-old-versions t)
    #+END_SRC
 
+   Spelling is important (I'm terrible at spelling).
+
+   #+BEGIN_SRC emacs-lisp
+     (cond
+      ((executable-find "aspell")
+            (setq ispell-program-name "aspell"))
+      ((executable-find "hunspell")
+       (setq ispell-program-name "hunspell")
+       (setq ispell-local-dictionary "en_US")
+       (setq ispell-local-dictionary-alist
+             '(("en_US" "[[:alpha]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8))))
+      (t (setq ispell-program-name nil)))
+   #+END_SRC
+
    And finally, I completely disable lockfiles, which I don't need,
    and which only cause trouble.
 
