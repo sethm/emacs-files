@@ -813,9 +813,10 @@
        :load-path org-load-paths
        :ensure t
        :config
+       (use-package org-drill
+           :ensure t)
        (require 'cl)
        (require 'ox-latex)
-       (require 'org-drill)
        (setq org-agenda-tags-column -100)
        (setq org-deadline-warning-days 14)
        (setq org-table-shrunk-column-indicator "")
