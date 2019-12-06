@@ -1403,10 +1403,10 @@
          #'company-indent-or-complete-common)
        (use-package racer
          :ensure t
-         :defer t)
-       :hook
-       (flycheck-mode . flycheck-rust-setup))
+         :defer t))
 
+     (with-eval-after-load 'rust-mode
+       (add-hook 'rust-mode-hook #'flycheck-rust-setup))
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
