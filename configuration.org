@@ -663,7 +663,8 @@
    #+BEGIN_SRC emacs-lisp
      (when (file-exists-p (expand-file-name "~/quicklisp/slime-helper.el"))
        (load (expand-file-name "~/quicklisp/slime-helper.el"))
-       (setq inferior-lisp-program "sbcl"))
+       (setq inferior-lisp-program "sbcl")
+       (setq slime-contribs '(slime-fancy)))
    #+END_SRC
 
 ** Email
