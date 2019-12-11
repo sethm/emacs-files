@@ -352,6 +352,10 @@
     (global-set-key (read-kbd-macro "M-[ C") 'quiet-windmove-right)
     (global-set-key (read-kbd-macro "M-[ A") 'quiet-windmove-up)
     (global-set-key (read-kbd-macro "M-[ B") 'quiet-windmove-down)
+    (global-set-key (read-kbd-macro "M-[ O D") 'quiet-windmove-left)
+    (global-set-key (read-kbd-macro "M-[ O C") 'quiet-windmove-right)
+    (global-set-key (read-kbd-macro "M-[ O A") 'quiet-windmove-up)
+    (global-set-key (read-kbd-macro "M-[ O B") 'quiet-windmove-down)
     #+END_SRC
 
 *** Linux Terminal
@@ -1534,7 +1538,7 @@
    finish.
 
    #+BEGIN_SRC emacs-lisp
-    (defun loomcom-publish ()
+    (defun loomcom-publish-full ()
       "Publish my website."
       (interactive)
       (loomcom-publish-local)
@@ -1719,6 +1723,89 @@
              new-date))))
    #+END_SRC
 
+   I override the entire =org-html-template= function because I want to
+   wrap the HTML body in a /wrapper/ div, and also want to add the
+   document date under the title and subtitle, if available.
+
+   #+BEGIN_SRC emacs-lisp
+     (fmakunbound 'org-html-template)
+
+     (defun org-html-template (contents info)
+       "Return complete document string after HTML conversion.
+     CONTENTS is the transcoded contents string.  INFO is a plist
+     holding export options."
+       (concat
+        (when (and (not (org-html-html5-p info)) (org-html-xhtml-p info))
+          (let* ((xml-declaration (plist-get info :html-xml-declaration))
+                 (decl (or (and (stringp xml-declaration) xml-declaration)
+                           (cdr (assoc (plist-get info :html-extension)
+                                       xml-declaration))
+                           (cdr (assoc "html" xml-declaration))
+                           "")))
+            (when (not (or (not decl) (string= "" decl)))
+              (format "%s\n"
+                      (format decl
+                              (or (and org-html-coding-system
+                                       (fboundp 'coding-system-get)
+                                       (coding-system-get org-html-coding-system 'mime-charset))
+                                  "iso-8859-1"))))))
+        (org-html-doctype info)
+        "\n"
+        (concat "<html"
+                (when (org-html-xhtml-p info)
+                  (format
+                   " xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"%s\" xml:lang=\"%s\""
+                   (plist-get info :language) (plist-get info :language)))
+                ">\n")
+        "<head>\n"
+        (org-html--build-meta-info info)
+        (org-html--build-head info)
+        (org-html--build-mathjax-config info)
+        "</head>\n"
+        "<body>\n"
+        "<div id=\"wrapper\">\n"
+        (let ((link-up (org-trim (plist-get info :html-link-up)))
+              (link-home (org-trim (plist-get info :html-link-home))))
+          (unless (and (string= link-up "") (string= link-home ""))
+            (format (plist-get info :html-home/up-format)
+                    (or link-up link-home)
+                    (or link-home link-up))))
+        ;; Preamble.
+        (org-html--build-pre/postamble 'preamble info)
+        ;; Document contents.
+        (let ((div (assq 'content (plist-get info :html-divs))))
+          (format "<%s id=\"%s\">\n" (nth 1 div) (nth 2 div)))
+        ;; Document title.
+        (when (plist-get info :with-title)
+          (let* ((title (plist-get info :title))
+                 (subtitle (plist-get info :subtitle))
+                 (with-date (plist-get info :with-date))
+                 (date-fmt (plist-get info :html-metadata-timestamp-format))
+                 (date (org-export-get-date info date-fmt)))
+            (when title
+              (format
+               (if (plist-get info :html-html5-fancy)
+                   "<header>\n<h1 class=\"title\">%s</h1>\n%s%s</header>"
+                 "<h1 class=\"title\">%s%s%s</h1>\n")
+               (org-export-data title info)
+               (if subtitle
+                   (format
+                    (if (plist-get info :html-html5-fancy)
+                        "<p class=\"subtitle\">%s</p>\n"
+                      "\n<br>\n<span class=\"subtitle\">%s</span>\n")
+                    (org-export-data subtitle info))
+                 "")
+               (if (and with-date date)
+                   (format "\n<h2 class=\"date\">%s</h2>" date)
+                 "")))))
+        contents
+        (format "</%s>\n" (nth 1 (assq 'content (plist-get info :html-divs))))
+        ;; Postamble.
+        (org-html--build-pre/postamble 'postamble info)
+        ;; Closing document.
+        "</div>\n</body>\n</html>"))
+   #+END_SRC
+
    Then, the meat of the matter. This is a complete rewrite of the
    default =org-publish-sitemap= function that comes built into Org Mode.
    It redefines the behavior to add support for publishing a multi-page
@@ -1800,6 +1887,8 @@
               :with-toc nil
               :with-drawers t
               :with-sub-superscript nil
+              :html-html5-fancy t
+              :html-metadata-timestamp-format "%A, %B %_d %Y at %l:%M %p"
               :html-doctype "html5"
               :html-link-home "https://loomcom.com/"
               :html-link-use-abs-url t
@@ -1832,8 +1921,9 @@
               :with-author t
               :author "Seth Morabito"
               :email "web@loomcom.com"
+              :html-html5-fancy t
               :with-creator nil
-              :with-date t
+              :with-date nil
               :html-link-home "/"
               :html-head nil
               :html-doctype "html5"
