@@ -671,138 +671,15 @@
        (setq slime-contribs '(slime-fancy)))
    #+END_SRC
 
-** Email
+** Email and News
 
-   The second package is also a bit of an exception. I read email in
-   emacs using =mu4e=, which is installed locally. Since this
-   configuration is shared between computers, and not all of my
-   computers have =mu4e= installed, this configuration will only be
-   applied if =mu4e= is successfully loaded.
-
-   First, we attempt to require =mu4e=.
+   All of my email and news configuration is kept locally, and it
+   varies by machine, so if the configuration file exists, I will load
+   it here.
 
    #+BEGIN_SRC emacs-lisp
-     (when (require 'mu4e nil 'noerror)
-   #+END_SRC
-
-   If that succeeded, it's time to configure things.
-
-   The first bit of code defines a replacement for the standard =html2text=
-   function. It's slightly nicer.
-
-   #+BEGIN_SRC emacs-lisp
-       (defun shr-html2text ()
-         "Replacement for standard html2text using shr."
-         (interactive)
-         (let ((dom (libxml-parse-html-region (point-min) (point-max)))
-               (shr-width fill-column)
-               (shr-inhibit-images t)
-               (shr-bullet " "))
-           (erase-buffer)
-           (shr-insert-document dom)
-           (goto-char (point-min))))
-
-       (setq mu4e-html2text-command 'shr-html2text)
-   #+END_SRC
-
-   Then, I want to configure how =shr= handles color in HTML
-   email.
-
-   #+BEGIN_SRC emacs-lisp
-     (require 'mu4e-contrib)
-     (setq mu4e-html2text-command 'mu4e-shr2text)
-     ;; (setq shr-color-visible-luminance-min 60)
-     (setq shr-color-visible-luminance-min 20)
-     (setq shr-color-visible-distance-min 5)
-     ;; (setq shr-use-colors t)
-     (advice-add #'shr-colorize-region :around
-                 (defun shr-no-colourise-region (&rest ignore)))
-   #+END_SRC
-
-   Next, I set up a bunch of basic =mu4e= settings. This tells it
-   where to look for mail, and how to send mail via SMTP.
-
-   Authentication is all handled through an =~/.authinfo.gpg= file,
-   which is encrypted, and holds username and password information for
-   the SMTP server.
-
-   One note: The =mu4e-get-mail-command= is set to =/bin/true= here
-   because I simply want it to be a no-op. Mail retrieval is all
-   handled with =offlineimap=, so there's really nothing to get.
-
-   #+BEGIN_SRC emacs-lisp
-       (setq
-        mu4e-maildir (expand-file-name "~/Maildir/")
-        mail-user-agent 'mu4e-user-agent
-        mu4e-drafts-folder "/Drafts"
-        mu4e-sent-folder "/Sent"
-        mu4e-refile-folder "/Archive"
-	mu4e-trash-folder "/Trash"
-        mu4e-get-mail-command "/bin/true"
-        mu4e-update-interval 60
-        user-mail-address "web@loomcom.com"
-        user-full-name "Seth J. Morabito"
-        message-send-mail-function 'smtpmail-send-it
-        smtpmail-smtp-server "smtp.fastmail.com"
-        smtpmail-default-smtp-server "smtp.fastmail.com"
-        smtpmail-auth-credentials '(("smtp.fastmail.com" 587 nil nil))
-        smtpmail-smtp-service 587)
-   #+END_SRC
-
-   I also like to enable =visual-line-mode= whenever I'm reading
-   messages.
-
-   #+BEGIN_SRC emacs-lisp
-       (add-hook 'mu4e-view-mode-hook 'visual-line-mode)
-   #+END_SRC
-
-   And finally, I add some useful =mu4e= bookmarks.
-
-   #+BEGIN_SRC emacs-lisp
-       (add-to-list 'mu4e-bookmarks
-                    (make-mu4e-bookmark
-                     :name "Flagged Messages"
-                     :query "flag:flagged"
-                     :key ?f))
-
-       (add-to-list 'mu4e-bookmarks
-                    (make-mu4e-bookmark
-                     :name "Unread (Non-List)"
-                     :query "flag:unread
-     AND NOT flag:trashed
-     AND NOT flag:list"
-                     :key ?l))
-
-       (add-to-list 'mu4e-bookmarks
-                    (make-mu4e-bookmark
-                     :name "Today (Non-List)"
-                     :query "date:today..now
-     AND NOT flag:trashed
-     AND NOT flag:list AND NOT maildir:/Archive"
-                     :key ?T))
-
-       (add-to-list 'mu4e-bookmarks
-                    (make-mu4e-bookmark
-                     :name "This Week (Non-List)"
-                     :query "date:1w..now
-     AND NOT flag:trashed
-     AND NOT flag:list
-     AND NOT maildir:/Archive"
-                     :key ?W)))
-   #+END_SRC
-
-** GNUS
-
-   I don't read Usenet very much any more, but it's nice to reminisce.
-   /Eternal September/ is a free Usenet provider that has a feed of
-   text-only articles. No binaries. I like it that way.
-
-   #+BEGIN_SRC emacs-lisp
-     (setq gnus-select-method '(nntp "news.eternal-september.org"))
-     (setq gnus-extra-headers '(To Newsgroup))
-     (setq nnmail-extra-headers gnus-extra-headers)
-     (setq gnus-summary-line-format "%U%R%z %4i %([%4L: %-25,25f]%) %I%s\n")
-     (setq gnus-summary-same-subject "-||-")
+     (when (file-exists-p (expand-file-name "~/.emacs-mail.el"))
+       (load (expand-file-name "~/.emacs-mail.el")))
    #+END_SRC
 
 ** Org Mode
