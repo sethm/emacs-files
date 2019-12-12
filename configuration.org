@@ -68,16 +68,6 @@
         (load custom-file))
    #+END_SRC
 
-** Identity
-
-   I begin by explicitly identifying myself and setting my full name
-   and email address.
-
-   #+BEGIN_SRC emacs-lisp
-     (setq user-full-name "Seth Morabito")
-     (setq user-mail-address "web@loomcom.com")
-   #+END_SRC
-
 ** Reducing Clutter
 
    Next, I like to immediately reduce what I consider to be visual
@@ -669,17 +659,6 @@
        (load (expand-file-name "~/quicklisp/slime-helper.el"))
        (setq inferior-lisp-program "sbcl")
        (setq slime-contribs '(slime-fancy)))
-   #+END_SRC
-
-** Email and News
-
-   All of my email and news configuration is kept locally, and it
-   varies by machine, so if the configuration file exists, I will load
-   it here.
-
-   #+BEGIN_SRC emacs-lisp
-     (when (file-exists-p (expand-file-name "~/.emacs-mail.el"))
-       (load (expand-file-name "~/.emacs-mail.el")))
    #+END_SRC
 
 ** Org Mode
