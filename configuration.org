@@ -129,6 +129,13 @@
       (t (setq ispell-program-name nil)))
    #+END_SRC
 
+   On macOS, I turn off ~--dired~ (because ~ls~ does not support it).
+
+   #+BEGIN_SRC emacs-lisp
+     (when (string= system-type "darwin")
+       (setq dired-use-ls-dired nil))
+   #+END_SRC
+
    And finally, I completely disable lockfiles, which I don't need,
    and which only cause trouble.
 
@@ -1807,30 +1814,3 @@
               :publishing-directory ,loomcom-www-dir
               :publishing-function org-publish-attachment)))
    #+END_SRC
-
-* Frame Placement
-
-  Define a helper function that will center the frame on its display.
-
-  #+BEGIN_SRC emacs-lisp
-    (defun center-frame-in-display ()
-      (interactive)
-      (let* ((col-width (/ (frame-pixel-width) (frame-width)))
-         (row-height (/ (frame-pixel-height) (frame-height)))
-         (half-width (* (/ (frame-width) 2) col-width))
-         (half-height (* (/ (frame-height) 2) row-height))
-         (center-x (/ (display-pixel-width) 2))
-         (center-y (/ (display-pixel-height) 2)))
-    (set-frame-position
-     (selected-frame)
-     (- center-x half-width)
-     (- center-y half-height))))
-  #+END_SRC
-
-  Then, resize and center the frame.
-
-  #+BEGIN_SRC emacs-lisp
-    (set-frame-width (selected-frame) 98)
-    (set-frame-height (selected-frame) 56)
-    (center-frame-in-display)
-  #+END_SRC
