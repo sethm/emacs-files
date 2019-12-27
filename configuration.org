@@ -42,14 +42,6 @@
   $ make
   #+END_EXAMPLE
 
-  The only other troublesome setup is to install the necessary
-  fonts to make /Doom Mode Line/ look pretty. That can be done
-  inside of a running emacs with the command:
-
-  #+BEGIN_EXAMPLE
-   M-x all-the-icons-install-fonts
-  #+END_EXAMPLE
-
 * Basic Setup
 
 ** Where to store Customization
@@ -72,17 +64,14 @@
 
    Next, I like to immediately reduce what I consider to be visual
    clutter. Your milage may vary, but for me this means turning off
-   startup messages, the splash screen, scroll bars, tool bar,
-   tooltips, and the menu.
+   startup messages, the splash screen, tool bar, and tooltips.
 
    #+BEGIN_SRC emacs-lisp
      (setq inhibit-startup-message t)
      (setq inhibit-splash-screen t)
      (when (display-graphic-p)
-       (scroll-bar-mode -1)
        (tool-bar-mode -1)
-       (tooltip-mode -1)
-       (menu-bar-mode -1))
+       (tooltip-mode -1))
    #+END_SRC
 
 * Behavior
@@ -901,49 +890,6 @@
          (setq org-agenda-files (file-expand-wildcards "~/Nextcloud/Notes/*.org")
                org-archive-location (concat "~/Nextcloud/Notes/Archive/%s::")
                org-default-notes-file "~/Nextcloud/Notes/tasks.org")))
-   #+END_SRC
-
-** Themes
-
-   Note that after installing these, you should run
-   =M-x all-the-icons-install-fonts=.
-
-   #+BEGIN_SRC emacs-lisp
-     (when (display-graphic-p)
-       (use-package all-the-icons
-         :ensure t)
-
-       (use-package doom-modeline
-         :ensure t
-         :hook
-         (after-init . doom-modeline-mode))
-
-       (use-package doom-themes
-         :ensure t
-         :defer t
-         :init
-         (load-theme 'doom-moonlight t)))
-   #+END_SRC
-
-** Email Alerts
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package mu4e-alert
-       :defer t
-       :after mu4e
-       :config
-       (setq mu4e-alert-interesting-mail-query
-             "flag:unread AND NOT flag:trashed AND NOT maildir/Spam")
-       (mu4e-alert-enable-mode-line-display))
-   #+END_SRC
-
-** Scrollbar Replacement
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package sml-modeline
-       :ensure t
-       :init
-       (sml-modeline-mode))
    #+END_SRC
 
 ** Org Bullets
