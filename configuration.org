@@ -1173,7 +1173,21 @@
    #+BEGIN_SRC emacs-lisp
      (use-package eglot
        :ensure t
-       :hook ((python-mode java-mode bash-mode rust-mode) . eglot-ensure))
+       :hook ((prog-mode) . eglot-ensure))
+   #+END_SRC
+   
+   #+BEGIN_SRC emacs-lisp
+     (use-package smartparens
+       :ensure t
+       :init
+         (use-package smartparens-config)
+         (use-package smartparens-ruby)
+         (use-package smartparens-html)
+         (smartparens-global-mode 1)
+         (show-smartparens-global-mode 1)
+       :config
+         (setq smartparens-strict-mode t)
+         (sp-local-pair 'emacs-lisp-mode "`" nil :when '(sp-in-string-p)))
    #+END_SRC
 
 ** Web Development
