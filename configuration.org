@@ -125,11 +125,20 @@
        (setq dired-use-ls-dired nil))
    #+END_SRC
 
-   And finally, I completely disable lockfiles, which I don't need,
-   and which only cause trouble.
+   I completely disable lockfiles, which I don't need, and which only
+   cause trouble.
 
    #+BEGIN_SRC emacs-lisp
      (setq create-lockfiles nil)
+   #+END_SRC
+
+   Lastly, I disable the default "Control-Z" behavior of suspending
+   emacs, because I find that I accidentally hit this key combo way
+   too often when my clumsy fingers are trying to hit "Control-X"
+
+   #+BEGIN_SRC emacs-lisp
+     (global-unset-key [(control z)])
+     (global-unset-key [(control x)(control z)])
    #+END_SRC
 
 ** Scrolling
