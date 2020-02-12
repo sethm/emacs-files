@@ -429,12 +429,8 @@
    Tell Python mode to use Python 3
 
    #+BEGIN_SRC emacs-lisp
-     (setq flycheck-python-pycompile-executable "python3")
-     (setq flycheck-python-flake8-executable "python3")
-     (setq flycheck-python-pylint-executable "python3")
      (setq python-shell-interpreter "python3")
    #+END_SRC
-
 
 * Appearance
 
@@ -446,8 +442,8 @@
      (when (member "Input Mono" (font-family-list))
        (set-face-attribute 'default nil
                            :family "Input Mono"
-                           :weight 'light
-                           :height 120))
+                           :weight 'medium
+                           :height 180))
    #+END_SRC
 
 ** Emacs 27
@@ -1114,49 +1110,6 @@
 
    #+END_SRC
 
-   Flycheck enables syntax checking for many different languages.
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package flycheck
-       :ensure t
-       :hook (prog-mode . flycheck-mode))
-   #+END_SRC
-
-   Next let's set up some autocompletion.
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package irony
-       :ensure t
-       :defer t
-       :init
-       (add-hook 'c++-mode-hook 'irony-mode)
-       (add-hook 'c-mode-hook 'irony-mode)
-       (add-hook 'objc-mode-hook 'irony-mode)
-       :config
-       (defun my-irony-mode-hook ()
-         (define-key irony-mode-map [remap completion-at-point]
-           'irony-completion-at-point-async)
-         (define-key irony-mode-map [remap complete-symbol]
-           'irony-completion-at-point-async))
-       (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-       (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
-
-     (use-package company
-       :ensure t
-       :hook (prog-mode . company-mode)
-       :init (add-hook 'after-init-hook 'global-company-mode)
-       :config
-       (use-package company-irony :ensure t :defer t)
-       (setq company-idle-delay nil
-             company-minimum-prefix-length 2
-             company-show-numbers t
-             company-tooltip-limit 20
-             company-dabbrev-downcase nil
-             company-tooltip-align-annotations t
-             company-backends '((company-irony company-gtags)))
-       :bind ("C-;" . company-complete))
-   #+END_SRC
-
    CEDET provides a lot of nice support for C and C++ development.
 
    #+BEGIN_SRC emacs-lisp
@@ -1166,25 +1119,6 @@
                    ("C-c , >" . semantic-ia-fast-jump)))
    #+END_SRC
 
-   I have a few custom directories that I always want Flycheck to
-   search, so I set those here.
-
-   #+BEGIN_SRC emacs-lisp
-     (setq flycheck-clang-include-path
-           (list
-            (expand-file-name "~/Projects/simh/")
-            (expand-file-name "~/Projects/simh/3B2/")
-            (expand-file-name "~/Projects/emsdk/fastcomp/emscripten/system/include")))
-
-     (setq flycheck-gcc-include-path flycheck-clang-include-path)
-   #+END_SRC
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package eglot
-       :ensure t
-       :hook ((prog-mode) . eglot-ensure))
-   #+END_SRC
-   
    #+BEGIN_SRC emacs-lisp
      (use-package smartparens
        :ensure t
@@ -1256,16 +1190,9 @@
        :defer t
        :bind (("C-c TAB" . rust-format-buffer))
        :config
-       (use-package flycheck-rust
-         :ensure t)
-       (define-key rust-mode-map (kbd "TAB")
-         #'company-indent-or-complete-common)
        (use-package racer
          :ensure t
          :defer t))
-
-     (with-eval-after-load 'rust-mode
-       (add-hook 'rust-mode-hook #'flycheck-rust-setup))
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
@@ -1299,6 +1226,44 @@
              helm-ff-file-name-history-use-recentf t)
        (helm-mode 1))
    #+END_SRC
+
+* Email
+
+  #+BEGIN_SRC emacs-lisp
+    (when (file-exists-p "/usr/local/share/emacs/site-lisp/mu/mu4e")
+
+      (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+
+      (require 'mu4e)
+
+      (setq
+       mue4e-headers-skip-duplicates  t
+       mu4e-view-show-images t
+       mu4e-view-show-addresses t
+       mu4e-compose-format-flowed nil
+       mu4e-date-format "%y/%m/%d"
+       mu4e-headers-date-format "%Y/%m/%d"
+       mu4e-change-filenames-when-moving t
+       mu4e-attachments-dir "~/Downloads"
+
+       mu4e-maildir       "~/Maildir"   ;; top-level Maildir
+       ;; note that these folders below must start with /
+       ;; the paths are relative to maildir root
+       mu4e-refile-folder "/Archive"
+       mu4e-sent-folder   "/Sent"
+       mu4e-drafts-folder "/Drafts"
+       mu4e-trash-folder  "/Trash")
+
+      ;; this setting allows to re-sync and re-index mail
+      ;; by pressing U
+      (setq mu4e-get-mail-command  "mbsync -a")
+
+      (setq
+       message-send-mail-function   'smtpmail-send-it
+       smtpmail-default-smtp-server "smtp.fastmail.com"
+       smtpmail-smtp-server         "smtp.fastmail.com"))
+  #+END_SRC
+
 
 * Webpage Publishing
 
@@ -1801,7 +1766,7 @@
 
              ("images"
               :base-directory ,loomcom-org-dir
-              :base-extension "png\\|jpg\\|gif\\|pdf"
+              :base-extension "png\\|jpg\\|gif\\|pdf\\|svg"
               :recursive t
               :publishing-directory ,loomcom-www-dir
               :publishing-function org-publish-attachment)))
