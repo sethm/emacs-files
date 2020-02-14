@@ -1304,7 +1304,8 @@
      (setq loomcom-footer
            (concat
             "<div id=\"footer\">\n"
-            "<p>Proudly published with "
+            "<p>Proudly "
+            "<a href=\"https://loomcom.com/blog/0110_emacs_blogging_for_fun_and_profit.html\">published</a> with "
             "<a href=\"https://www.gnu.org/software/emacs/\">Emacs</a> and "
             "<a href=\"https://orgmode.org/\">Org Mode</a>"
             "</div>"))
