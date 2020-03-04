@@ -60,6 +60,16 @@
         (load custom-file))
    #+END_SRC
 
+** Default Directory
+
+   Some builds of emacs on exotic operating systems don't
+   automatically know that I want my home directory to be the default
+   find-file directory.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq default-directory (expand-file-name "~/"))
+   #+END_SRC
+
 ** Reducing Clutter
 
    Next, I like to immediately reduce what I consider to be visual
