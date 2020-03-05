@@ -919,80 +919,6 @@
         (lambda () (org-bullets-mode 1))))
    #+END_SRC
 
-** IRC
-
-   I like to use ERC for talking on IRC. This configuration was completely
-   stolen from =u/rmberYou= on Reddit, [[https://www.reddit.com/r/emacs/comments/8ml6na/tip_how_to_make_erc_fun_to_use/][who shared it in the r/emacs community]].
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package erc
-       :ensure t
-       :custom
-       (erc-autojoin-channels-alist
-        '(("irc.freenode.net" "#emacs" "#org-mode" "##3b2")))
-       (erc-autojoin-timing 'ident)
-       (erc-fill-function 'erc-fill-static)
-       (erc-fill-static-center 22)
-       (erc-hide-list '("JOIN" "PART" "QUIT"))
-       (erc-lurker-hide-list '("JOIN" "PART" "QUIT"))
-       (erc-lurker-threshold-time 43200)
-       (erc-prompt-for-nickserv-password nil)
-       (erc-server-reconnect-attempts 5)
-       (erc-server-reconnect-timeout 3)
-       (erc-track-exclude-types '("JOIN" "MODE" "NICK" "PART" "QUIT"
-                                  "324" "329" "332" "333" "353" "477"))
-       :config
-       (add-to-list 'erc-modules 'notifications)
-       (add-to-list 'erc-modules 'spelling)
-       (erc-services-mode 1)
-       (erc-update-modules))
-
-     (use-package erc-hl-nicks
-       :ensure t
-       :after erc)
-
-     (use-package erc-image
-       :ensure t
-       :after erc)
-
-     (defun my/erc-start-or-switch ()
-       "Connects to ERC, or switch to last active buffer."
-       (interactive)
-       (if (get-buffer "irc.freenode.net:6667")
-           (erc-track-switch-buffer 1)
-         (when (y-or-n-p "Start ERC? ")
-           (erc :server "irc.freenode.net" :port 6667 :nick "Twylo"))))
-
-     (defun my/erc-notify (nickname message)
-       "Displays a notification message for ERC."
-       (let* ((channel (buffer-name))
-              (nick (erc-hl-nicks-trim-irc-nick nickname))
-              (title (if (string-match-p (concat "^" nickname) channel)
-                         nick
-                       (concat nick " (" channel ")")))
-              (msg (s-trim (s-collapse-whitespace message))))
-         (alert (concat nick ": " msg) :title title)))
-
-     (defun my/erc-count-users ()
-       "Displays the number of users connected on the current channel."
-       (interactive)
-       (if (get-buffer "irc.freenode.net:6667")
-           (let ((channel (erc-default-target)))
-             (if (and channel (erc-channel-p channel))
-                 (message "%d users are online on %s"
-                          (hash-table-count erc-channel-users)
-                          channel)
-               (user-error "The current buffer is not a channel")))
-         (user-error "You must first start ERC")))
-
-     (defun my/erc-preprocess (string)
-       "Avoids channel flooding."
-       (setq str
-             (string-trim
-              (replace-regexp-in-string "\n+" " " str))))
-   #+END_SRC
-
-
 ** Support for Encrypted Authinfo
 
    #+BEGIN_SRC emacs-lisp
@@ -1151,11 +1077,18 @@
        :defer t
        :config
        (setq lsp-clients-clangd-args
-             '("-j=4" "-background-index" "-log=error"))
+             '("-j=4" 
+               "-background-index"
+               "-log=error"))
+       (when (string= system-type "darwin")
+         (setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"))
        (add-hook 'c-mode-hook #'lsp)
        (add-hook 'c++-mode-hook #'lsp)
        (add-hook 'python-mode-hook #'lsp)
        (add-hook 'rust-mode-hook #'lsp))
+
+     (use-package flycheck
+       :ensure t)
 
      (use-package lsp-ui
        :ensure t
@@ -1191,7 +1124,7 @@
        :config
        (push 'company-lsp company-backends)
 
-        ;; Disable client-side cache because the LSP server does a better job.
+       ;; Disable client-side cache because the LSP server does a better job.
        (setq company-transformers nil
              company-lsp-async t
              company-lsp-cache-candidates nil))
@@ -1279,8 +1212,8 @@
               ("C-x b" . helm-buffers-list)
               ("M-x" . helm-M-x))
        :config
-       (setq helm-candidate-number-limit 50
-             helm-fuzzy-matching t
+       (setq helm-candidate-number-limit 10
+             helm-fuzzy-matching nil ; was t
              helm-split-window-inside-p t
              helm-move-to-line-cycle-in-source t
              helm-scroll-amount 8
