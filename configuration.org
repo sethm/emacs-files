@@ -453,7 +453,7 @@
        (set-face-attribute 'default nil
                            :family "Input Mono"
                            :weight 'medium
-                           :height 180))
+                           :height 160))
    #+END_SRC
 
 ** Emacs 27
