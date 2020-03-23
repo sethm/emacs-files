@@ -44,6 +44,15 @@
 
 * Basic Setup
 
+** Common-Lisp extensions
+
+   Before doing anything else, I pull in Common Lisp extensions
+   because they mey be needed below.
+
+   #+BEGIN_SRC emacs-lisp
+     (require 'cl-lib)
+   #+END_SRC
+
 ** Where to store Customization
 
    First things first. Because I use =org-babel= and literate
@@ -444,24 +453,48 @@
 
 * Appearance
 
+** Theme
+
+  When running in a window system I like the Tango Dark theme.
+
+	#+BEGIN_SRC emacs-lisp
+    (when window-system
+      (load-theme 'tango-dark t))
+	#+END_SRC
+
 ** Default Face
 
-   I have become enamored of the /"Input Mono"/ family of fonts.
+   Not all fonts are installed on all systems where I use Emacs. This
+   code will iterate over a list of fonts, in order of my personal
+   preference, and set the default face to the first one available. Of
+   course, if Emacs is not running in a windowing system, this is
+   ignored.
 
    #+BEGIN_SRC emacs-lisp
-     (when (member "Input Mono" (font-family-list))
-       (set-face-attribute 'default nil
-                           :family "Input Mono"
-                           :weight 'medium
-                           :height 160))
+     (when window-system
+       (let* ((families '("Input Mono"
+                          "Dejavu"
+                          "Inconsolata"
+                          "Menlo"
+                          "Monaco"
+                          "Courier New"
+                          "Courier"
+                          "fixed"))
+              (selected-family (cl-dolist (fam families)
+                                 (when (member fam (font-family-list))
+                                   (cl-return fam)))))
+         (set-face-attribute 'default nil
+                             :family selected-family
+                             :weight 'medium
+                             :height 160)))
    #+END_SRC
 
 ** Emacs 27
 
-   Beginning in Emacs 27, a new attribute, =:extend=, was added to faces.
-   It determines whether the background of a face will extend to the right
-   margin or not. It defaults to =nil=, but I prefer it to be set for some
-   things.
+   Beginning in Emacs 27, a new attribute, =:extend=, was added to
+   faces.  It determines whether the background of a face will extend
+   to the right margin or not. It defaults to =nil=, but I prefer it
+   to be set for some things.
 
    #+BEGIN_SRC emacs-lisp
      (when (>= emacs-major-version 27)
@@ -783,12 +816,6 @@
             org-ellipsis "▼")
     #+END_SRC
 
-    I also really enjoy hiding emphasis markers.
-
-    #+BEGIN_SRC emacs-lisp
-      (setq org-hide-emphasis-markers t)
-    #+END_SRC
-
 *** Export Settings
 
     This adds support the LaTeX class =koma-article= on LaTeX export.
@@ -1077,7 +1104,7 @@
        :defer t
        :config
        (setq lsp-clients-clangd-args
-             '("-j=4" 
+             '("-j=4"
                "-background-index"
                "-log=error"))
        (when (string= system-type "darwin")
