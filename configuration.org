@@ -472,9 +472,9 @@
 
    #+BEGIN_SRC emacs-lisp
      (when window-system
-       (let* ((families '("Input Mono"
+       (let* ((families '("Inconsolata"
+                          "Input Mono"
                           "Dejavu"
-                          "Inconsolata"
                           "Menlo"
                           "Monaco"
                           "Courier New"
@@ -981,14 +981,14 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package magit
-       :ensure t)
+       :ensure t
+       :init
+       (add-hook 'prog-mode-hook #'git-gutter-mode))
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
      (use-package git-gutter
-       :ensure t
-       :init
-       (global-git-gutter-mode +1))
+       :ensure t)
    #+END_SRC
 
 ** YAML
@@ -1311,61 +1311,6 @@
             "<a href=\"https://www.gnu.org/software/emacs/\">Emacs</a> and "
             "<a href=\"https://orgmode.org/\">Org Mode</a>"
             "</div>"))
-   #+END_SRC
-
-   Now, it's on to the helper functions.
-
-** Helper Function: Publishing The Site Locally
-
-   =org-publish= has one fatal flaw: It opens a /lot/ of buffers, and
-   if =global-git-gutter-mode= or =magit-file-mode= are enabled (as
-   they usually are), Emacs grinds to a halt. So, in order to publish
-   efficiently, those modes /must/ be turned off. We can turn them
-   back on after publishing is complete.
-
-   #+BEGIN_SRC emacs-lisp
-    (defun loomcom-publish-local ()
-      "Publish my website, but do not push to the server."
-      (interactive)
-      (remove-hook 'find-file-hooks 'vc-find-file-hook)
-      (magit-file-mode -1)
-      (global-git-gutter-mode -1)
-      (org-publish-all)
-      (global-git-gutter-mode +1)
-      (magit-file-mode +1)
-      (add-hook 'find-file-hooks 'vc-find-file-hook))
-   #+END_SRC
-
-** Helper Function: Pushing Published Files to the Server
-
-   Once files have been published to local disk, they need to be
-   rsynced to the server.
-
-   #+BEGIN_SRC emacs-lisp
-     (defun loomcom-rsync-www ()
-       "Rsync my working directory to my public web directory."
-       (interactive)
-       (let ((publish-dir loomcom-www-dir)
-             (remote-dir "neon.loomcom.com:/var/www/loomcom/"))
-         (when (file-exists-p publish-dir)
-           (shell-command
-            (format
-             "rsync -avz --delete --delete-after %s %s"
-             publish-dir
-             remote-dir)))))
-   #+END_SRC
-
-** Helper Function: Do a Complete Publishing Cycle
-
-   And here's a function that will publish my webpage from start to
-   finish.
-
-   #+BEGIN_SRC emacs-lisp
-    (defun loomcom-publish-full ()
-      "Publish my website."
-      (interactive)
-      (loomcom-publish-local)
-      (loomcom-rsync-www))
    #+END_SRC
 
 ** Helper Function: Build a Preview for a Blog Page
@@ -1773,4 +1718,25 @@
               :recursive t
               :publishing-directory ,loomcom-www-dir
               :publishing-function org-publish-attachment)))
+   #+END_SRC
+
+** Publishing
+
+   After publishing a site, I always want to rsync it to my 
+   web server. We can do that with a hook.
+
+   #+BEGIN_SRC emacs-lisp
+     (defun loomcom-rsync-www (in-file out-file)
+       "Rsync my working directory to my public web directory."
+       (interactive)
+       (let ((publish-dir loomcom-www-dir)
+             (remote-dir "neon.loomcom.com:/var/www/loomcom/"))
+         (when (file-exists-p publish-dir)
+           (shell-command
+            (format
+             "rsync -avqz --delete --delete-after %s %s"
+             publish-dir
+             remote-dir)))))
+
+     (add-hook 'org-publish-after-publishing-hook 'loomcom-rsync-www)
    #+END_SRC
