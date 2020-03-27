@@ -1106,7 +1106,10 @@
        (setq lsp-clients-clangd-args
              '("-j=4"
                "-background-index"
-               "-log=error"))
+               "-log=error")
+             ;; Disable automatic formatting-as-you-type
+             lsp-enable-indentation nil
+             lsp-enable-on-type-formatting nil)
        (when (string= system-type "darwin")
          (setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"))
        (add-hook 'c-mode-hook #'lsp)
