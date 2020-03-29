@@ -1079,22 +1079,6 @@
                    ("C-c , >" . semantic-ia-fast-jump)))
    #+END_SRC
 
-   Smartparens lets me save some keystrokes.
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package smartparens
-       :ensure t
-       :init
-       (use-package smartparens-config)
-       (use-package smartparens-ruby)
-       (use-package smartparens-html)
-       (smartparens-global-mode 1)
-       (show-smartparens-global-mode 1)
-       :config
-       (setq smartparens-strict-mode t)
-       (sp-local-pair 'emacs-lisp-mode "`" nil :when '(sp-in-string-p)))
-   #+END_SRC
-
    Language Server Protocol support is pretty essential to my
    workflow. It makes Emacs act almost like an IDE.
 
