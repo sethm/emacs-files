@@ -1157,7 +1157,10 @@
    #+BEGIN_SRC emacs-lisp
      (use-package web-mode
        :ensure t
-       :defer t)
+       :config
+       (setq web-mode-markup-indent-offset 2
+             web-mode-css-indent-offset 2
+             web-mode-code-indent-offset 2))
    #+END_SRC
 
    I almost never use PHP, but it's nice to have when you really,
