@@ -1709,24 +1709,3 @@
               :publishing-directory ,loomcom-www-dir
               :publishing-function org-publish-attachment)))
    #+END_SRC
-
-** Publishing
-
-   After publishing a site, I always want to rsync it to my 
-   web server. We can do that with a hook.
-
-   #+BEGIN_SRC emacs-lisp
-     (defun loomcom-rsync-www (in-file out-file)
-       "Rsync my working directory to my public web directory."
-       (interactive)
-       (let ((publish-dir loomcom-www-dir)
-             (remote-dir "neon.loomcom.com:/var/www/loomcom/"))
-         (when (file-exists-p publish-dir)
-           (shell-command
-            (format
-             "rsync -avqz --delete --delete-after %s %s"
-             publish-dir
-             remote-dir)))))
-
-     (add-hook 'org-publish-after-publishing-hook 'loomcom-rsync-www)
-   #+END_SRC
