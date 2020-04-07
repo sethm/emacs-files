@@ -939,7 +939,7 @@
        :commands (org-bullets-mode)
        :config
        (setq org-bullets-bullet-list
-           '("●" "♦" "►" "•" "▸"))
+           '("①" "②" "③" "④" "⑤"))
        :init
        (add-hook
         'org-mode-hook
