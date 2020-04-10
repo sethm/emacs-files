@@ -1086,7 +1086,9 @@
      (use-package lsp-mode
        :ensure t
        :defer t
+       :commands lsp
        :config
+       (require 'lsp-clients)
        (setq lsp-clients-clangd-args
              '("-j=4"
                "-background-index"
@@ -1102,7 +1104,15 @@
        (add-hook 'rust-mode-hook #'lsp))
 
      (use-package flycheck
-       :ensure t)
+       :ensure t
+       :hook (prog-mode . flycheck-mode))
+
+     (use-package flycheck-rust
+       :ensure t
+       :config
+       (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
+       (setq exec-path (append exec-path '("~/.cargo/bin")))
+       (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
      (use-package lsp-ui
        :ensure t
@@ -1130,11 +1140,8 @@
 
      (use-package company
        :ensure t
-       :config
-       (setq company-idle-delay 0.3)
-
-       (global-company-mode 1)
-
+       :hook (prog-mode . company-mode)
+       :config (setq company-idle-delay 0.3)
        (global-set-key (kbd "S-<tab>") 'company-complete))
 
      (use-package company-lsp
@@ -1211,17 +1218,18 @@
        :config
        (use-package racer
          :ensure t
-         :defer t))
+         :defer t)
+       (setq lsp-rust-show-warnings t
+             lsp-rust-racer-completion t
+             lsp-rust-full-docs t
+             lsp-rust-build-lib t))
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
      (use-package cargo
        :ensure t
-       :hook (rust-mode . cargo-minor-mode)
-       :after rust-mode
        :config
-       (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
-       (setq exec-path (append exec-path '("~/.cargo/bin"))))
+       (add-hook 'rust-mode-hook 'cargo-minor-mode))
    #+END_SRC
 
 ** Emacs Helm
