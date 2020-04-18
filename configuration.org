@@ -1131,6 +1131,7 @@
              lsp-ui-doc-use-childframe t
              lsp-ui-doc-position 'top
              lsp-ui-doc-include-signature t
+             lsp-ui-doc-delay 2.5
              lsp-ui-sideline-enable nil
              lsp-ui-flycheck-enable t
              lsp-ui-flycheck-list-position 'right
@@ -1149,7 +1150,9 @@
      (use-package company
        :ensure t
        :hook (prog-mode . company-mode)
-       :config (setq company-idle-delay 0.3)
+       :config
+       (setq company-idle-delay 0.1
+             company-show-numbers t)
        (global-set-key (kbd "S-<tab>") 'company-complete))
 
      (use-package company-lsp
