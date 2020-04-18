@@ -730,6 +730,13 @@
 
    I have a lot of custom configuration for =org-mode=.
 
+*** Org Super Agenda
+
+    #+BEGIN_SRC emacs-lisp
+      (use-package org-super-agenda
+        :ensure t)
+    #+END_SRC
+
 *** Org Capture
 
     To capture new notes, I configure Org Capture with a quick
@@ -833,8 +840,8 @@
 
 *** Org Agenda
 
-   Org Agenda is a great way of tracking time and progress on various
-   projects and repeatable tasks. It's built into org-mode.
+    Org Agenda is a great way of tracking time and progress on various
+    projects and repeatable tasks. It's built into org-mode.
 
     I add a quick and easy way to get into =org-agenda= from any
     =org-mode= buffer by pressing =C-c a=.
@@ -925,10 +932,11 @@
          (global-set-key (kbd "C-c o")
                          (lambda ()
                            (interactive)
-                           (find-file "~/Nextcloud/Notes/tasks.org")))
-         (setq org-agenda-files (file-expand-wildcards "~/Nextcloud/Notes/*.org")
+                           (find-file "~/Nextcloud/Notes/agenda.org")))
+         (setq org-habit-show-habits-only-for-today nil
+               org-agenda-files (file-expand-wildcards "~/Nextcloud/Notes/*.org")
                org-archive-location (concat "~/Nextcloud/Notes/Archive/%s::")
-               org-default-notes-file "~/Nextcloud/Notes/tasks.org")))
+               org-default-notes-file "~/Nextcloud/Notes/agenda.org")))
    #+END_SRC
 
 ** Org Bullets
