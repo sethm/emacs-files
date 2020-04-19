@@ -734,7 +734,30 @@
 
     #+BEGIN_SRC emacs-lisp
       (use-package org-super-agenda
-        :ensure t)
+        :ensure t
+        :after org-agenda
+        :init
+        (setq org-agenda-compact-blocks nil
+              org-columns-default-format "%35ITEM %TODO %3PRIORITY %TAGS"
+              org-super-agenda-groups
+              '((:name "Next"
+                       :time-grid t
+                       :todo "NEXT"
+                       :order 1)
+                (:name "Language"
+                       :time-grid t
+                       :tag "language"
+                       :order 2)
+                (:name "Study"
+                       :time-grid t
+                       :tag "study"
+                       :order 3)
+                (:discard (:not (:todo "TODO")))))
+        :config
+        (org-super-agenda-mode)
+        (set-face-attribute 'org-super-agenda-header nil
+                             :overline t
+                             :weight 'bold))
     #+END_SRC
 
 *** Org Capture
