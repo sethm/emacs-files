@@ -7,7 +7,6 @@
 .mc-lists.el
 .org*
 .smex-items
-/excorporate
 /workspace
 ac-comphist.dat
 backups
