@@ -737,9 +737,7 @@
         :ensure t
         :after org-agenda
         :init
-        (setq org-agenda-compact-blocks nil
-              org-columns-default-format "%35ITEM %TODO %3PRIORITY %TAGS"
-              org-super-agenda-groups
+        (setq org-super-agenda-groups
               '((:name "Next"
                        :time-grid t
                        :todo "NEXT"
@@ -755,9 +753,15 @@
                 (:discard (:not (:todo "TODO")))))
         :config
         (org-super-agenda-mode)
+        (setq org-agenda-compact-blocks nil
+              org-agenda-span 1
+              org-super-agenda-header-separator ""
+              org-columns-default-format "%35ITEM %TODO %3PRIORITY %TAGS")
         (set-face-attribute 'org-super-agenda-header nil
-                             :overline t
-                             :weight 'bold))
+                             :weight 'bold)
+        (set-face-attribute 'org-agenda-date nil
+                             :underline t
+                             :height 1.5))
     #+END_SRC
 
 *** Org Capture
