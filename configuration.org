@@ -8,7 +8,7 @@
 * Introduction
 
   This document contains my entire GNU Emacs configuration file in
-  /"Literate Programming"/ style. Literate Programming strives to
+  /Literate Programming/ style. Literate Programming strives to
   invert the normal programming paradigm; Instead of source code
   scattered with comments, Literate Programming encourages code to be
   written as a human readable document, in prose, with source code
