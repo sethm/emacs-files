@@ -47,7 +47,8 @@
 ** Common-Lisp extensions
 
    Before doing anything else, I pull in Common Lisp extensions
-   because they mey be needed below.
+   because they are needed in several custom functions I use
+   way down below.
 
    #+BEGIN_SRC emacs-lisp
      (require 'cl-lib)
