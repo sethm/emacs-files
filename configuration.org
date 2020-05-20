@@ -89,9 +89,11 @@
    #+BEGIN_SRC emacs-lisp
      (setq inhibit-startup-message t)
      (setq inhibit-splash-screen t)
-     (when (display-graphic-p)
-       (tool-bar-mode -1)
-       (tooltip-mode -1))
+     (tool-bar-mode -1)
+     (tooltip-mode -1)
+     (if (display-graphic-p)
+         (menu-bar-mode t)
+       (menu-bar-mode -1))
    #+END_SRC
 
 * Behavior
@@ -380,7 +382,6 @@
     (global-set-key (read-kbd-macro "M-[ 1 ; 5 C") 'quiet-windmove-right)
     (global-set-key (read-kbd-macro "M-[ 1 ; 5 A") 'quiet-windmove-up)
     (global-set-key (read-kbd-macro "M-[ 1 ; 5 B") 'quiet-windmove-down)
-
     #+END_SRC
 
 *** Linux GTK
@@ -390,7 +391,6 @@
     (global-set-key (kbd "C-<right>") 'quiet-windmove-right)
     (global-set-key (kbd "C-<up>")    'quiet-windmove-up)
     (global-set-key (kbd "C-<down>")  'quiet-windmove-down)
-
     #+END_SRC
 
 ** Other Key Bindings
@@ -399,7 +399,6 @@
 
     #+BEGIN_SRC emacs-lisp
     (global-set-key "\C-xl" 'goto-line)
-
     #+END_SRC
 
 ** Miscellaneous Settings
