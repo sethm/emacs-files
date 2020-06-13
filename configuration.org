@@ -473,8 +473,8 @@
 
    #+BEGIN_SRC emacs-lisp
      (when window-system
-       (let* ((families '("Inconsolata"
-                          "Input Mono"
+       (let* ((families '("Input Mono"
+                          "Inconsolata"
                           "Dejavu"
                           "Menlo"
                           "Monaco"
@@ -722,6 +722,19 @@
 
    I have a lot of custom configuration for =org-mode=.
 
+*** Appearance
+
+    #+BEGIN_SRC emacs-lisp
+      (set-face-attribute 'org-level-1 nil
+                          :weight 'black
+                          :underline t
+                          :height 1.6)
+      (set-face-attribute 'org-level-2 nil
+                          :weight 'bold
+                          :height 1.3)
+    #+END_SRC
+
+
 *** Org Roam
 
     Org-Roam is a Zettelkasten note taking system for org-mode. I've
@@ -736,16 +749,12 @@
         (require 'org-roam-protocol)
         :custom
         (org-roam-directory "~/Documents/org-roam")
+        (org-roam-index-file "~/Documents/org-roam/index.org")
         (org-roam-capture-templates
          '(("d" "default" plain (function org-roam--capture-get-point)
             "%?"
             :file-name "%<%Y%m%d%H%M%S>-${slug}"
-            :head "#+AUTHOR: %n
-#+DATE: %<%Y-%m-%d %a %H:%M>
-#+TITLE: ${title}
-#+STARTUP: showall inlineimages
-#+OPTIONS: toc:nil num:nil\n
-- tags :: \n\n")))
+            :head "#+AUTHOR: %n\n#+DATE: %<%Y-%m-%d>\n#+TITLE: ${title}\n#+STARTUP: showall inlineimages\n#+OPTIONS: toc:nil num:nil\n\n- tags :: \n\n")))
         :bind (:map org-roam-mode-map
                     (("C-c n l" . org-roam)
                      ("C-c n f" . org-roam-find-file)
@@ -767,6 +776,11 @@
               org-roam-server-label-truncate t
               org-roam-server-label-truncate-length 60
               org-roam-server-label-wrap-length 20))
+
+      (use-package company-org-roam
+        :ensure t
+        :config
+        (push 'company-org-roam company-backends))
     #+END_SRC
 
 *** Org Super Agenda
@@ -1007,20 +1021,14 @@
 
 ** Org Bullets
 
-   I've disabled Org-Bullets for now, but simply uncomment this to get
-   them back.
-
    #+BEGIN_SRC emacs-lisp
-     ;; (use-package org-bullets
-     ;;   :ensure t
-     ;;   :commands (org-bullets-mode)
-     ;;   :config
-     ;;   (setq org-bullets-bullet-list
-     ;;       '("①" "②" "③" "④" "⑤"))
-     ;;   :init
-     ;;   (add-hook
-     ;;    'org-mode-hook
-     ;;    (lambda () (org-bullets-mode 1))))
+     (use-package org-bullets
+       :ensure t
+       :commands (org-bullets-mode)
+       :init
+       (add-hook
+        'org-mode-hook
+        (lambda () (org-bullets-mode 1))))
    #+END_SRC
 
 ** Support for Encrypted Authinfo
