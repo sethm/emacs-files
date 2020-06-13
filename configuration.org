@@ -1,7 +1,7 @@
 #+AUTHOR: Seth Morabito
 #+EMAIL:  web@loomcom.com
 #+TITLE:  GNU Emacs Configuration File
-#+DATE:   11 July 2019
+#+DATE:   13 June 2020
 #+OPTIONS: toc:1 ':t
 #+STARTUP: showall
 
