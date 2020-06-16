@@ -473,7 +473,8 @@
 
    #+BEGIN_SRC emacs-lisp
      (when window-system
-       (let* ((families '("Input Mono"
+       (let* ((families '("Hack"
+                          "Input Mono"
                           "Inconsolata"
                           "Dejavu"
                           "Menlo"
