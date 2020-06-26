@@ -749,8 +749,8 @@
         :config
         (require 'org-roam-protocol)
         :custom
-        (org-roam-directory "~/Documents/org-roam")
-        (org-roam-index-file "~/Documents/org-roam/index.org")
+        (org-roam-directory "~/Nextcloud/org-roam")
+        (org-roam-index-file "~/Nextcloud/org-roam/index.org")
         (org-roam-capture-templates
          '(("d" "default" plain (function org-roam--capture-get-point)
             "%?"
