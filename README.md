@@ -62,7 +62,7 @@ the final set of UI element fonts.
 
 ## License
 
-Copyright 1995–2019, Seth J. Morabito &lt;web@loomcom.com&gt;
+Copyright 1995–2020, Seth J. Morabito &lt;web@loomcom.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

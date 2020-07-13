@@ -1,7 +1,7 @@
 #+AUTHOR: Seth Morabito
 #+EMAIL:  web@loomcom.com
 #+TITLE:  GNU Emacs Configuration File
-#+DATE:   13 June 2020
+#+DATE:   10 July 2020
 #+OPTIONS: toc:1 ':t
 #+STARTUP: showall
 
@@ -301,9 +301,9 @@
    I have mandated the following keys for navigation:
 
    - =C-<left>= :: Navigate to the window to the left of the current
-                   window.
+     window.
    - =C-<right>= :: Navigate to the window to the right of the current
-                    window.
+     window.
    - =C-<up>= :: Navigate to the window above the current window.
    - =C-<down>= :: Navigate to the window below the current window.
 
@@ -456,12 +456,12 @@
 
 ** Theme
 
-  When running in a window system I like the Tango Dark theme.
+   When running in a window system I like the Tango Dark theme.
 
-	#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
     (when window-system
       (load-theme 'tango-dark t))
-	#+END_SRC
+   #+END_SRC
 
 ** Default Face
 
@@ -701,6 +701,29 @@
    Next is =org-mode=, which I use constantly, day in and day out.
 
    #+BEGIN_SRC emacs-lisp
+     (defun my-org-agenda-format-date-aligned (date)
+       "Format a DATE string for display in the daily/weekly agenda, or timeline.
+     This function makes sure that dates are aligned for easy reading."
+       (require 'cal-iso)
+       (let* ((dayname (calendar-day-name date 1 nil))
+              (day (cadr date))
+              (day-of-week (calendar-day-of-week date))
+              (month (car date))
+              (monthname (calendar-month-name month 1))
+              (year (nth 2 date))
+              (iso-week (org-days-to-iso-week
+                         (calendar-absolute-from-gregorian date)))
+              (weekyear (cond ((and (= month 1) (>= iso-week 52))
+                               (1- year))
+                              ((and (= month 12) (<= iso-week 1))
+                               (1+ year))
+                              (t year)))
+              (weekstring (if (= day-of-week 1)
+                              (format " W%02d" iso-week)
+                            "")))
+         (format "%-2s. %2d %s"
+                 dayname day monthname)))
+
      (eval-and-compile
        (setq org-load-paths '("~/.emacs.d/org-mode/lisp"
                               "~/.emacs.d/org-mode/contrib/lisp")))
@@ -717,7 +740,9 @@
        (setq org-agenda-tags-column -65)
        (setq org-deadline-warning-days 14)
        (setq org-table-shrunk-column-indicator "")
+       (setq org-agenda-block-separator (string-to-char " "))
        (setq org-adapt-indentation t)
+       (setq org-agenda-format-date 'my-org-agenda-format-date-aligned)
        ;; Open up org-mode links in the same buffer
        (setq org-link-frame-setup '((file . find-file))))
    #+END_SRC
@@ -997,17 +1022,17 @@
                "CANCELED(c)")))
     #+END_SRC
 
-   And finally, I set some file locations. This is a bit convoluted
-   because I use Agenda both for work and for home. At work, I keep a
-   file called =~/.org-agenda-setup.el= that contains my agenda files
-   and archive location information. At home, I just use what's baked
-   into this file.
+    And finally, I set some file locations. This is a bit convoluted
+    because I use Agenda both for work and for home. At work, I keep a
+    file called =~/.org-agenda-setup.el= that contains my agenda files
+    and archive location information. At home, I just use what's baked
+    into this file.
 
-   Also note that I like to keep archived Agenda items in a separate
-   directory, rather than the default behavior of renaming them to
-   =<original-file-name>.org_archive=.
+    Also note that I like to keep archived Agenda items in a separate
+    directory, rather than the default behavior of renaming them to
+    =<original-file-name>.org_archive=.
 
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
      (if (file-exists-p "~/.org-agenda-setup.el")
          (load "~/.org-agenda-setup.el")
        (progn
@@ -1019,7 +1044,7 @@
                org-agenda-files (file-expand-wildcards "~/Nextcloud/Notes/*.org")
                org-archive-location (concat "~/Nextcloud/Notes/Archive/%s::")
                org-default-notes-file "~/Nextcloud/Notes/agenda.org")))
-   #+END_SRC
+    #+END_SRC
 
 ** Org Bullets
 
@@ -1807,3 +1832,24 @@
               :publishing-directory ,loomcom-www-dir
               :publishing-function org-publish-attachment)))
    #+END_SRC
+
+* Miscellaneous Hacks
+
+** An Emacs 27 oddity or bug?
+
+   Some time in Emacs 27's development lifetime, the default value of
+   the variable ~truncate-string-ellipsis~ became unbound. It's
+   supposed to be a string that's used when truncating a string to
+   width with the ~truncate-string-to-width~ function.  I think this
+   is a bug, but to work around it, we just define it here.
+
+   It might also be a bug with mu4e. Maybe mu4e is unbinding the
+   variable?
+
+   Hopefully we can remove this hack after the bug is fixed, whoever's
+   fault it is.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq truncate-string-ellipsis "...")
+   #+END_SRC
+
