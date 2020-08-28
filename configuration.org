@@ -454,15 +454,6 @@
 
 * Appearance
 
-** Theme
-
-   When running in a window system I like the Tango Dark theme.
-
-   #+BEGIN_SRC emacs-lisp
-    (when window-system
-      (load-theme 'tango-dark t))
-   #+END_SRC
-
 ** Default Face
 
    Not all fonts are installed on all systems where I use Emacs. This
@@ -1045,6 +1036,17 @@
                org-archive-location (concat "~/Nextcloud/Notes/Archive/%s::")
                org-default-notes-file "~/Nextcloud/Notes/agenda.org")))
     #+END_SRC
+
+** Theme
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package modus-operandi
+       :ensure t)
+
+     (when window-system
+       (load-theme 'modus-operandi t))
+   #+END_SRC
+
 
 ** Org Bullets
 
