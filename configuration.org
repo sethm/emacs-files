@@ -1202,7 +1202,6 @@
        :defer t
        :commands lsp
        :config
-       (require 'lsp-clients)
        (setq lsp-clients-clangd-args
              '("-j=4"
                "-background-index"
