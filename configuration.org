@@ -1040,7 +1040,7 @@
 ** Theme
 
    #+BEGIN_SRC emacs-lisp
-     (use-package modus-operandi
+     (use-package modus-operandi-theme
        :ensure t)
 
      (when window-system
