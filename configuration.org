@@ -44,6 +44,18 @@
 
 * Basic Setup
 
+** Native Compilation
+
+   If (and only if) Emacs has native compilation available, set it up
+   to do its thing.
+
+   #+BEGIN_SRC emacs-lisp
+     (when (and (fboundp 'native-comp-available-p)
+                (native-comp-available-p)
+                (functionp 'json-serialize))
+       (setq comp-deferred-compilation t))
+   #+END_SRC
+
 ** Common-Lisp extensions
 
    Before doing anything else, I pull in Common Lisp extensions
