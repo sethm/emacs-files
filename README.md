@@ -48,18 +48,6 @@ is as follows:
     $ cd ~/.emacs.d/org-mode
     $ make
 
-
-### Install fonts
-
-By default, my setup uses a font called **Input Mono**. If you want my exact
-look and feel, you'll want to install it.It's free for personal use here:
-https://input.fontbureau.com/download/
-
-Then, the final step is done from within Emacs when it's running. This installs
-the final set of UI element fonts.
-
-    M-x all-the-icons-install-fonts
-
 ## License
 
 Copyright 1995–2020, Seth J. Morabito &lt;web@loomcom.com&gt;

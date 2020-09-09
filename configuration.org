@@ -1318,6 +1318,21 @@
        :ensure t)
    #+END_SRC
 
+** Markdown
+
+   Org-mode is clearly superior [;-)] but sometimes you need to use
+   Markdown.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package markdown-mode
+       :ensure t
+       :commands (markdown-mode gfm-mode)
+       :mode (("README\\.md\\'" . gfm-mode)
+              ("\\.md\\'" . markdown-mode)
+              ("\\.markdown\\'" . markdown-mode))
+       :init (setq markdown-command "multimarkdown"))
+   #+END_SRC
+
 ** Haskell
 
    #+BEGIN_SRC emacs-lisp
