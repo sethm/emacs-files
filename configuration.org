@@ -522,10 +522,12 @@
 ** Changing Font Size on the Fly
 
    By default, you can increase or decrease the font face size in a
-   single window with =C-x C-+= or =C-x C--=, respectively.  This is
-   fine, but it applies to the /current window only/. I like to map
-   =C-+= and =C--= to functions that will change the height of the
-   default face in ALL windows.
+   single window with =C-x C-+= or =C-x C--=, respectively. This is
+   fine, but it applies to the /current window only/ (*note*: In
+   Emacs, a /window/ is what you or I would probably call a frame or a
+   pane... yes, I know, just work with it). I like to map =C-+= and
+   =C--= to functions that will change the height of the default face
+   in ALL windows.
 
    First, I create a base function to do the change by a certain
    amount in a certain direction.
