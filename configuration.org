@@ -8,23 +8,24 @@
 * Introduction
 
   This document contains my entire GNU Emacs configuration file in
-  /Literate Programming/ style. Literate Programming strives to
-  invert the normal programming paradigm; Instead of source code
-  scattered with comments, Literate Programming encourages code to be
-  written as a human readable document, in prose, with source code
-  blocks embedded inside of it. The source code later interpreted,
-  while the human readable prose is ignored.
+  /Literate Programming/ style. Literate Programming strives to invert
+  the normal programming paradigm; Instead of source code scattered
+  with comments, Literate Programming encourages code to be written as
+  a human readable document, in prose, with source code blocks
+  embedded inside of it. The source code is later interpreted, while
+  the human readable prose is ignored by the interpreter or compiler.
 
   The magic here is provided by =org-babel=, which provides a method
   for extracting and evaluating Emacs Lisp expressions inside an
   =org-mode= file.
 
-  *There is one more thing:* Emacs comes with a built-in version of Org
-  Mode that is out of date and obsolete. Because of that, I provide my
-  own checkout of Org Mode as a submodule. The first two lines of my
-  =init.el= file then add this submodule to the load path. This is
-  required to use the submodule version of org mode. My =init.el=
-  looks like this:
+  *There is one more thing:* Emacs comes with a built-in version of
+  Org Mode that is usually out of date. Because I like to live on the
+  bleeding edge of org-mode, I provide my own checkout of Org Mode as
+  a git submodule. The first two lines of my =init.el= file then add
+  this submodule to the load path. This is required to use the
+  submodule version of org mode. My =init.el= looks like this, in its
+  entirety:
 
   #+BEGIN_EXAMPLE
     (add-to-list 'load-path "~/.emacs.d/org-mode/lisp")
@@ -38,6 +39,7 @@
   #+BEGIN_EXAMPLE
   $ cd ~/.emacs.d
   $ git submodule init
+  $ git submodule update
   $ cd ~/.emacs.d/org-mode
   $ make
   #+END_EXAMPLE
