@@ -21,11 +21,10 @@
 
   *There is one more thing:* Emacs comes with a built-in version of
   Org Mode that is usually out of date. Because I like to live on the
-  bleeding edge of org-mode, I provide my own checkout of Org Mode as
-  a git submodule. The first two lines of my =init.el= file then add
-  this submodule to the load path. This is required to use the
-  submodule version of org mode. My =init.el= looks like this, in its
-  entirety:
+  bleeding edge of Org Mode, I provide my own checkout as a git
+  submodule. The first two lines of my =init.el= file then add this
+  submodule to the load path. This is required to use the submodule
+  version of org mode. My =init.el= looks like this, in its entirety:
 
   #+BEGIN_EXAMPLE
     (add-to-list 'load-path "~/.emacs.d/org-mode/lisp")
