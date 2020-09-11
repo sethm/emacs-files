@@ -1085,6 +1085,14 @@
        (setq auth-sources '("~/.authinfo.gpg")))
    #+END_SRC
 
+** Epresent
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package epresent
+       :ensure t)
+   #+END_SRC
+
+
 ** Ledger Mode
 
    #+BEGIN_SRC emacs-lisp
@@ -1275,17 +1283,6 @@
        (setq company-idle-delay 0.1
              company-show-numbers t)
        (global-set-key (kbd "S-<tab>") 'company-complete))
-
-     (use-package company-lsp
-       :requires company
-       :ensure t
-       :config
-       (push 'company-lsp company-backends)
-
-       ;; Disable client-side cache because the LSP server does a better job.
-       (setq company-transformers nil
-             company-lsp-async t
-             company-lsp-cache-candidates nil))
    #+END_SRC
 
 ** Web Development
