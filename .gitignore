@@ -1,6 +1,7 @@
 *.elc
 *~
 .cache
+.dap-breakpoints
 .emacs.desktop*
 .last-package-update-day
 .lsp*
