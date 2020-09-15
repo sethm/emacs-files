@@ -520,6 +520,15 @@
     (setq frame-title-format "%b")
    #+END_SRC
 
+   When uncommented, this will disable fringe-mode ("fringe" is a
+   small blank margin space by default on the right and left of the
+   buffer). I'm leaving this default for now, but may uncomment it
+   later.
+
+   #+BEGIN_SRC emacs-lisp
+     ; (set-fringe-mode 0)
+   #+END_SRC
+
 ** Changing Font Size on the Fly
 
    By default, you can increase or decrease the font face size in a
@@ -587,10 +596,12 @@
 
 ** Line Numbers
 
-   I like to see line numbers in the gutter at all times.
+   When uncommented, this will display line numbers in the gutter at
+   all times. I'm experimenting by turning this off, for now. I may
+   uncomment it later.
 
    #+BEGIN_SRC emacs-lisp
-     (global-display-line-numbers-mode)
+     ; (global-display-line-numbers-mode)
    #+END_SRC
 
    Furthermore, I like to see /(Line,Column)/ displayed in the modeline.
