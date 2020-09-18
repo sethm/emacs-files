@@ -1387,15 +1387,26 @@
        (add-hook 'rust-mode-hook 'cargo-minor-mode))
    #+END_SRC
 
-** Emacs Counsel
+** Emacs Helm
 
    #+BEGIN_SRC emacs-lisp
-     (use-package counsel
+     (use-package helm
        :ensure t
+       :bind (("C-x C-f" . helm-find-files)
+              ("C-x f" . helm-recentf)
+              ("C-x b" . helm-buffers-list)
+              ("M-x" . helm-M-x))
        :config
-       (setq ivy-use-virtual-buffers t)
-       (setq ivy-count-format "(%d/%d) ")
-       (ivy-mode 1))
+       (setq helm-candidate-number-limit 10
+             helm-fuzzy-matching nil ; was t
+             helm-split-window-inside-p t
+             helm-move-to-line-cycle-in-source t
+             helm-scroll-amount 8
+             helm-echo-input-in-header-line t
+             helm-autoresize-max-height 0
+             helm-autoresize-min-height 20
+             helm-ff-file-name-history-use-recentf t)
+       (helm-mode 1))
    #+END_SRC
 
 * Email
