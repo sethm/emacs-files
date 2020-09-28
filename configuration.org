@@ -1056,11 +1056,11 @@
          (global-set-key (kbd "C-c o")
                          (lambda ()
                            (interactive)
-                           (find-file "~/Nextcloud/Notes/agenda.org")))
+                           (find-file "~/Nextcloud/agenda/agenda.org")))
          (setq org-habit-show-habits-only-for-today nil
-               org-agenda-files (file-expand-wildcards "~/Nextcloud/Notes/*.org")
-               org-archive-location (concat "~/Nextcloud/Notes/Archive/%s::")
-               org-default-notes-file "~/Nextcloud/Notes/agenda.org")))
+               org-agenda-files (file-expand-wildcards "~/Nextcloud/agenda/*.org")
+               org-archive-location (concat "~/Nextcloud/agenda/Archive/%s::")
+               org-default-notes-file "~/Nextcloud/agenda/agenda.org")))
     #+END_SRC
 
 ** Theme
