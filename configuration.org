@@ -288,6 +288,10 @@
        (setq exec-path (append exec-path '("/usr/local/bin")))
        (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
 
+     (when (file-exists-p (expand-file-name "~/bin"))
+       (setq exec-path (append exec-path '("~/bin")))
+       (setenv "PATH" (concat (getenv "PATH") ":$HOME/bin")))
+
      (when (file-exists-p "/Library/TeX/texbin")
        (setq exec-path (append exec-path '("/Library/TeX/texbin")))
        (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin")))
