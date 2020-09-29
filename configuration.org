@@ -600,12 +600,10 @@
 
 ** Line Numbers
 
-   When uncommented, this will display line numbers in the gutter at
-   all times. I'm experimenting by turning this off, for now. I may
-   uncomment it later.
+   Display line numbers in all programming-modes.
 
    #+BEGIN_SRC emacs-lisp
-     ; (global-display-line-numbers-mode)
+     (add-hook 'prog-mode-hook #'display-line-numbers-mode)
    #+END_SRC
 
    Furthermore, I like to see /(Line,Column)/ displayed in the modeline.
@@ -1379,6 +1377,9 @@
          :ensure t
          :defer t)
        (setq lsp-rust-server 'rust-analyzer
+             lsp-rust-analyzer-server-display-inline-hints t
+             lsp-rust-analyzer-display-chaining-hints t
+             lsp-rust-analyzer-display-parameter-hints t
              lsp-rust-show-warnings t
              lsp-rust-racer-completion t
              lsp-rust-full-docs t
