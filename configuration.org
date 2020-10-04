@@ -1377,7 +1377,8 @@
        (use-package racer
          :ensure t
          :defer t)
-       (setq lsp-rust-show-warnings t
+       (setq lsp-rust-server 'rls
+             lsp-rust-show-warnings t
              lsp-rust-racer-completion t
              lsp-rust-full-docs t
              lsp-rust-build-lib t))
