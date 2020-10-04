@@ -1134,6 +1134,7 @@
      (use-package magit
        :ensure t
        :init
+       (global-set-key (kbd "C-x g") 'magit-status)
        (add-hook 'prog-mode-hook #'git-gutter-mode))
    #+END_SRC
 
@@ -1376,11 +1377,7 @@
        (use-package racer
          :ensure t
          :defer t)
-       (setq lsp-rust-server 'rust-analyzer
-             lsp-rust-analyzer-server-display-inline-hints t
-             lsp-rust-analyzer-display-chaining-hints t
-             lsp-rust-analyzer-display-parameter-hints t
-             lsp-rust-show-warnings t
+       (setq lsp-rust-show-warnings t
              lsp-rust-racer-completion t
              lsp-rust-full-docs t
              lsp-rust-build-lib t))
