@@ -829,6 +829,107 @@
         (push 'company-org-roam company-backends))
     #+END_SRC
 
+*** Org Agenda
+
+    Org Agenda is a great way of tracking time and progress on various
+    projects and repeatable tasks. It's built into org-mode.
+
+    I add a quick and easy way to get into =org-agenda= from any
+    =org-mode= buffer by pressing =C-c a=.
+
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "C-c a") 'org-agenda)
+    #+END_SRC
+
+    Next, I add a custom =org-agenda= command to show the next three
+    weeks.
+
+    #+BEGIN_SRC emacs-lisp
+      (setq org-agenda-custom-commands
+            '(("W" "Next Week" agenda ""
+               ((org-agenda-span 7)
+                (org-agenda-start-on-weekday 0)))
+              ("N" "Next Three Weeks" agenda ""
+               ((org-agenda-span 21)
+                (org-agenda-start-on-weekday 0)))))
+    #+END_SRC
+
+    Then, I define some faces and use them for deadlines in
+    =org-agenda=.
+
+    #+BEGIN_SRC emacs-lisp
+      (defface deadline-soon-face
+        '((t (:foreground "#ff0000"
+                          :weight bold
+                          :slant italic
+                          :underline t))) t)
+      (defface deadline-near-face
+        '((t (:foreground "#ffa500"
+                          :weight bold
+                          :slant italic))) t)
+      (defface deadline-distant-face
+        '((t (:foreground "#ffff00"
+                          :weight bold
+                          :slant italic))) t)
+
+      (setq org-agenda-deadline-faces
+            '((0.75 . deadline-soon-face)
+              (0.5  . deadline-near-face)
+              (0.25 . deadline-distant-face)
+              (0.0  . deadline-distant-face)))
+    #+END_SRC
+
+    Then I set my =org-todo-keywords= so that I can manage my workflow
+    states the way I like to.
+
+    The syntax =@= following a definition indicates that a state needs
+    a note with a timestamp, while a =!= indicates that it needs only
+    a timestamp.
+
+    The =(a/b)= syntax indicates that action =a= should happen on
+    entry, and =b= should happen on exit. For example, =WAIT(w@/!)=
+    means that the workflow state =WAIT= can be accessed by the short
+    form =w=, and that a timestamp with a note should be recorded on
+    entry, but only a timestamp should be recorded on exit.
+
+    The vertical separator =|= separates keywords that need further
+    actions from those that are end states.
+
+    #+BEGIN_SRC emacs-lisp
+      (setq org-todo-keywords
+            '((sequence
+               "TODO(t)"
+               "NEXT(n)"
+               "WAIT(w/!)"
+               "|"
+               "DONE(d)"
+               "CANCELED(c)")))
+    #+END_SRC
+
+    And finally, I set some file locations. This is a bit convoluted
+    because I use Agenda both for work and for home. At work, I keep a
+    file called =~/.org-agenda-setup.el= that contains my agenda files
+    and archive location information. At home, I just use what's baked
+    into this file.
+
+    Also note that I like to keep archived Agenda items in a separate
+    directory, rather than the default behavior of renaming them to
+    =<original-file-name>.org_archive=.
+
+    #+BEGIN_SRC emacs-lisp
+     (if (file-exists-p "~/.org-agenda-setup.el")
+         (load "~/.org-agenda-setup.el")
+       (progn
+         (global-set-key (kbd "C-c o")
+                         (lambda ()
+                           (interactive)
+                           (find-file "~/Nextcloud/agenda/agenda.org")))
+         (setq org-habit-show-habits-only-for-today nil
+               org-agenda-files (file-expand-wildcards "~/Nextcloud/agenda/*.org")
+               org-archive-location (concat "~/Nextcloud/agenda/Archive/%s::")
+               org-default-notes-file "~/Nextcloud/agenda/agenda.org")))
+    #+END_SRC
+
 *** Org Super Agenda
 
     #+BEGIN_SRC emacs-lisp
@@ -962,107 +1063,6 @@
                      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                      ("\\paragraph{%s}" . "\\paragraph*{%s}")
                      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-    #+END_SRC
-
-*** Org Agenda
-
-    Org Agenda is a great way of tracking time and progress on various
-    projects and repeatable tasks. It's built into org-mode.
-
-    I add a quick and easy way to get into =org-agenda= from any
-    =org-mode= buffer by pressing =C-c a=.
-
-    #+BEGIN_SRC emacs-lisp
-      (add-hook 'org-mode-hook
-                (lambda ()
-                  (local-set-key
-                   (kbd "C-c a") 'org-agenda)))
-    #+END_SRC
-
-    Next, I add a custom =org-agenda= command to show the next three
-    weeks.
-
-    #+BEGIN_SRC emacs-lisp
-      (setq org-agenda-custom-commands
-            '(("N" "Next Three Weeks" agenda ""
-               ((org-agenda-span 21)
-                (org-agenda-start-on-weekday 0)))))
-    #+END_SRC
-
-    Then, I define some faces and use them for deadlines in
-    =org-agenda=.
-
-    #+BEGIN_SRC emacs-lisp
-      (defface deadline-soon-face
-        '((t (:foreground "#ff0000"
-                          :weight bold
-                          :slant italic
-                          :underline t))) t)
-      (defface deadline-near-face
-        '((t (:foreground "#ffa500"
-                          :weight bold
-                          :slant italic))) t)
-      (defface deadline-distant-face
-        '((t (:foreground "#ffff00"
-                          :weight bold
-                          :slant italic))) t)
-
-      (setq org-agenda-deadline-faces
-            '((0.75 . deadline-soon-face)
-              (0.5  . deadline-near-face)
-              (0.25 . deadline-distant-face)
-              (0.0  . deadline-distant-face)))
-    #+END_SRC
-
-    Then I set my =org-todo-keywords= so that I can manage my workflow
-    states the way I like to.
-
-    The syntax =@= following a definition indicates that a state needs
-    a note with a timestamp, while a =!= indicates that it needs only
-    a timestamp.
-
-    The =(a/b)= syntax indicates that action =a= should happen on
-    entry, and =b= should happen on exit. For example, =WAIT(w@/!)=
-    means that the workflow state =WAIT= can be accessed by the short
-    form =w=, and that a timestamp with a note should be recorded on
-    entry, but only a timestamp should be recorded on exit.
-
-    The vertical separator =|= separates keywords that need further
-    actions from those that are end states.
-
-    #+BEGIN_SRC emacs-lisp
-      (setq org-todo-keywords
-            '((sequence
-               "TODO(t)"
-               "NEXT(n)"
-               "WAIT(w/!)"
-               "|"
-               "DONE(d)"
-               "CANCELED(c)")))
-    #+END_SRC
-
-    And finally, I set some file locations. This is a bit convoluted
-    because I use Agenda both for work and for home. At work, I keep a
-    file called =~/.org-agenda-setup.el= that contains my agenda files
-    and archive location information. At home, I just use what's baked
-    into this file.
-
-    Also note that I like to keep archived Agenda items in a separate
-    directory, rather than the default behavior of renaming them to
-    =<original-file-name>.org_archive=.
-
-    #+BEGIN_SRC emacs-lisp
-     (if (file-exists-p "~/.org-agenda-setup.el")
-         (load "~/.org-agenda-setup.el")
-       (progn
-         (global-set-key (kbd "C-c o")
-                         (lambda ()
-                           (interactive)
-                           (find-file "~/Nextcloud/agenda/agenda.org")))
-         (setq org-habit-show-habits-only-for-today nil
-               org-agenda-files (file-expand-wildcards "~/Nextcloud/agenda/*.org")
-               org-archive-location (concat "~/Nextcloud/agenda/Archive/%s::")
-               org-default-notes-file "~/Nextcloud/agenda/agenda.org")))
     #+END_SRC
 
 ** Theme
