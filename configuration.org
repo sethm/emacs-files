@@ -54,7 +54,8 @@
      (when (and (fboundp 'native-comp-available-p)
                 (native-comp-available-p)
                 (functionp 'json-serialize))
-       (setq comp-deferred-compilation t))
+       (setq comp-deferred-compilation t
+             comp-speed 2))
    #+END_SRC
 
 ** Common-Lisp extensions
