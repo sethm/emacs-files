@@ -10,7 +10,7 @@
   - [[Introduction]]
   - [[Basic Setup]]
     
-* Introduction
+* <<Introduction>>Introduction
 
   This document contains my entire GNU Emacs configuration file in
   /Literate Programming/ style. Literate Programming strives to invert
@@ -48,7 +48,7 @@
   $ make
   #+END_EXAMPLE
 
-* Basic Setup
+* <<Basic Setup>>Basic Setup
 
 ** Native Compilation
 
