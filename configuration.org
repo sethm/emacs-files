@@ -9,7 +9,12 @@
 
   - [[#introduction][Introduction]]
   - [[#basic-setup][Basic Setup]]
-    
+  - [[#behavior][Behavior]]
+  - [[#appearance][Appearance]]
+  - [[#package-management][Package Management]]
+  - [[#webpage-publishing][Webpage Publishing]]
+  - [[misc-hacks][Miscellaneous Hacks]]
+
 * Introduction
   :PROPERTIES:
   :CUSTOM_ID: introduction
@@ -53,7 +58,7 @@
 
 * Basic Setup
   :PROPERTIES:
-  :CUSTOM_ID: basic_setup
+  :CUSTOM_ID: basic-setup
   :END:
 
 ** Native Compilation
@@ -88,10 +93,10 @@
 
    #+BEGIN_SRC emacs-lisp
      (let ((local-custom-file "~/.emacs-custom.el"))
-        (when (not (file-exists-p local-custom-file))
-           (write-region "" nil local-custom-file))
-        (setq custom-file local-custom-file)
-        (load custom-file))
+       (when (not (file-exists-p local-custom-file))
+         (write-region "" nil local-custom-file))
+       (setq custom-file local-custom-file)
+       (load custom-file))
    #+END_SRC
 
 ** Default Directory
@@ -122,6 +127,9 @@
    #+END_SRC
 
 * Behavior
+  :PROPERTIES:
+  :CUSTOM_ID: behavior
+  :END:
 
 ** Tidying Up the Working Directory
 
@@ -156,7 +164,7 @@
    #+BEGIN_SRC emacs-lisp
      (cond
       ((executable-find "aspell")
-            (setq ispell-program-name "aspell"))
+       (setq ispell-program-name "aspell"))
       ((executable-find "hunspell")
        (setq ispell-program-name "hunspell")
        (setq ispell-local-dictionary "en_US")
@@ -247,7 +255,7 @@
    Here's the setting:
 
    #+BEGIN_SRC emacs-lisp
-    (c-set-offset 'brace-list-intro '+)
+     (c-set-offset 'brace-list-intro '+)
    #+END_SRC
 
 ** Tramp
@@ -270,14 +278,13 @@
 
 ** Saving the Desktop
 
-   When these are uncommented, the current emacs "desktop" (basically,
-   the state of the frames and all the buffers) will be saved and
-   reloaded automatically between sessions. I honestly cannot decide
-   whether I want this or not, hence, it is commented out right now.
+   This configuration allows the current emacs "desktop" (basically,
+   the state of the frames and all the buffers) to be saved and
+   reloaded automatically between sessions.
 
    #+BEGIN_SRC emacs-lisp
-   ; (defvar desktop-dirname user-emacs-directory)
-   ; (desktop-save-mode 1)
+     (defvar desktop-dirname user-emacs-directory)
+     (desktop-save-mode 1)
    #+END_SRC
 
 ** Recent Files
@@ -344,40 +351,40 @@
    take a direction to move, and swallow errors.
 
    #+BEGIN_SRC emacs-lisp
-    (defun quiet-windmove (direction)
-      "Catch all errors and silently return nil.
-    ,* DIRECTION is a symbol, 'left, 'right, 'up, or 'down."
-      (condition-case nil
-          (cond ((eq direction 'left)
-                 (windmove-left))
-                ((eq direction 'right)
-                 (windmove-right))
-                ((eq direction 'up)
-                 (windmove-up))
-                ((eq direction 'down)
-                 (windmove-down)))
-        (error nil)))
+     (defun quiet-windmove (direction)
+       "Catch all errors and silently return nil.
+     ,* DIRECTION is a symbol, 'left, 'right, 'up, or 'down."
+       (condition-case nil
+           (cond ((eq direction 'left)
+                  (windmove-left))
+                 ((eq direction 'right)
+                  (windmove-right))
+                 ((eq direction 'up)
+                  (windmove-up))
+                 ((eq direction 'down)
+                  (windmove-down)))
+         (error nil)))
    #+END_SRC
 
    Next, for convenience, I define a bunch of short functions
    to move in the cardinal directions.
 
    #+BEGIN_SRC emacs-lisp
-    (defun quiet-windmove-left ()
-      "Navigate to the window immediately to the left the current one."
-      (interactive) (quiet-windmove 'left))
+     (defun quiet-windmove-left ()
+       "Navigate to the window immediately to the left the current one."
+       (interactive) (quiet-windmove 'left))
 
-    (defun quiet-windmove-right ()
-      "Navigate to the window immediately to the right the current one."
-      (interactive) (quiet-windmove 'right))
+     (defun quiet-windmove-right ()
+       "Navigate to the window immediately to the right the current one."
+       (interactive) (quiet-windmove 'right))
 
-    (defun quiet-windmove-up ()
-      "Navigate to the window immediately above the current one."
-      (interactive) (quiet-windmove 'up))
+     (defun quiet-windmove-up ()
+       "Navigate to the window immediately above the current one."
+       (interactive) (quiet-windmove 'up))
 
-    (defun quiet-windmove-down ()
-      "Navigate to the window immediately below the current one."
-      (interactive) (quiet-windmove 'down))
+     (defun quiet-windmove-down ()
+       "Navigate to the window immediately below the current one."
+       (interactive) (quiet-windmove 'down))
    #+END_SRC
 
    And then, finally, bind the keys to the functions to do the
@@ -390,36 +397,36 @@
 *** MacOS
 
     #+BEGIN_SRC emacs-lisp
-    (global-set-key (read-kbd-macro "M-[ 5 D") 'quiet-windmove-left)
-    (global-set-key (read-kbd-macro "M-[ 5 C") 'quiet-windmove-right)
-    (global-set-key (read-kbd-macro "M-[ 5 A") 'quiet-windmove-up)
-    (global-set-key (read-kbd-macro "M-[ 5 B") 'quiet-windmove-down)
-    (global-set-key (read-kbd-macro "M-[ D") 'quiet-windmove-left)
-    (global-set-key (read-kbd-macro "M-[ C") 'quiet-windmove-right)
-    (global-set-key (read-kbd-macro "M-[ A") 'quiet-windmove-up)
-    (global-set-key (read-kbd-macro "M-[ B") 'quiet-windmove-down)
-    (global-set-key (read-kbd-macro "M-[ O D") 'quiet-windmove-left)
-    (global-set-key (read-kbd-macro "M-[ O C") 'quiet-windmove-right)
-    (global-set-key (read-kbd-macro "M-[ O A") 'quiet-windmove-up)
-    (global-set-key (read-kbd-macro "M-[ O B") 'quiet-windmove-down)
+      (global-set-key (read-kbd-macro "M-[ 5 D") 'quiet-windmove-left)
+      (global-set-key (read-kbd-macro "M-[ 5 C") 'quiet-windmove-right)
+      (global-set-key (read-kbd-macro "M-[ 5 A") 'quiet-windmove-up)
+      (global-set-key (read-kbd-macro "M-[ 5 B") 'quiet-windmove-down)
+      (global-set-key (read-kbd-macro "M-[ D") 'quiet-windmove-left)
+      (global-set-key (read-kbd-macro "M-[ C") 'quiet-windmove-right)
+      (global-set-key (read-kbd-macro "M-[ A") 'quiet-windmove-up)
+      (global-set-key (read-kbd-macro "M-[ B") 'quiet-windmove-down)
+      (global-set-key (read-kbd-macro "M-[ O D") 'quiet-windmove-left)
+      (global-set-key (read-kbd-macro "M-[ O C") 'quiet-windmove-right)
+      (global-set-key (read-kbd-macro "M-[ O A") 'quiet-windmove-up)
+      (global-set-key (read-kbd-macro "M-[ O B") 'quiet-windmove-down)
     #+END_SRC
 
 *** Linux Terminal
 
     #+BEGIN_SRC emacs-lisp
-    (global-set-key (read-kbd-macro "M-[ 1 ; 5 D") 'quiet-windmove-left)
-    (global-set-key (read-kbd-macro "M-[ 1 ; 5 C") 'quiet-windmove-right)
-    (global-set-key (read-kbd-macro "M-[ 1 ; 5 A") 'quiet-windmove-up)
-    (global-set-key (read-kbd-macro "M-[ 1 ; 5 B") 'quiet-windmove-down)
+      (global-set-key (read-kbd-macro "M-[ 1 ; 5 D") 'quiet-windmove-left)
+      (global-set-key (read-kbd-macro "M-[ 1 ; 5 C") 'quiet-windmove-right)
+      (global-set-key (read-kbd-macro "M-[ 1 ; 5 A") 'quiet-windmove-up)
+      (global-set-key (read-kbd-macro "M-[ 1 ; 5 B") 'quiet-windmove-down)
     #+END_SRC
 
 *** Linux GTK
 
     #+BEGIN_SRC emacs-lisp
-    (global-set-key (kbd "C-<left>")  'quiet-windmove-left)
-    (global-set-key (kbd "C-<right>") 'quiet-windmove-right)
-    (global-set-key (kbd "C-<up>")    'quiet-windmove-up)
-    (global-set-key (kbd "C-<down>")  'quiet-windmove-down)
+      (global-set-key (kbd "C-<left>")  'quiet-windmove-left)
+      (global-set-key (kbd "C-<right>") 'quiet-windmove-right)
+      (global-set-key (kbd "C-<up>")    'quiet-windmove-up)
+      (global-set-key (kbd "C-<down>")  'quiet-windmove-down)
     #+END_SRC
 
 ** Other Key Bindings
@@ -427,7 +434,7 @@
 *** Shortcut for "Goto Line"
 
     #+BEGIN_SRC emacs-lisp
-    (global-set-key "\C-xl" 'goto-line)
+      (global-set-key "\C-xl" 'goto-line)
     #+END_SRC
 
 ** Miscellaneous Settings
@@ -481,6 +488,9 @@
    #+END_SRC
 
 * Appearance
+  :PROPERTIES:
+  :CUSTOM_ID: appearance
+  :END:
 
 ** Default Face
 
@@ -531,8 +541,8 @@
    actual name of the currently selected buffer.
 
    #+BEGIN_SRC emacs-lisp
-    (setq-default frame-title-format "%b")
-    (setq frame-title-format "%b")
+     (setq-default frame-title-format "%b")
+     (setq frame-title-format "%b")
    #+END_SRC
 
    When uncommented, this will disable fringe-mode ("fringe" is a
@@ -541,7 +551,7 @@
    later.
 
    #+BEGIN_SRC emacs-lisp
-     ; (set-fringe-mode 0)
+                                             ; (set-fringe-mode 0)
    #+END_SRC
 
 ** Changing Font Size on the Fly
@@ -558,16 +568,16 @@
    amount in a certain direction.
 
    #+BEGIN_SRC emacs-lisp
-    (defun change-face-size (dir-func &optional delta)
-      "Increase or decrease font size in all frames and windows.
+     (defun change-face-size (dir-func &optional delta)
+       "Increase or decrease font size in all frames and windows.
 
-    ,* DIR-FUNC is a direction function (embiggen-default-face) or
-      (ensmallen-default-face)
-    ,* DELTA is an amount to increase.  By default, the value is 10."
-      (progn
-        (set-face-attribute
-         'default nil :height
-         (funcall dir-func (face-attribute 'default :height) delta))))
+     ,* DIR-FUNC is a direction function (embiggen-default-face) or
+       (ensmallen-default-face)
+     ,* DELTA is an amount to increase.  By default, the value is 10."
+       (progn
+         (set-face-attribute
+          'default nil :height
+          (funcall dir-func (face-attribute 'default :height) delta))))
    #+END_SRC
 
    Then, I create two little helper functions to bump the size up or
@@ -596,8 +606,8 @@
    And, finally, bind those functions to the right keys.
 
    #+BEGIN_SRC emacs-lisp
-    (global-set-key (kbd "C-+")  'embiggen-default-face)
-    (global-set-key (kbd "C--")  'ensmallen-default-face)
+     (global-set-key (kbd "C-+")  'embiggen-default-face)
+     (global-set-key (kbd "C--")  'ensmallen-default-face)
    #+END_SRC
 
 ** Shell Colors
@@ -674,7 +684,10 @@
              mac-right-option-modifier 'super))
    #+END_SRC
 
-* Packages
+* Package Management
+  :PROPERTIES:
+  :CUSTOM_ID: package-management
+  :END:
 
 ** Basic Setup
 
@@ -763,7 +776,7 @@
        :ensure t
        :config
        (use-package org-drill
-           :ensure t)
+         :ensure t)
        (require 'cl)
        (require 'ox-latex)
        (setq org-tags-column -65)
@@ -928,17 +941,17 @@
     =<original-file-name>.org_archive=.
 
     #+BEGIN_SRC emacs-lisp
-     (if (file-exists-p "~/.org-agenda-setup.el")
-         (load "~/.org-agenda-setup.el")
-       (progn
-         (global-set-key (kbd "C-c o")
-                         (lambda ()
-                           (interactive)
-                           (find-file "~/Nextcloud/agenda/agenda.org")))
-         (setq org-habit-show-habits-only-for-today nil
-               org-agenda-files (file-expand-wildcards "~/Nextcloud/agenda/*.org")
-               org-archive-location (concat "~/Nextcloud/agenda/Archive/%s::")
-               org-default-notes-file "~/Nextcloud/agenda/agenda.org")))
+      (if (file-exists-p "~/.org-agenda-setup.el")
+          (load "~/.org-agenda-setup.el")
+        (progn
+          (global-set-key (kbd "C-c o")
+                          (lambda ()
+                            (interactive)
+                            (find-file "~/Nextcloud/agenda/agenda.org")))
+          (setq org-habit-show-habits-only-for-today nil
+                org-agenda-files (file-expand-wildcards "~/Nextcloud/agenda/*.org")
+                org-archive-location (concat "~/Nextcloud/agenda/Archive/%s::")
+                org-default-notes-file "~/Nextcloud/agenda/agenda.org")))
     #+END_SRC
 
 *** Org Super Agenda
@@ -969,10 +982,10 @@
               org-super-agenda-header-separator ""
               org-columns-default-format "%35ITEM %TODO %3PRIORITY %TAGS")
         (set-face-attribute 'org-super-agenda-header nil
-                             :weight 'bold)
+                            :weight 'bold)
         (set-face-attribute 'org-agenda-date nil
-                             :underline t
-                             :height 1.5))
+                            :underline t
+                            :height 1.5))
     #+END_SRC
 
 *** Org Capture
@@ -1173,18 +1186,18 @@
    in the =snippets= directory.
 
    #+BEGIN_SRC emacs-lisp
-    (use-package yasnippet
-      :ensure t
-      :diminish yas-minor-mode
-      :config
-      (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
-      (yas-global-mode))
+     (use-package yasnippet
+       :ensure t
+       :diminish yas-minor-mode
+       :config
+       (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
+       (yas-global-mode))
 
-    (use-package yasnippet-snippets
-      :ensure t
-      :defer t
-      :after yasnippet
-      :config (yasnippet-snippets-initialize))
+     (use-package yasnippet-snippets
+       :ensure t
+       :defer t
+       :after yasnippet
+       :config (yasnippet-snippets-initialize))
    #+END_SRC
 
 ** Development Support
@@ -1389,7 +1402,7 @@
          :ensure t
          :defer t)
        (setq lsp-rust-server 'rust-analyzer
-             ; lsp-rust-analyzer-server-command "/home/seth/.local/bin/rust-analyzer-linux"
+                                             ; lsp-rust-analyzer-server-command "/home/seth/.local/bin/rust-analyzer-linux"
              lsp-rust-analyzer-server-display-inline-hints t
              lsp-rust-analyzer-display-chaining-hints t
              lsp-rust-analyzer-display-parameter-hints t
@@ -1438,8 +1451,10 @@
         (load-file mail-conf)))
   #+END_SRC
 
-
 * Webpage Publishing
+  :PROPERTIES:
+  :CUSTOM_ID: webpage-publishing
+  :END:
 
   I keep my main homepage ([[https://loomcom.com/][https://loomcom.com/]]) entirely in
   =org-mode=. This section details how =org-publish= is used to
@@ -1893,6 +1908,9 @@
    #+END_SRC
 
 * Miscellaneous Hacks
+  :PROPERTIES:
+  :CUSTOM_ID: misc-hacks
+  :END:
 
 ** An Emacs 27 oddity or bug?
 
