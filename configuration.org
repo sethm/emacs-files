@@ -1658,11 +1658,6 @@
    be a lot slower.
 
    #+BEGIN_SRC emacs-lisp
-     ;;
-     ;; We keep a local cache of filename to date. This speeds up
-     ;; publishing tremendously, because org-publish-find-date is very
-     ;; expensive, and the sorting predicate we use calls it n^2 times.
-     ;;
      (setq loomcom-sitemap-file-dates (make-hash-table))
 
      (defun loomcom--find-date (file-name project)
