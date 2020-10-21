@@ -7,10 +7,13 @@
 
 * Table of Contents
 
-  - [[Introduction]]
-  - [[Basic Setup]]
+  - [[#introduction][Introduction]]
+  - [[#basic-setup][Basic Setup]]
     
-* <<Introduction>>Introduction
+* Introduction
+  :PROPERTIES:
+  :CUSTOM_ID: introduction
+  :END:
 
   This document contains my entire GNU Emacs configuration file in
   /Literate Programming/ style. Literate Programming strives to invert
@@ -48,7 +51,10 @@
   $ make
   #+END_EXAMPLE
 
-* <<Basic Setup>>Basic Setup
+* Basic Setup
+  :PROPERTIES:
+  :CUSTOM_ID: basic_setup
+  :END:
 
 ** Native Compilation
 
@@ -59,8 +65,7 @@
      (when (and (fboundp 'native-comp-available-p)
                 (native-comp-available-p)
                 (functionp 'json-serialize))
-       (setq comp-deferred-compilation t
-             comp-speed 2))
+       (setq comp-deferred-compilation t))
    #+END_SRC
 
 ** Common-Lisp extensions
