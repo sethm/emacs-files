@@ -5,6 +5,11 @@
 #+OPTIONS: toc:1 ':t
 #+STARTUP: showall
 
+* Table of Contents
+
+  - [[Introduction]]
+  - [[Basic Setup]]
+    
 * Introduction
 
   This document contains my entire GNU Emacs configuration file in
@@ -1379,6 +1384,7 @@
          :ensure t
          :defer t)
        (setq lsp-rust-server 'rust-analyzer
+             ; lsp-rust-analyzer-server-command "/home/seth/.local/bin/rust-analyzer-linux"
              lsp-rust-analyzer-server-display-inline-hints t
              lsp-rust-analyzer-display-chaining-hints t
              lsp-rust-analyzer-display-parameter-hints t
