@@ -1471,6 +1471,7 @@
      (setq loomcom-www-dir (concat loomcom-project-dir "www/"))
      (setq loomcom-blog-org-dir (concat loomcom-org-dir "blog/"))
      (setq loomcom-blog-www-dir (concat loomcom-www-dir "blog/"))
+     (setq loomcom-blog-pattern "^\\([0-9]\\{4\\}\\)")
      (setq loomcom-header-file
            (concat loomcom-project-dir "org/header.html"))
      (setq loomcom-posts-per-page 12)
@@ -1536,6 +1537,50 @@
            (list (not (= marker (buffer-size)))
                  (buffer-substring content-start marker)))))
    #+END_src
+
+** Helper Functions: New Blog Entry
+
+   These functions allow me to easily add a new blog entry by calling
+   ~M-x loomcom-blog-new~, which will prompt for a title and create
+   the appropriate file.
+
+   #+BEGIN_SRC emacs-lisp
+
+     (defun loomcom-blog-entry-p (fname)
+       "Return true if `fname' is a blog entry"
+       (string-match loomcom-blog-pattern fname))
+
+     (defun loomcom-make-file-name (number title)
+       (let ((stub
+              (replace-regexp-in-string "[^a-z]+" "_" (downcase title) nil 'literal)))
+         (format
+          "%s_%s.org"
+          number
+          (replace-regexp-in-string "^_\\|_$" "" stub nil 'literal))))
+
+     (defun loomcom-blog-new ()
+       "Create a new blog entry."
+       (interactive)
+       (let* ((blog-files (sort
+                           (seq-filter 'loomcom-blog-entry-p
+                                       (directory-files loomcom-blog-org-dir)) 'string>))
+              (match (string-match loomcom-blog-pattern (car blog-files)))
+              (last-num (match-string 1 (car blog-files)))
+              (next-num (format "%04d" (+ 1 (string-to-number last-num))))
+              (human-title (read-from-minibuffer "New Entry Title: "))
+              (new-file (loomcom-make-file-name next-num human-title))
+              (snippet (cl-find "New Blog File" (yas--all-templates
+                                                 (yas--get-snippet-tables 'org-mode))
+                                :key #'yas--template-name :test #'string=)))
+         (find-file (concat loomcom-blog-org-dir new-file))
+         (yas-expand-snippet snippet)
+         (insert human-title)
+         (yas-next-field)
+         (yas-next-field)
+         (yas-next-field)))
+
+   #+END_SRC
+
 
 ** Helper Function: Insert A Page Header
 
@@ -1924,4 +1969,3 @@
    #+BEGIN_SRC emacs-lisp
      (setq truncate-string-ellipsis "...")
    #+END_SRC
-
