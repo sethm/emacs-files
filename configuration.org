@@ -276,17 +276,6 @@
      (setq max-specpdl-size 5000)      ; default is 1000
    #+END_SRC
 
-** Saving the Desktop
-
-   This configuration allows the current emacs "desktop" (basically,
-   the state of the frames and all the buffers) to be saved and
-   reloaded automatically between sessions.
-
-   #+BEGIN_SRC emacs-lisp
-     (defvar desktop-dirname user-emacs-directory)
-     (desktop-save-mode 1)
-   #+END_SRC
-
 ** Recent Files
 
    Keep a list of recently opened files
@@ -1546,11 +1535,11 @@
 
    #+BEGIN_SRC emacs-lisp
 
-     (defun loomcom-blog-entry-p (fname)
+     (defun loomcom--blog-entry-p (fname)
        "Return true if `fname' is a blog entry"
        (string-match loomcom-blog-pattern fname))
 
-     (defun loomcom-make-file-name (number title)
+     (defun loomcom--make-file-name (number title)
        (let ((stub
               (replace-regexp-in-string "[^a-z]+" "_" (downcase title) nil 'literal)))
          (format
@@ -1561,24 +1550,27 @@
      (defun loomcom-blog-new ()
        "Create a new blog entry."
        (interactive)
-       (let* ((blog-files (sort
-                           (seq-filter 'loomcom-blog-entry-p
-                                       (directory-files loomcom-blog-org-dir)) 'string>))
-              (match (string-match loomcom-blog-pattern (car blog-files)))
-              (last-num (match-string 1 (car blog-files)))
-              (next-num (format "%04d" (+ 1 (string-to-number last-num))))
-              (human-title (read-from-minibuffer "New Entry Title: "))
-              (new-file (loomcom-make-file-name next-num human-title))
-              (snippet (cl-find "New Blog File" (yas--all-templates
-                                                 (yas--get-snippet-tables 'org-mode))
-                                :key #'yas--template-name :test #'string=)))
-         (find-file (concat loomcom-blog-org-dir new-file))
-         (yas-expand-snippet snippet)
-         (insert human-title)
-         (yas-next-field)
-         (yas-next-field)
-         (yas-next-field)))
-
+       (if (file-exists-p loomcom-blog-org-dir)
+           (progn
+             (org-mode)
+             (let* ((blog-files (sort
+                                 (seq-filter 'loomcom--blog-entry-p
+                                             (directory-files loomcom-blog-org-dir)) 'string>))
+                    (match (string-match loomcom-blog-pattern (car blog-files)))
+                    (last-num (match-string 1 (car blog-files)))
+                    (next-num (format "%04d" (+ 1 (string-to-number last-num))))
+                    (human-title (read-from-minibuffer "New Entry Title: "))
+                    (new-file (loomcom--make-file-name next-num human-title))
+                    (snippet (cl-find "New Blog File" (yas--all-templates
+                                                       (yas--get-snippet-tables 'org-mode))
+                                      :key #'yas--template-name :test #'string=)))
+               (find-file (concat loomcom-blog-org-dir new-file))
+               (yas-expand-snippet snippet)
+               (insert human-title)
+               (yas-next-field)
+               (yas-next-field)
+               (yas-next-field)))
+         (error "Blog directory does not exist.")))
    #+END_SRC
 
 
