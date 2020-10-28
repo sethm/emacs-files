@@ -1086,16 +1086,16 @@
                      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
     #+END_SRC
 
-** Org Bullets
+** Org Superstar
 
    #+BEGIN_SRC emacs-lisp
-     ;; (use-package org-bullets
-     ;;   :ensure t
-     ;;   :commands (org-bullets-mode)
-     ;;   :init
-     ;;   (add-hook
-     ;;    'org-mode-hook
-     ;;    (lambda () (org-bullets-mode 1))))
+     (use-package org-superstar
+       :ensure t
+       :init
+       (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+       :config
+       (setq org-hide-leading-stars nil
+             org-superstar-leading-bullet ?\s))
    #+END_SRC
 
 ** Support for Encrypted Authinfo
