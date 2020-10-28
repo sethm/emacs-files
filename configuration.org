@@ -481,6 +481,19 @@
   :CUSTOM_ID: appearance
   :END:
 
+** Theme
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package modus-operandi-theme
+       :ensure t)
+     (use-package modus-vivendi-theme
+       :ensure t)
+
+     (when window-system
+       (load-theme 'modus-vivendi t))
+   #+END_SRC
+
+   
 ** Default Face
 
    Not all fonts are installed on all systems where I use Emacs. This
@@ -766,32 +779,28 @@
        :config
        (use-package org-drill
          :ensure t)
-       (require 'cl)
        (require 'ox-latex)
-       (setq org-tags-column -65)
-       (setq org-agenda-tags-column -65)
-       (setq org-deadline-warning-days 14)
-       (setq org-table-shrunk-column-indicator "")
-       (setq org-agenda-block-separator (string-to-char " "))
-       (setq org-adapt-indentation t)
-       (setq org-agenda-format-date 'my-org-agenda-format-date-aligned)
-       ;; Open up org-mode links in the same buffer
-       (setq org-link-frame-setup '((file . find-file))))
+       (setq org-tags-column -65
+             org-agenda-tags-column -65
+             org-deadline-warning-days 14
+             org-table-shrunk-column-indicator ""
+             org-agenda-block-separator (string-to-char " ")
+             org-adapt-indentation t
+             org-fontify-whole-heading-line t
+             org-agenda-format-date 'my-org-agenda-format-date-aligned
+             ;; Open up org-mode links in the same buffer
+             org-link-frame-setup '((file . find-file)))
+       :init
+       (set-face-attribute 'org-level-1 nil
+                           :weight 'bold
+                           :underline t
+                           :height 1.4)
+       (set-face-attribute 'org-level-2 nil
+                           :weight 'bold
+                           :height 1.2))
    #+END_SRC
 
    I have a lot of custom configuration for =org-mode=.
-
-*** Appearance
-
-    #+BEGIN_SRC emacs-lisp
-      (set-face-attribute 'org-level-1 nil
-                          :weight 'black
-                          :height 1.4)
-      (set-face-attribute 'org-level-2 nil
-                          :weight 'bold
-                          :height 1.2)
-    #+END_SRC
-
 
 *** Org Roam
 
@@ -1077,18 +1086,6 @@
                      ("\\paragraph{%s}" . "\\paragraph*{%s}")
                      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
     #+END_SRC
-
-** Theme
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package modus-operandi-theme
-       :ensure t)
-     (use-package modus-vivendi-theme
-       :ensure t)
-
-     (when window-system
-       (load-theme 'modus-vivendi t))
-   #+END_SRC
 
 ** Org Bullets
 
