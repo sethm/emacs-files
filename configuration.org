@@ -1102,6 +1102,7 @@
        (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
        :config
        (setq org-hide-leading-stars nil
+             org-superstar-prettify-item-bullets nil
              org-superstar-leading-bullet ?\s))
    #+END_SRC
 
