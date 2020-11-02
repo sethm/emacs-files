@@ -1,7 +1,7 @@
 #+AUTHOR: Seth Morabito
 #+EMAIL:  web@loomcom.com
 #+TITLE:  GNU Emacs Configuration File
-#+DATE:   10 July 2020
+#+DATE:   2 November 2020
 #+OPTIONS: toc:1 ':t
 #+STARTUP: showall
 
@@ -481,19 +481,6 @@
   :CUSTOM_ID: appearance
   :END:
 
-** Theme
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package modus-operandi-theme
-       :ensure t)
-     (use-package modus-vivendi-theme
-       :ensure t)
-
-     (when window-system
-       (load-theme 'modus-vivendi t))
-   #+END_SRC
-
-   
 ** Default Face
 
    Not all fonts are installed on all systems where I use Emacs. This
@@ -726,6 +713,18 @@
        (package-refresh-contents)
        (package-install 'use-package))
      (require 'use-package)
+   #+END_SRC
+
+** Theme
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package modus-operandi-theme
+       :ensure t)
+     (use-package modus-vivendi-theme
+       :ensure t)
+
+     (when window-system
+       (load-theme 'modus-vivendi t))
    #+END_SRC
 
 ** Slime
@@ -1403,27 +1402,32 @@
        (add-hook 'rust-mode-hook 'cargo-minor-mode))
    #+END_SRC
 
-** Emacs Helm
+** Counsel / Ivy
+
+   Counsel, Swiper, and Ivy are used for autocompletion.
 
    #+BEGIN_SRC emacs-lisp
-     (use-package helm
+     (use-package counsel
        :ensure t
-       :bind (("C-x C-f" . helm-find-files)
-              ("C-x f" . helm-recentf)
-              ("C-x b" . helm-buffers-list)
-              ("M-x" . helm-M-x))
        :config
-       (setq helm-candidate-number-limit 10
-             helm-fuzzy-matching nil ; was t
-             helm-split-window-inside-p t
-             helm-move-to-line-cycle-in-source t
-             helm-scroll-amount 8
-             helm-echo-input-in-header-line t
-             helm-autoresize-max-height 0
-             helm-autoresize-min-height 20
-             helm-ff-file-name-history-use-recentf t)
-       (helm-mode 1))
+       (ivy-mode 1)
+       (setq ivy-use-virtual-buffers t
+             enable-recursive-minibuffers t
+             ivy-height 10
+             ivy-count-format ""
+             ivy-initial-inputs-alist nil
+             ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+       (setq search-default-mode #'char-fold-to-regexp)
+       (global-set-key (kbd "C-s") 'swiper-isearch)
+       (global-set-key (kbd "C-c C-r") 'ivy-resume)
+       (global-set-key (kbd "M-x") 'counsel-M-x)
+       (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+       (global-set-key (kbd "M-y") 'counsel-yank-pop)
+       (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+       (global-set-key (kbd "C-c v") 'ivy-push-view)
+       (global-set-key (kbd "C-c V") 'ivy-pop-view))
    #+END_SRC
+
 
 * Email
 
