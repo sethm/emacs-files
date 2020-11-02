@@ -1075,7 +1075,7 @@
 
     #+BEGIN_SRC emacs-lisp
       (setq org-pretty-entities t
-            org-ellipsis "↓")
+            org-ellipsis "⬇")
     #+END_SRC
 
 *** Export Settings
