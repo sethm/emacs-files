@@ -795,7 +795,15 @@
                            :height 1.3)
        (set-face-attribute 'org-level-2 nil
                            :weight 'bold
-                           :height 1.1))
+                           :height 1.1)
+       (set-face-attribute 'org-block nil
+                           :background "#181a20")
+       (set-face-attribute 'org-block-begin-line nil
+                           :height 0.8
+                           :foreground "#666666")
+       (set-face-attribute 'org-block-end-line nil
+                           :height 0.8
+                           :foreground "#666666"))
    #+END_SRC
 
    I have a lot of custom configuration for =org-mode=.
