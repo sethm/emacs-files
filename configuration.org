@@ -1,4 +1,4 @@
-#+AUTHOR: Seth Morabito
++AUTHOR: Seth Morabito
 #+EMAIL:  web@loomcom.com
 #+TITLE:  GNU Emacs Configuration File
 #+DATE:   2 November 2020
@@ -780,6 +780,7 @@
          :ensure t)
        (require 'ox-latex)
        (setq org-tags-column -65
+             org-export-default-language "en-US"
              org-agenda-tags-column -65
              org-deadline-warning-days 14
              org-table-shrunk-column-indicator ""
@@ -1757,7 +1758,7 @@
         (org-html--build-head info)
         (org-html--build-mathjax-config info)
         "</head>\n"
-        "<body>\n"
+        "<body lang=\"en-US\">\n"
         "<div id=\"wrapper\">\n"
         (let ((link-up (org-trim (plist-get info :html-link-up)))
               (link-home (org-trim (plist-get info :html-link-home))))
