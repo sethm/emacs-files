@@ -61,6 +61,17 @@
   :CUSTOM_ID: basic-setup
   :END:
 
+** Hack: Turn Off cl Deprecation Warnings
+
+   Some of the packages I use still do ~(require 'cl)~, which is now
+   deprecated in favor of ~(require 'cl-lib)~. I don't use this
+   deprecated library myself, so this hack simply silences those
+   deprecation warnings.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq byte-compile-warnings '(cl-functions))
+   #+END_SRC
+
 ** Native Compilation
 
    If (and only if) Emacs has native compilation available, set it up
@@ -71,16 +82,6 @@
                 (native-comp-available-p)
                 (functionp 'json-serialize))
        (setq comp-deferred-compilation t))
-   #+END_SRC
-
-** Common-Lisp extensions
-
-   Before doing anything else, I pull in Common Lisp extensions
-   because they are needed in several custom functions I use
-   way down below.
-
-   #+BEGIN_SRC emacs-lisp
-     (require 'cl-lib)
    #+END_SRC
 
 ** Where to store Customization
@@ -801,10 +802,9 @@
                            :background "#181a20")
        (set-face-attribute 'org-block-begin-line nil
                            :height 0.8
-                           :foreground "#666666")
+                           :foreground "#383a40")
        (set-face-attribute 'org-block-end-line nil
-                           :height 0.8
-                           :foreground "#666666"))
+                           :foreground "#383a40"))
    #+END_SRC
 
    I have a lot of custom configuration for =org-mode=.
