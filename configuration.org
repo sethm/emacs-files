@@ -1,4 +1,4 @@
-+AUTHOR: Seth Morabito
+#+AUTHOR: Seth Morabito
 #+EMAIL:  web@loomcom.com
 #+TITLE:  GNU Emacs Configuration File
 #+DATE:   2 November 2020
@@ -1340,9 +1340,27 @@
        :defer t)
    #+END_SRC
 
+   I detest JavaScript, and yet... sometimes you need to interact
+   with the modern web.
+
    #+BEGIN_SRC emacs-lisp
      (use-package typescript-mode
        :ensure t)
+
+     (defun setup-tide-mode ()
+       (interactive)
+       (defun tide-imenu-index () nil)
+       (tide-setup)
+       (tide-hl-identifier-mode +1))
+
+     (use-package tide
+       :ensure t
+       :config
+       (progn
+         (add-hook 'typescript-mode-hook #'setup-tide-mode)
+         (add-hook 'js-mode-hook #'setup-tide-mode)
+         (add-hook 'js2-mode-hook #'setup-tide-mode)
+         (add-hook 'rjsx-mode-hook #'setup-tide-mode)))
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
