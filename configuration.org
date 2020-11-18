@@ -132,6 +132,21 @@
   :CUSTOM_ID: behavior
   :END:
 
+** Better Defaults
+
+   A few minor tweaks that I enjoy. First, I like to take space from all
+   windows whenever I split a window
+
+   #+BEGIN_SRC emacs-lisp
+     (setq-default window-combination-resize t)
+   #+END_SRC
+
+   Next, stretch the cursor to fill a full glyph cell
+
+   #+BEGIN_SRC emacs-lisp
+     (setq-default x-stretch-cursor t)
+   #+END_SRC
+
 ** Tidying Up the Working Directory
 
    Emacs, by default, keeps backup files in the current working
@@ -792,12 +807,9 @@
              ;; Open up org-mode links in the same buffer
              org-link-frame-setup '((file . find-file)))
        (set-face-attribute 'org-level-1 nil
-                           :weight 'bold
-                           :overline t
-                           :height 1.3)
+                           :height 1.4)
        (set-face-attribute 'org-level-2 nil
-                           :weight 'bold
-                           :height 1.1)
+                           :height 1.2)
        (set-face-attribute 'org-block nil
                            :background "#181a20")
        (set-face-attribute 'org-block-begin-line nil
@@ -875,7 +887,12 @@
 
     #+BEGIN_SRC emacs-lisp
       (setq org-agenda-custom-commands
-            '(("W" "Next Week" agenda ""
+            '(("n" "Agenda / INTR / PROG / NEXT"
+               ((agenda "" nil)
+                (todo "INTR" nil)
+                (todo "PROG" nil)
+                (todo "NEXT" nil)))
+              ("W" "Next Week" agenda ""
                ((org-agenda-span 7)
                 (org-agenda-start-on-weekday 0)))
               ("N" "Next Three Weeks" agenda ""
@@ -909,30 +926,17 @@
     #+END_SRC
 
     Then I set my =org-todo-keywords= so that I can manage my workflow
-    states the way I like to.
-
-    The syntax =@= following a definition indicates that a state needs
-    a note with a timestamp, while a =!= indicates that it needs only
-    a timestamp.
-
-    The =(a/b)= syntax indicates that action =a= should happen on
-    entry, and =b= should happen on exit. For example, =WAIT(w@/!)=
-    means that the workflow state =WAIT= can be accessed by the short
-    form =w=, and that a timestamp with a note should be recorded on
-    entry, but only a timestamp should be recorded on exit.
-
-    The vertical separator =|= separates keywords that need further
-    actions from those that are end states.
+    states the way I like to. Although my own list is very linear and
+    simple, they can become quite complex if need be!
 
     #+BEGIN_SRC emacs-lisp
       (setq org-todo-keywords
             '((sequence
                "TODO(t)"
                "NEXT(n)"
-               "WAIT(w/!)"
-               "|"
-               "DONE(d)"
-               "CANCELED(c)")))
+               "PROG(p)"
+               "INTR(i)"
+               "DONE(d)")))
     #+END_SRC
 
     And finally, I set some file locations. This is a bit convoluted
@@ -983,14 +987,13 @@
         :config
         (org-super-agenda-mode)
         (setq org-agenda-compact-blocks nil
-              org-agenda-span 1
+              org-agenda-span 'day
+              org-agenda-todo-ignore-scheduled 'future
+              org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled
               org-super-agenda-header-separator ""
               org-columns-default-format "%35ITEM %TODO %3PRIORITY %TAGS")
         (set-face-attribute 'org-super-agenda-header nil
-                            :weight 'bold)
-        (set-face-attribute 'org-agenda-date nil
-                            :underline t
-                            :height 1.5))
+                            :weight 'bold))
     #+END_SRC
 
 *** Org Capture
@@ -1123,7 +1126,6 @@
        :ensure t)
    #+END_SRC
 
-
 ** Ledger Mode
 
    #+BEGIN_SRC emacs-lisp
@@ -1144,7 +1146,6 @@
      (use-package yaml-mode
        :ensure t)
    #+END_SRC
-
 
 ** Git Integration
 
@@ -1169,7 +1170,6 @@
      (use-package yaml-mode
        :ensure t)
    #+END_SRC
-
 
 ** Snippets
 
@@ -1456,7 +1456,6 @@
        (global-set-key (kbd "C-c V") 'ivy-pop-view))
    #+END_SRC
 
-
 * Email
 
   Email configuration is all in an external, optional file.
@@ -1599,7 +1598,6 @@
                (yas-next-field)))
          (error "Blog directory does not exist.")))
    #+END_SRC
-
 
 ** Helper Function: Insert A Page Header
 
