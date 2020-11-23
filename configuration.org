@@ -117,6 +117,7 @@
    startup messages, the splash screen, tool bar, and tooltips.
 
    #+BEGIN_SRC emacs-lisp
+     (setq warning-minimum-level :emergency)
      (setq inhibit-startup-message t)
      (setq inhibit-splash-screen t)
      (tool-bar-mode -1)
@@ -796,7 +797,8 @@
          :ensure t)
        (require 'ox-latex)
        (setq org-tags-column -65
-             org-export-default-language "en-US"
+             org-export-default-language "en"
+             org-export-with-smart-quotes t
              org-agenda-tags-column -65
              org-deadline-warning-days 14
              org-table-shrunk-column-indicator ""
