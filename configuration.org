@@ -735,13 +735,13 @@
 ** Theme
 
    #+BEGIN_SRC emacs-lisp
-     (use-package modus-operandi-theme
-       :ensure t)
-     (use-package modus-vivendi-theme
-       :ensure t)
-
-     (when window-system
-       (load-theme 'modus-vivendi t))
+     ;;(use-package modus-operandi-theme
+     ;;  :ensure t)
+     ;;(use-package modus-vivendi-theme
+     ;;  :ensure t)
+     ;;
+     ;;(when window-system
+     ;;  (load-theme 'modus-vivendi t))
    #+END_SRC
 
 ** Slime
@@ -806,19 +806,16 @@
              org-adapt-indentation t
              org-fontify-whole-heading-line t
              org-agenda-format-date 'my-org-agenda-format-date-aligned
+             ;; Use CSS for htmlizing HTML output
+             org-html-htmlize-output-type 'css
              ;; Open up org-mode links in the same buffer
              org-link-frame-setup '((file . find-file)))
        (set-face-attribute 'org-level-1 nil
                            :height 1.4)
        (set-face-attribute 'org-level-2 nil
                            :height 1.2)
-       (set-face-attribute 'org-block nil
-                           :background "#181a20")
        (set-face-attribute 'org-block-begin-line nil
-                           :height 0.8
-                           :foreground "#383a40")
-       (set-face-attribute 'org-block-end-line nil
-                           :foreground "#383a40"))
+                           :height 0.8))
    #+END_SRC
 
    I have a lot of custom configuration for =org-mode=.
