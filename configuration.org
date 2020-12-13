@@ -734,14 +734,13 @@
 
 ** Theme
 
+
    #+BEGIN_SRC emacs-lisp
-     ;;(use-package modus-operandi-theme
-     ;;  :ensure t)
-     ;;(use-package modus-vivendi-theme
-     ;;  :ensure t)
-     ;;
-     ;;(when window-system
-     ;;  (load-theme 'modus-vivendi t))
+     (use-package dracula-theme
+       :ensure t)
+
+     (when window-system
+       (load-theme 'dracula t))
    #+END_SRC
 
 ** Slime
