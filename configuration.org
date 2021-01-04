@@ -319,6 +319,11 @@
      (when (file-exists-p "/Library/TeX/texbin")
        (setq exec-path (append exec-path '("/Library/TeX/texbin")))
        (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin")))
+
+     (when (file-exists-p "~/.cargo/bin")
+       ;; Add to front of the list
+       (add-to-list 'exec-path "~/.cargo/bin")
+       (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin")))
    #+END_SRC
 
 ** Encryption
@@ -831,10 +836,12 @@
         :hook (after-init . org-roam-mode)
         :config
         (require 'org-roam-protocol)
-        :custom
-        (org-roam-directory "~/Nextcloud/org-roam")
-        (org-roam-index-file "~/Nextcloud/org-roam/index.org")
-        (org-roam-capture-templates
+        (when (file-exists-p (expand-file-name "~/Nextcloud/org-roam"))
+          (setq
+           org-roam-directory "~/Nextcloud/org-roam"
+           org-roam-index-file "~/Nextcloud/org-roam/index.org"))
+        (setq
+         org-roam-capture-templates
          '(("d" "default" plain (function org-roam--capture-get-point)
             "%?"
             :file-name "%<%Y%m%d%H%M%S>-${slug}"
