@@ -1176,6 +1176,15 @@
        :ensure t)
    #+END_SRC
 
+** Snow
+
+   This is just a bit of fun. See: [[https://github.com/alphapapa/snow.el]["Let It Snow" on GitHub]].
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package snow
+       :ensure t)
+   #+END_SRC
+
 ** Snippets
 
    Snippets build in support for typing a few keys, pressing tab, and
