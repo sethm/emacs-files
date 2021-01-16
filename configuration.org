@@ -344,101 +344,42 @@
 
    I frequently split my Emacs windows both horizontally and
    vertically. Navigation between windows with =C-x o= is tedious, so
-   I have mandated the following keys for navigation:
+   I use =C-<arrow>= to navigate between windows. (N.B.: This
+   overrides the default behavior of moving forward or backward by
+   word using =C-<right>= nad =C-<left>=, so keep that in mind)
 
-   - =C-<left>= :: Navigate to the window to the left of the current
-     window.
-   - =C-<right>= :: Navigate to the window to the right of the current
-     window.
-   - =C-<up>= :: Navigate to the window above the current window.
-   - =C-<down>= :: Navigate to the window below the current window.
+   The typical way of doing this would be just to set the following
+   in your config:
 
-   This is harder than it sounds, for a number of reasons.
+   #+BEGIN_EXAMPLE
+     (windmove-default-keybindings 'ctrl)
+   #+END_EXAMPLE
 
-   First, by default, if you try to navigate to a window that doesn't
-   exist (for example, if you're in the left-most window and try to
-   move left again), Emacs will throw an error and complain. To work
-   around this, I define a function called =quiet-windmove= that will
-   take a direction to move, and swallow errors.
-
-   #+BEGIN_SRC emacs-lisp
-     (defun quiet-windmove (direction)
-       "Catch all errors and silently return nil.
-     ,* DIRECTION is a symbol, 'left, 'right, 'up, or 'down."
-       (condition-case nil
-           (cond ((eq direction 'left)
-                  (windmove-left))
-                 ((eq direction 'right)
-                  (windmove-right))
-                 ((eq direction 'up)
-                  (windmove-up))
-                 ((eq direction 'down)
-                  (windmove-down)))
-         (error nil)))
-   #+END_SRC
-
-   Next, for convenience, I define a bunch of short functions
-   to move in the cardinal directions.
+   However, there's one downside here: If you accidentally try to
+   navigate to a window that doesn't exist, it raises an error and/or
+   traps into the debugger (if ~debug-on-error~ is enabled). No good!
+   So instead, I wrap in a lambda that ignores errors (Inspired by:
+   [[https://www.emacswiki.org/emacs/WindMove][EmacsWiki WindMove]])
 
    #+BEGIN_SRC emacs-lisp
-     (defun quiet-windmove-left ()
-       "Navigate to the window immediately to the left the current one."
-       (interactive) (quiet-windmove 'left))
-
-     (defun quiet-windmove-right ()
-       "Navigate to the window immediately to the right the current one."
-       (interactive) (quiet-windmove 'right))
-
-     (defun quiet-windmove-up ()
-       "Navigate to the window immediately above the current one."
-       (interactive) (quiet-windmove 'up))
-
-     (defun quiet-windmove-down ()
-       "Navigate to the window immediately below the current one."
-       (interactive) (quiet-windmove 'down))
+     (global-set-key (kbd "C-<left>")
+                     '(lambda ()
+                        (interactive)
+                        (ignore-errors (windmove-left))))
+     (global-set-key (kbd "C-<right>")
+                     '(lambda ()
+                        (interactive)
+                        (ignore-errors (windmove-right))))
+     (global-set-key (kbd "C-<up>")
+                     '(lambda ()
+                        (interactive)
+                        (ignore-errors (windmove-up))))
+     (global-set-key (kbd "C-<down>")
+                     '(lambda ()
+                        (interactive)
+                        (ignore-errors (windmove-down))))
    #+END_SRC
 
-   And then, finally, bind the keys to the functions to do the
-   movement.
-
-   Again, there's a problem. MacOS, Linux GTK, Linux terminal, and
-   Windows all may (or may not) provide different keycodes for
-   the arrow keys. Oh boy!
-
-*** MacOS
-
-    #+BEGIN_SRC emacs-lisp
-      (global-set-key (read-kbd-macro "M-[ 5 D") 'quiet-windmove-left)
-      (global-set-key (read-kbd-macro "M-[ 5 C") 'quiet-windmove-right)
-      (global-set-key (read-kbd-macro "M-[ 5 A") 'quiet-windmove-up)
-      (global-set-key (read-kbd-macro "M-[ 5 B") 'quiet-windmove-down)
-      (global-set-key (read-kbd-macro "M-[ D") 'quiet-windmove-left)
-      (global-set-key (read-kbd-macro "M-[ C") 'quiet-windmove-right)
-      (global-set-key (read-kbd-macro "M-[ A") 'quiet-windmove-up)
-      (global-set-key (read-kbd-macro "M-[ B") 'quiet-windmove-down)
-      (global-set-key (read-kbd-macro "M-[ O D") 'quiet-windmove-left)
-      (global-set-key (read-kbd-macro "M-[ O C") 'quiet-windmove-right)
-      (global-set-key (read-kbd-macro "M-[ O A") 'quiet-windmove-up)
-      (global-set-key (read-kbd-macro "M-[ O B") 'quiet-windmove-down)
-    #+END_SRC
-
-*** Linux Terminal
-
-    #+BEGIN_SRC emacs-lisp
-      (global-set-key (read-kbd-macro "M-[ 1 ; 5 D") 'quiet-windmove-left)
-      (global-set-key (read-kbd-macro "M-[ 1 ; 5 C") 'quiet-windmove-right)
-      (global-set-key (read-kbd-macro "M-[ 1 ; 5 A") 'quiet-windmove-up)
-      (global-set-key (read-kbd-macro "M-[ 1 ; 5 B") 'quiet-windmove-down)
-    #+END_SRC
-
-*** Linux GTK
-
-    #+BEGIN_SRC emacs-lisp
-      (global-set-key (kbd "C-<left>")  'quiet-windmove-left)
-      (global-set-key (kbd "C-<right>") 'quiet-windmove-right)
-      (global-set-key (kbd "C-<up>")    'quiet-windmove-up)
-      (global-set-key (kbd "C-<down>")  'quiet-windmove-down)
-    #+END_SRC
 
 ** Other Key Bindings
 
