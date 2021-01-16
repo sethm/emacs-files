@@ -1354,33 +1354,50 @@
        :defer t)
    #+END_SRC
 
-   I detest JavaScript, and yet... sometimes you need to interact
-   with the modern web.
+*** TypeScript
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package typescript-mode
-       :ensure t)
+    I detest JavaScript, and yet... sometimes you need to interact
+    with the modern web.
 
-     (defun setup-tide-mode ()
-       (interactive)
-       (defun tide-imenu-index () nil)
-       (tide-setup)
-       (tide-hl-identifier-mode +1))
+    #+BEGIN_SRC emacs-lisp
+      (use-package typescript-mode
+        :ensure t)
 
-     (use-package tide
-       :ensure t
-       :config
-       (progn
-         (add-hook 'typescript-mode-hook #'setup-tide-mode)
-         (add-hook 'js-mode-hook #'setup-tide-mode)
-         (add-hook 'js2-mode-hook #'setup-tide-mode)
-         (add-hook 'rjsx-mode-hook #'setup-tide-mode)))
-   #+END_SRC
+      (defun setup-tide-mode ()
+        (interactive)
+        (defun tide-imenu-index () nil)
+        (tide-setup)
+        (tide-hl-identifier-mode +1))
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package htmlize
-       :ensure t)
-   #+END_SRC
+      (use-package tide
+        :ensure t
+        :config
+        (progn
+          (add-hook 'typescript-mode-hook #'setup-tide-mode)
+          (add-hook 'js-mode-hook #'setup-tide-mode)
+          (add-hook 'js2-mode-hook #'setup-tide-mode)
+          (add-hook 'rjsx-mode-hook #'setup-tide-mode)))
+    #+END_SRC
+
+    #+BEGIN_SRC emacs-lisp
+      (use-package htmlize
+        :ensure t)
+    #+END_SRC
+
+*** Tera Mode
+
+    One of my projects uses [[https://tera.netlify.app/][the Tera template language]], so I add
+    support here. Unfortunately, ~tera-mode~ is not in ELPA or MELPA,
+    so I have it checked out as a sub-module. I also just lazily enable
+    ~tera-mode~ by hand when I need it.
+
+    #+BEGIN_SRC emacs-lisp
+      (add-to-list 'load-path "~/.emacs.d/tera-mode")
+      (require 'tera-mode)
+      ;; Set offset for HTML/XML-like things
+      (setq sgml-basic-offset 4)
+    #+END_SRC
+
 
 ** Markdown
 
