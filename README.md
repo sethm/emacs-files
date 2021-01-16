@@ -37,7 +37,7 @@ is as follows:
 
     $ git clone git@github.com:sethm/emacs-files.git ~/.emacs.d
 
-### Update the `org-mode` Submodule
+### Update the `org-mode` and `tera-mode` submodules
 
     $ cd ~/.emacs.d
     $ git submodule init
