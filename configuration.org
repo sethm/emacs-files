@@ -758,9 +758,7 @@
        (set-face-attribute 'org-level-1 nil
                            :height 1.4)
        (set-face-attribute 'org-level-2 nil
-                           :height 1.2)
-       (set-face-attribute 'org-block-begin-line nil
-                           :height 0.8))
+                           :height 1.2))
    #+END_SRC
 
    I have a lot of custom configuration for =org-mode=.
@@ -1208,68 +1206,68 @@
    workflow. It makes Emacs act almost like an IDE.
 
    #+BEGIN_SRC emacs-lisp
-     (use-package lsp-mode
-       :ensure t
-       :defer t
-       :commands lsp
-       :config
-       (setq lsp-clients-clangd-args
-             '("-j=4"
-               "-background-index"
-               "-log=error")
-             ;; Disable automatic formatting-as-you-type
-             lsp-enable-indentation nil
-             lsp-enable-on-type-formatting nil)
-       (when (string= system-type "darwin")
-         (setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"))
-       (add-hook 'c-mode-hook #'lsp)
-       (add-hook 'c++-mode-hook #'lsp)
-       (add-hook 'python-mode-hook #'lsp)
-       (add-hook 'rust-mode-hook #'lsp))
+          (use-package lsp-mode
+            :ensure t
+            :defer t
+            :commands lsp
+            :config
+            (setq lsp-clients-clangd-args
+                  '("-j=4"
+                    "-background-index"
+                    "-log=error")
+                  ;; Disable automatic formatting-as-you-type
+                  lsp-enable-indentation nil
+                  lsp-enable-on-type-formatting nil)
+            (when (string= system-type "darwin")
+              (setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"))
+            (add-hook 'c-mode-hook #'lsp)
+            (add-hook 'c++-mode-hook #'lsp)
+            (add-hook 'python-mode-hook #'lsp)
+            (add-hook 'rust-mode-hook #'lsp))
 
-     (use-package flycheck
-       :ensure t
-       :hook (prog-mode . flycheck-mode))
+          (use-package flycheck
+            :ensure t
+            :hook (prog-mode . flycheck-mode))
 
-     (use-package flycheck-rust
-       :ensure t
-       :config
-       (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
-       (setq exec-path (append exec-path '("~/.cargo/bin")))
-       (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+          (use-package flycheck-rust
+            :ensure t
+            :config
+            (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
+            (setq exec-path (append exec-path '("~/.cargo/bin")))
+            (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
-     (use-package lsp-ui
-       :ensure t
-       :requires lsp-mode flycheck
-       :config
+          (use-package lsp-ui
+            :ensure t
+            :requires lsp-mode flycheck
+            :config
 
-       (setq lsp-ui-doc-enable t
-             lsp-ui-doc-use-childframe t
-             lsp-ui-doc-position 'top
-             lsp-ui-doc-include-signature t
-             lsp-ui-doc-delay 2.5
-             lsp-ui-sideline-enable nil
-             lsp-ui-flycheck-enable t
-             lsp-ui-flycheck-list-position 'right
-             lsp-ui-flycheck-live-reporting t
-             lsp-ui-peek-enable t
-             lsp-ui-peek-list-width 60
-             lsp-ui-peek-peek-height 25)
+            (setq lsp-ui-doc-enable t
+                  lsp-ui-doc-use-childframe t
+                  lsp-ui-doc-position 'top
+                  lsp-ui-doc-include-signature t
+                  lsp-ui-doc-delay 2.5
+                  lsp-ui-sideline-enable nil
+                  lsp-ui-flycheck-enable t
+                  lsp-ui-flycheck-list-position 'right
+                  lsp-ui-flycheck-live-reporting t
+                  lsp-ui-peek-enable t
+                  lsp-ui-peek-list-width 60
+                  lsp-ui-peek-peek-height 25)
 
-       (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+            (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
-     (use-package lsp-java
-       :ensure t
-       :config
-       (add-hook 'java-mode-hook #'lsp))
+          (use-package lsp-java
+            :ensure t
+            :config
+            (add-hook 'java-mode-hook #'lsp))
 
-     (use-package company
-       :ensure t
-       :hook (prog-mode . company-mode)
-       :config
-       (setq company-idle-delay 0.1
-             company-show-numbers t)
-       (global-set-key (kbd "S-<tab>") 'company-complete))
+          (use-package company
+            :ensure t
+            :hook (prog-mode . company-mode)
+            :config
+            (setq company-idle-delay 0.5
+                  company-show-numbers t
+                  company-minimum-prefix-length 0))
    #+END_SRC
 
 ** Web Development
@@ -1679,8 +1677,8 @@
 
      SOURCE  The list.
      N  The number to group the list by."
-       (if (not (endp (nthcdr n source)))
-           (cons (subseq source 0 n)
+       (if (not (cl-endp (nthcdr n source)))
+           (cons (cl-subseq source 0 n)
                  (loomcom--group (nthcdr n source) n))
          (list source)))
    #+END_SRC
