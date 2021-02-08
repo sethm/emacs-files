@@ -469,7 +469,7 @@
          (set-face-attribute 'default nil
                              :family selected-family
                              :weight 'medium
-                             :height 160)))
+                             :height 140)))
    #+END_SRC
 
 ** Emacs 27
@@ -497,13 +497,12 @@
      (setq frame-title-format "%b")
    #+END_SRC
 
-   When uncommented, this will disable fringe-mode ("fringe" is a
-   small blank margin space by default on the right and left of the
-   buffer). I'm leaving this default for now, but may uncomment it
-   later.
+   Give ourselves a little left and right margin, for looks
 
    #+BEGIN_SRC emacs-lisp
-                                             ; (set-fringe-mode 0)
+     (set-fringe-mode 16)
+     (set-frame-parameter nil 'internal-border-width 20)
+     (setq-default left-margin-width 3 right-margin-width 3)
    #+END_SRC
 
 ** Changing Font Size on the Fly
