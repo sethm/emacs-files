@@ -1,6 +1,6 @@
 [submodule "org-mode"]
-	path = org-mode
+	path = vendor/org-mode
 	url = https://code.orgmode.org/bzg/org-mode.git
 [submodule "tera-mode"]
-	path = tera-mode
+	path = vendor/tera-mode
 	url = https://github.com/svavs/tera-mode.git

@@ -40,8 +40,8 @@
   version of org mode. My =init.el= looks like this, in its entirety:
 
   #+BEGIN_EXAMPLE
-    (add-to-list 'load-path "~/.emacs.d/org-mode/lisp")
-    (add-to-list 'load-path "~/.emacs.d/org-mode/contrib/lisp")
+    (add-to-list 'load-path "~/.emacs.d/vendor/org-mode/lisp")
+    (add-to-list 'load-path "~/.emacs.d/vendor/org-mode/contrib/lisp")
 
     (org-babel-load-file "~/.emacs.d/configuration.org")
   #+END_EXAMPLE
@@ -497,14 +497,6 @@
      (setq frame-title-format "%b")
    #+END_SRC
 
-   Give ourselves a little left and right margin, for looks
-
-   #+BEGIN_SRC emacs-lisp
-     (set-fringe-mode 16)
-     (set-frame-parameter nil 'internal-border-width 20)
-     (setq-default left-margin-width 3 right-margin-width 3)
-   #+END_SRC
-
 ** Changing Font Size on the Fly
 
    By default, you can increase or decrease the font face size in a
@@ -642,16 +634,8 @@
 
 ** Basic Setup
 
-   Before we begin, add some special folders to the load-path. We'll
-   need these for packages that are /not/ installed from ELPA and MELPA.
-
-   #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/lisp")
-     (add-to-list 'load-path "~/.emacs.d/local")
-   #+END_SRC
-
-   Next, require the =package= mode and set up URLs to the package
-   archives.
+   We'll begin by requiring =package= mode and setting up URLs to the
+   package archives.
 
    #+BEGIN_SRC emacs-lisp
      (require 'package)
@@ -679,11 +663,10 @@
 
 ** Theme
 
-
    #+BEGIN_SRC emacs-lisp
      (use-package dracula-theme
+       :defer t
        :ensure t)
-
      (when window-system
        (load-theme 'dracula t))
    #+END_SRC
@@ -736,9 +719,11 @@
      (use-package org
        :load-path org-load-paths
        :ensure t
+       :defer t
        :config
        (use-package org-drill
-         :ensure t)
+         :ensure t
+         :defer t)
        (require 'ox-latex)
        (setq org-tags-column -65
              org-export-default-language "en"
@@ -772,6 +757,7 @@
       (use-package org-roam
         :ensure t
         :hook (after-init . org-roam-mode)
+        :defer t
         :config
         (require 'org-roam-protocol)
         (when (file-exists-p (expand-file-name "~/Nextcloud/org-roam"))
@@ -797,6 +783,7 @@
 
       (use-package org-roam-server
         :ensure t
+        :defer t
         :config
         (setq org-roam-server-host "127.0.0.1"
               org-roam-server-port 8080
@@ -906,6 +893,7 @@
     #+BEGIN_SRC emacs-lisp
       (use-package org-super-agenda
         :ensure t
+        :defer t
         :after org-agenda
         :init
         (setq org-super-agenda-groups
@@ -1040,6 +1028,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package org-superstar
        :ensure t
+       :defer t
        :init
        (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
        :config
@@ -1053,6 +1042,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package auth-source
        :ensure t
+       :defer t
        :config
        (setq auth-sources '("~/.authinfo.gpg")))
    #+END_SRC
@@ -1061,6 +1051,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package epresent
+       :defer t
        :ensure t)
    #+END_SRC
 
@@ -1068,6 +1059,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package ledger-mode
+       :defer t
        :ensure t)
    #+END_SRC
 
@@ -1075,6 +1067,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package graphviz-dot-mode
+       :defer t
        :ensure t)
    #+END_SRC
 
@@ -1083,6 +1076,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package magit
        :ensure t
+       :defer t
        :init
        (global-set-key (kbd "C-x g") 'magit-status)
        (add-hook 'prog-mode-hook #'git-gutter-mode))
@@ -1090,6 +1084,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package git-gutter
+       :defer t
        :ensure t)
    #+END_SRC
 
@@ -1099,6 +1094,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package yaml-mode
+       :defer t
        :ensure t)
    #+END_SRC
 
@@ -1108,6 +1104,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package snow
+       :defer t
        :ensure t)
    #+END_SRC
 
@@ -1122,6 +1119,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package yasnippet
        :ensure t
+       :defer t
        :diminish yas-minor-mode
        :config
        (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
@@ -1185,6 +1183,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package cedet
        :ensure t
+       :defer t
        :bind (:map semantic-mode-map
                    ("C-c , >" . semantic-ia-fast-jump)))
    #+END_SRC
@@ -1214,10 +1213,12 @@
 
      (use-package flycheck
        :ensure t
+       :defer t
        :hook (prog-mode . flycheck-mode))
 
      (use-package flycheck-rust
        :ensure t
+       :defer t
        :config
        (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
        (setq exec-path (append exec-path '("~/.cargo/bin")))
@@ -1225,6 +1226,7 @@
 
      (use-package lsp-ui
        :ensure t
+       :defer t
        :requires lsp-mode flycheck
        :config
 
@@ -1245,11 +1247,13 @@
 
      (use-package lsp-java
        :ensure t
+       :defer t
        :config
        (add-hook 'java-mode-hook #'lsp))
 
      (use-package company
        :ensure t
+       :defer t
        :hook (prog-mode . company-mode)
        :config
        (setq company-idle-delay 0.5
@@ -1265,6 +1269,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package web-mode
        :ensure t
+       :defer t
        :config
        (setq web-mode-markup-indent-offset 4
              web-mode-css-indent-offset 4
@@ -1288,7 +1293,7 @@
     ~tera-mode~ by hand when I need it.
 
     #+BEGIN_SRC emacs-lisp
-      (add-to-list 'load-path "~/.emacs.d/tera-mode")
+      (add-to-list 'load-path "~/.emacs.d/vendor/tera-mode")
       (require 'tera-mode)
       ;; Set offset for HTML/XML-like things
       (setq sgml-basic-offset 4)
@@ -1302,6 +1307,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package markdown-mode
        :ensure t
+       :defer t
        :commands (markdown-mode gfm-mode)
        :mode (("README\\.md\\'" . gfm-mode)
               ("\\.md\\'" . markdown-mode)
@@ -1316,13 +1322,16 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package elpher
-       :ensure t)
+       :ensure t
+       :defer t)
 
      (use-package gemini-mode
-       :ensure t)
+       :ensure t
+       :defer t)
 
      (use-package ox-gemini
-       :ensure t)
+       :ensure t
+       :defer t)
    #+END_SRC
 
 
@@ -1340,7 +1349,8 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package toml-mode
-       :ensure t)
+       :ensure t
+       :defer t)
    #+END_SRC
 
    Next, configure Rust Mode. Note that the hooks are set up in the
@@ -1369,6 +1379,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package cargo
        :ensure t
+       :defer t
        :config
        (add-hook 'rust-mode-hook 'cargo-minor-mode))
    #+END_SRC
@@ -1380,6 +1391,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package counsel
        :ensure t
+       :defer t
        :config
        (ivy-mode 1)
        (setq ivy-use-virtual-buffers t
