@@ -664,11 +664,8 @@
 ** Theme
 
    #+BEGIN_SRC emacs-lisp
-     (use-package dracula-theme
-       :defer t
-       :ensure t)
      (when window-system
-       (load-theme 'dracula t))
+       (load-theme 'tango-dark t))
    #+END_SRC
 
 ** Slime
