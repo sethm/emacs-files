@@ -668,19 +668,6 @@
        (load-theme 'tango-dark t))
    #+END_SRC
 
-** Slime
-
-   Our first package is a little bit of an exception. I don't load
-   Slime as a package. Instead, I prefer to load it from Quicklisp, if
-   and only if Quicklisp is installed.
-
-   #+BEGIN_SRC emacs-lisp
-     (when (file-exists-p (expand-file-name "~/quicklisp/slime-helper.el"))
-       (load (expand-file-name "~/quicklisp/slime-helper.el"))
-       (setq inferior-lisp-program "sbcl")
-       (setq slime-contribs '(slime-fancy)))
-   #+END_SRC
-
 ** Org Mode
 
    Next is =org-mode=, which I use constantly, day in and day out.
@@ -1044,6 +1031,23 @@
        (setq auth-sources '("~/.authinfo.gpg")))
    #+END_SRC
 
+** Sly
+
+   Sly is a Common Lisp IDE that is a fork of SLIME, with some
+   additional features.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package sly
+       :defer t
+       :ensure t
+       :config
+       (setq inferior-lisp-program "sbcl"))
+
+     (use-package sly-quicklisp
+       :defer t
+       :ensure t)
+   #+END_SRC
+
 ** Epresent
 
    #+BEGIN_SRC emacs-lisp
@@ -1134,10 +1138,7 @@
    problem is that I use =C-<left>= and =C-<right>= to navigate
    between windows in Emacs, so I don't want to use them for
    Paredit. Instead, I remap these to =C-S-<left>= and =C-S-<right>=,
-   respectively. One issue is that =<left>= and =<right>= may differ
-   depending on the platform I'm on, so there are several alternate
-   definitions here to make sure it works on all platforms.  What a
-   pain.
+   respectively.
 
    #+BEGIN_SRC emacs-lisp
      (use-package paredit
@@ -1147,28 +1148,17 @@
        (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
        (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
        (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-       (add-hook 'ielm-mode-hook #'enable-paredit-mode)
        (add-hook 'lisp-mode-hook #'enable-paredit-mode)
        (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
        (add-hook 'scheme-mode-hook #'enable-paredit-mode)
        :config
+       ;; Unmap defaults
        (define-key paredit-mode-map (kbd "C-<left>") nil)
        (define-key paredit-mode-map (kbd "C-<right>") nil)
+       ;; Map new keys
        (define-key paredit-mode-map (kbd "C-S-<left>")
          'paredit-forward-barf-sexp)
        (define-key paredit-mode-map (kbd "C-S-<right>")
-         'paredit-forward-slurp-sexp)
-       (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 D")
-         'paredit-forward-barf-sexp)
-       (define-key paredit-mode-map (read-kbd-macro "S-M-[ 5 C")
-         'paredit-forward-slurp-sexp)
-       (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 d")
-         'paredit-forward-barf-sexp)
-       (define-key paredit-mode-map (read-kbd-macro "M-[ 1 ; 6 c")
-         'paredit-forward-slurp-sexp)
-       (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 D")
-         'paredit-forward-barf-sexp)
-       (define-key paredit-mode-map (read-kbd-macro "S-M-[ 1 ; 5 C")
          'paredit-forward-slurp-sexp))
 
    #+END_SRC
