@@ -1196,19 +1196,6 @@
        (add-hook 'python-mode-hook #'lsp)
        (add-hook 'rust-mode-hook #'lsp))
 
-     (use-package flycheck
-       :ensure t
-       :defer t
-       :hook (prog-mode . flycheck-mode))
-
-     (use-package flycheck-rust
-       :ensure t
-       :defer t
-       :config
-       (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
-       (setq exec-path (append exec-path '("~/.cargo/bin")))
-       (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-
      (use-package lsp-ui
        :ensure t
        :defer t
@@ -1241,10 +1228,24 @@
        :defer t
        :hook (prog-mode . company-mode)
        :config
-       (setq company-idle-delay 0.5
+       (setq company-idle-delay 1.0
              company-show-numbers t
              company-minimum-prefix-length 0))
-   #+END_SRC
+
+     (use-package flycheck
+       :ensure t)
+
+     (use-package flycheck-rust
+       :ensure t
+       :config
+       (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
+       (setq exec-path (append exec-path '("~/.cargo/bin")))
+       (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+       (add-hook 'rust-mode-hook
+                 (lambda ()
+                   (setq flycheck-mode-hook #'flycheck-rust-setup))))
+
+     #+END_SRC
 
 ** Web Development
 
@@ -1343,22 +1344,28 @@
    problem that prevents them from being =hook:= calls.
 
    #+BEGIN_SRC emacs-lisp
-     (use-package rust-mode
+     (use-package rustic
        :ensure t
-       :defer t
-       :bind (("C-c TAB" . rust-format-buffer))
+       :bind (:map rustic-mode-map
+                   ("M-j" . lsp-ui-imenu)
+                   ("M-?" . lsp-find-references)
+                   ("C-c C-c l" . flycheck-list-errors)
+                   ("C-c C-c a" . lsp-execute-code-action)
+                   ("C-c C-c r" . lsp-rename)
+                   ("C-c C-c q" . lsp-workspace-restart)
+                   ("C-c C-c Q" . lsp-workspace-shutdown)
+                   ("C-c C-c s" . lsp-rust-analyzer-status))
        :config
-       (use-package racer
-         :ensure t
-         :defer t)
-       (setq lsp-rust-server 'rust-analyzer
+       (setq rustic-format-on-save t
+             lsp-rust-server 'rust-analyzer
              lsp-rust-analyzer-server-display-inline-hints t
              lsp-rust-analyzer-display-chaining-hints t
              lsp-rust-analyzer-display-parameter-hints t
              lsp-rust-show-warnings t
              lsp-rust-racer-completion t
              lsp-rust-full-docs t
-             lsp-rust-build-lib t))
+             lsp-rust-build-lib t)
+       (add-hook 'rustic-mode-hook (lambda () (setq-local buffer-save-without-query t))))
    #+END_SRC
 
    #+BEGIN_SRC emacs-lisp
@@ -1366,7 +1373,10 @@
        :ensure t
        :defer t
        :config
-       (add-hook 'rust-mode-hook 'cargo-minor-mode))
+       (add-hook 'rust-mode-hook 'cargo-minor-mode)
+       (add-hook 'cargo-minor-mode
+                 (lambda ()
+                   (setq flycheck-mode-hook #'flycheck-rust-setup))))
    #+END_SRC
 
 ** Counsel / Ivy
