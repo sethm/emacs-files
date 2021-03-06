@@ -665,8 +665,10 @@
 ** Theme
 
    #+BEGIN_SRC emacs-lisp
-     (when window-system
-       (load-theme 'tango-dark t))
+     (use-package color-theme-sanityinc-tomorrow
+       :ensure t
+       :config
+       (load-theme 'sanityinc-tomorrow-bright t))
    #+END_SRC
 
 ** Org Mode
@@ -1246,6 +1248,20 @@
        (setq-local buffer-save-without-query t))
    #+END_SRC
 
+** CCLS
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package ccls
+       :ensure t
+       :defer t
+       :config
+       (setq ccls-executable "ccls")
+       (setq lsp-prefer-flymake nil)
+       (setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+       :hook ((c-mode c++-mode objc-mode) .
+              (lambda () (require 'ccls) (lsp))))
+   #+END_SRC
+
 ** LSP Mode
 
    LSP is a language server protocol mode to allow working with
@@ -1253,7 +1269,8 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package lsp-mode
-       :ensure
+       :ensure t
+       :defer t
        :commands lsp
        :custom
        (lsp-rust-analyzer-cargo-watch-command "clippy")
@@ -1266,7 +1283,8 @@
        (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
      (use-package lsp-ui
-       :ensure
+       :ensure t
+       :defer t
        :commands lsp-ui-mode
        :custom
        (lsp-ui-peek-always-show t)
@@ -1279,6 +1297,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package company
        :ensure t
+       :defer t
        :custom
        (company-idle-delay 0.5) ;; how long to wait until popup
        ;; (company-begin-commands nil) ;; uncomment to disable popup
