@@ -12,6 +12,7 @@
   - [[#behavior][Behavior]]
   - [[#appearance][Appearance]]
   - [[#package-management][Package Management]]
+  - [[#development][Development and Languages]]
   - [[#webpage-publishing][Webpage Publishing]]
   - [[#misc-hacks][Miscellaneous Hacks]]
 
@@ -1048,22 +1049,6 @@
        :ensure t)
    #+END_SRC
 
-** Epresent
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package epresent
-       :defer t
-       :ensure t)
-   #+END_SRC
-
-** Ledger Mode
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package ledger-mode
-       :defer t
-       :ensure t)
-   #+END_SRC
-
 ** GraphViz (dot) Mode
 
    #+BEGIN_SRC emacs-lisp
@@ -1131,147 +1116,7 @@
        :config (yasnippet-snippets-initialize))
    #+END_SRC
 
-** Development Support
-
-   I really like paredit, especially for Lisp, but I don't like the
-   default key bindings, so I tweak them heavily. Primarily, the
-   problem is that I use =C-<left>= and =C-<right>= to navigate
-   between windows in Emacs, so I don't want to use them for
-   Paredit. Instead, I remap these to =C-S-<left>= and =C-S-<right>=,
-   respectively.
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package paredit
-       :ensure t
-       :defer t
-       :init
-       (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
-       (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
-       (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-       (add-hook 'lisp-mode-hook #'enable-paredit-mode)
-       (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-       (add-hook 'scheme-mode-hook #'enable-paredit-mode)
-       :config
-       ;; Unmap defaults
-       (define-key paredit-mode-map (kbd "C-<left>") nil)
-       (define-key paredit-mode-map (kbd "C-<right>") nil)
-       ;; Map new keys
-       (define-key paredit-mode-map (kbd "C-S-<left>")
-         'paredit-forward-barf-sexp)
-       (define-key paredit-mode-map (kbd "C-S-<right>")
-         'paredit-forward-slurp-sexp))
-
-   #+END_SRC
-
-   CEDET provides a lot of nice support for C and C++ development.
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package cedet
-       :ensure t
-       :defer t
-       :bind (:map semantic-mode-map
-                   ("C-c , >" . semantic-ia-fast-jump)))
-   #+END_SRC
-
-   Language Server Protocol support is pretty essential to my
-   workflow. It makes Emacs act almost like an IDE.
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package lsp-mode
-       :ensure t
-       :defer t
-       :commands lsp
-       :config
-       (setq lsp-clients-clangd-args
-             '("-j=4"
-               "-background-index"
-               "-log=error")
-             ;; Disable automatic formatting-as-you-type
-             lsp-enable-indentation nil
-             lsp-enable-on-type-formatting nil)
-       (when (string= system-type "darwin")
-         (setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"))
-       (add-hook 'c-mode-hook #'lsp)
-       (add-hook 'c++-mode-hook #'lsp)
-       (add-hook 'python-mode-hook #'lsp)
-       (add-hook 'rust-mode-hook #'lsp))
-
-     (use-package lsp-ui
-       :ensure t
-       :defer t
-       :requires lsp-mode flycheck
-       :config
-
-       (setq lsp-ui-doc-enable t
-             lsp-ui-doc-use-childframe t
-             lsp-ui-doc-position 'top
-             lsp-ui-doc-include-signature t
-             lsp-ui-doc-delay 2.5
-             lsp-ui-sideline-enable nil
-             lsp-ui-flycheck-enable t
-             lsp-ui-flycheck-list-position 'right
-             lsp-ui-flycheck-live-reporting t
-             lsp-ui-peek-enable t
-             lsp-ui-peek-list-width 60
-             lsp-ui-peek-peek-height 25)
-
-       (add-hook 'lsp-mode-hook 'lsp-ui-mode))
-
-     (use-package lsp-java
-       :ensure t
-       :defer t
-       :config
-       (add-hook 'java-mode-hook #'lsp))
-
-     (use-package company
-       :ensure t
-       :defer t
-       :hook (prog-mode . company-mode)
-       :config
-       (setq company-idle-delay 1.0
-             company-show-numbers t
-             company-minimum-prefix-length 0))
-
-     (use-package flycheck
-       :ensure t)
-
-     (use-package flycheck-rust
-       :ensure t
-       :config
-       (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin"))
-       (setq exec-path (append exec-path '("~/.cargo/bin")))
-       (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
-       (add-hook 'rust-mode-hook
-                 (lambda ()
-                   (setq flycheck-mode-hook #'flycheck-rust-setup))))
-
-     #+END_SRC
-
-** Web Development
-
-   Web Mode offers a very nice integrated experience for editing HTML,
-   JavaScript, and CSS.
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package web-mode
-       :ensure t
-       :defer t
-       :config
-       (setq web-mode-markup-indent-offset 4
-             web-mode-css-indent-offset 4
-             web-mode-code-indent-offset 4))
-   #+END_SRC
-
-   I almost never use PHP, but it's nice to have when you really,
-   really need it.
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package php-mode
-       :ensure t
-       :defer t)
-   #+END_SRC
-
-*** Tera Mode
+** Tera Mode
 
     One of my projects uses [[https://tera.netlify.app/][the Tera template language]], so I add
     support here. Unfortunately, ~tera-mode~ is not in ELPA or MELPA,
@@ -1286,9 +1131,6 @@
     #+END_SRC
 
 ** Markdown
-
-   Org-mode is clearly superior [;-)] but sometimes you need to use
-   Markdown.
 
    #+BEGIN_SRC emacs-lisp
      (use-package markdown-mode
@@ -1320,6 +1162,44 @@
        :defer t)
    #+END_SRC
 
+* Development and Languages
+  :PROPERTIES:
+  :CUSTOM_ID: development
+  :END:
+
+  Much of this section, especially with regards to Rust development,
+  is stolen verbatim from [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Robert Krahn]]. Thank you!
+
+** Lisp Editing
+
+   I really like paredit, especially for Lisp, but I don't like the
+   default key bindings, so I tweak them heavily. Primarily, the
+   problem is that I use =C-<left>= and =C-<right>= to navigate
+   between windows in Emacs, so I don't want to use them for
+   Paredit. Instead, I remap these to =C-S-<left>= and =C-S-<right>=,
+   respectively.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package paredit
+       :ensure t
+       :defer t
+       :init
+       (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
+       (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+       (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+       (add-hook 'lisp-mode-hook #'enable-paredit-mode)
+       (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+       (add-hook 'scheme-mode-hook #'enable-paredit-mode)
+       :config
+       ;; Unmap defaults
+       (define-key paredit-mode-map (kbd "C-<left>") nil)
+       (define-key paredit-mode-map (kbd "C-<right>") nil)
+       ;; Map new keys
+       (define-key paredit-mode-map (kbd "C-S-<left>")
+         'paredit-forward-barf-sexp)
+       (define-key paredit-mode-map (kbd "C-S-<right>")
+         'paredit-forward-slurp-sexp))
+   #+END_SRC
 
 ** Haskell
 
@@ -1329,19 +1209,9 @@
        :defer t)
    #+END_SRC
 
-** Rust
+** Rustic
 
-   Rust's Cargo configuration files use TOML.
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package toml-mode
-       :ensure t
-       :defer t)
-   #+END_SRC
-
-   Next, configure Rust Mode. Note that the hooks are set up in the
-   =init:= block intentionally. There is a dependency load order
-   problem that prevents them from being =hook:= calls.
+   Support for the Rust Programming Language.
 
    #+BEGIN_SRC emacs-lisp
      (use-package rustic
@@ -1356,57 +1226,101 @@
                    ("C-c C-c Q" . lsp-workspace-shutdown)
                    ("C-c C-c s" . lsp-rust-analyzer-status))
        :config
-       (setq rustic-format-on-save t
-             lsp-rust-server 'rust-analyzer
-             lsp-rust-analyzer-server-display-inline-hints t
-             lsp-rust-analyzer-display-chaining-hints t
-             lsp-rust-analyzer-display-parameter-hints t
-             lsp-rust-show-warnings t
-             lsp-rust-racer-completion t
-             lsp-rust-full-docs t
-             lsp-rust-build-lib t)
-       (add-hook 'rustic-mode-hook (lambda () (setq-local buffer-save-without-query t))))
+       ;; comment to disable rustfmt on save
+       (setq rustic-format-on-save t)
+       (add-hook 'rustic-mode-hook 'loomcom/rustic-mode-hook))
+
+     (defun loomcom/rustic-mode-hook ()
+       ;; so that run C-c C-c C-r works without having to confirm
+       (setq-local buffer-save-without-query t))
    #+END_SRC
 
+** LSP Mode
+
+   LSP is a language server protocol mode to allow working with
+   various LSP daemons.
+
    #+BEGIN_SRC emacs-lisp
-     (use-package cargo
-       :ensure t
-       :defer t
+     (use-package lsp-mode
+       :ensure
+       :commands lsp
+       :custom
+       (lsp-rust-analyzer-cargo-watch-command "clippy")
+       (lsp-eldoc-render-all t)
+       (lsp-idle-delay 0.6)
        :config
-       (add-hook 'rust-mode-hook 'cargo-minor-mode)
-       (add-hook 'cargo-minor-mode
-                 (lambda ()
-                   (setq flycheck-mode-hook #'flycheck-rust-setup))))
+       (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+     (use-package lsp-ui
+       :ensure
+       :commands lsp-ui-mode
+       :custom
+       (lsp-ui-peek-always-show t)
+       (lsp-ui-sideline-show-hover t)
+       (lsp-ui-doc-enable nil))
    #+END_SRC
 
-** Counsel / Ivy
-
-   Counsel, Swiper, and Ivy are used for autocompletion.
+** Company
 
    #+BEGIN_SRC emacs-lisp
-     (use-package counsel
+     (use-package company
        :ensure t
-       :defer t
-       :config
-       (ivy-mode 1)
-       (setq ivy-use-virtual-buffers t
-             enable-recursive-minibuffers t
-             ivy-height 10
-             ivy-count-format ""
-             ivy-initial-inputs-alist nil
-             ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
-       (setq search-default-mode #'char-fold-to-regexp)
-       (global-set-key (kbd "C-s") 'swiper-isearch)
-       (global-set-key (kbd "C-c C-r") 'ivy-resume)
-       (global-set-key (kbd "M-x") 'counsel-M-x)
-       (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-       (global-set-key (kbd "M-y") 'counsel-yank-pop)
-       (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
-       (global-set-key (kbd "C-c v") 'ivy-push-view)
-       (global-set-key (kbd "C-c V") 'ivy-pop-view))
+       :custom
+       (company-idle-delay 0.5) ;; how long to wait until popup
+       ;; (company-begin-commands nil) ;; uncomment to disable popup
+       :bind
+       (:map company-mode-map
+             ("<tab>" . tab-indent-or-complete)
+             ("TAB" . tab-indent-or-complete))
+       (:map company-active-map
+             ("C-n". company-select-next)
+             ("C-p". company-select-previous)
+             ("M-<". company-select-first)
+             ("M->". company-select-last)))
+   #+END_SRC
+
+** Helpers!
+
+   #+BEGIN_SRC emacs-lisp
+     (defun company-yasnippet-or-completion ()
+       (interactive)
+       (or (do-yas-expand)
+           (company-complete-common)))
+
+     (defun check-expansion ()
+       (save-excursion
+         (if (looking-at "\\_>") t
+           (backward-char 1)
+           (if (looking-at "\\.") t
+             (backward-char 1)
+             (if (looking-at "::") t nil)))))
+
+     (defun do-yas-expand ()
+       (let ((yas/fallback-behavior 'return-nil))
+         (yas/expand)))
+
+     (defun tab-indent-or-complete ()
+       (interactive)
+       (if (minibufferp)
+           (minibuffer-complete)
+         (if (or (not yas/minor-mode)
+                 (null (do-yas-expand)))
+             (if (check-expansion)
+                 (company-complete-common)
+               (indent-for-tab-command)))))
+   #+END_SRC
+
+** Flycheck
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package flycheck
+       :ensure t)
    #+END_SRC
 
 * Email
+  :PROPERTIES:
+  :CUSTOM_ID: email
+  :END:
 
   Email configuration is all in an external, optional file.
 
