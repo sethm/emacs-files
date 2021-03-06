@@ -1170,6 +1170,17 @@
   Much of this section, especially with regards to Rust development,
   is stolen verbatim from [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Robert Krahn]]. Thank you!
 
+** Ivy
+
+   Let's use Ivy for completion. See: [[https://github.com/abo-abo/swiper][https://github.com/abo-abo/swiper]]
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package ivy
+       :ensure t
+       :config
+       (ivy-mode 1))
+   #+END_SRC
+
 ** Lisp Editing
 
    I really like paredit, especially for Lisp, but I don't like the
@@ -1246,7 +1257,10 @@
        :commands lsp
        :custom
        (lsp-rust-analyzer-cargo-watch-command "clippy")
-       (lsp-eldoc-render-all t)
+       (lsp-rust-analyzer-proc-macro-enable t)
+       (lsp-rust-analyzer-cargo-load-out-dirs-from-check t)
+       (lsp-eldoc-render-all nil)
+       (lsp-eldoc-hook nil)
        (lsp-idle-delay 0.6)
        :config
        (add-hook 'lsp-mode-hook 'lsp-ui-mode))
@@ -1257,7 +1271,7 @@
        :custom
        (lsp-ui-peek-always-show t)
        (lsp-ui-sideline-show-hover t)
-       (lsp-ui-doc-enable nil))
+       (lsp-ui-doc-enable t))
    #+END_SRC
 
 ** Company
