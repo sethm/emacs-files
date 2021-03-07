@@ -1,4 +1,4 @@
-# My Emacs Configuration
+* My Emacs Configuration
 
 This is my Emacs configuration. It's been written and rewritten and
 refactored and migrated and changed and updated since the late '90s.
@@ -10,7 +10,7 @@ development servers, etc.
 A lot of this stuff is pretty specific to my personal needs, but feel
 free to steal ideas.
 
-## Structure
+** Structure
 
 My Emacs configuration is kept in *Literate Configuration* style.
 This means that my configuration is a human-readable document that
@@ -18,39 +18,39 @@ puts comments first, and embeds the actual configuration elisp as code
 snippets.
 
 The main file is called [configuration.org](configuration.org), and
-is in `org-mode` format.
+is in =org-mode= format.
 
-Files found in `~/.emacs.d/local` are ignore by Git, but added to
+Files found in =~/.emacs.d/local= are ignore by Git, but added to
 the load path.
 
-Files found in `~/.emacs.d/lisp` are checked into Git, and added to
+Files found in =~/.emacs.d/lisp= are checked into Git, and added to
 the load path.
 
-## Getting Started
+** Getting Started
 
 The process for bootstrapping all this stuff is complicated
-a little bit by the fact that I use the latest `org-mode`
+a little bit by the fact that I use the latest =org-mode=
 as a Git submodule. The full process for getting everything running
 is as follows:
 
-### Clone the Repository
+*** Clone the Repository
 
-    $ git clone git@github.com:sethm/emacs-files.git ~/.emacs.d
+    : $ git clone git@github.com:sethm/emacs-files.git ~/.emacs.d
 
-### Update the `org-mode` and `tera-mode` submodules
+*** Update the =org-mode= and =tera-mode= submodules
 
-    $ cd ~/.emacs.d
-    $ git submodule init
-    $ git submodule update
+    : $ cd ~/.emacs.d
+    : $ git submodule init
+    : $ git submodule update
 
-### Build `org-mode`
+*** Build =org-mode=
 
-    $ cd ~/.emacs.d/org-mode
-    $ make
+    : $ cd ~/.emacs.d/org-mode
+    : $ make
 
-## License
+** License
 
-Copyright 1995–2020, Seth J. Morabito &lt;web@loomcom.com&gt;
+Copyright 1995–2020, Seth J. Morabito <web@loomcom.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

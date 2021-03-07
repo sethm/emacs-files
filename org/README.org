@@ -1,0 +1,4 @@
+* Global org-mode Files
+
+This directory contains org-mode files I want to include as 
+templates elsewhere.

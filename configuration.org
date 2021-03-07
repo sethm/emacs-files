@@ -713,6 +713,7 @@
          :defer t)
        (require 'ox-latex)
        (setq org-tags-column -65
+             org-latex-listings 't
              org-export-default-language "en"
              org-export-with-smart-quotes t
              org-agenda-tags-column -65
@@ -730,6 +731,20 @@
                            :height 1.4)
        (set-face-attribute 'org-level-2 nil
                            :height 1.2))
+
+
+     (with-eval-after-load 'ox-latex
+       (add-to-list 'org-latex-classes
+                    '("org-plain-latex"
+                      "\\documentclass{article}
+     [NO-DEFAULT-PACKAGES]
+     [PACKAGES]
+     [EXTRA]"
+                      ("\\section{%s}" . "\\section*{%s}")
+                      ("\\subsection{%s}" . "\\subsection*{%s}")
+                      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                      ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                      ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
    #+END_SRC
 
    I have a lot of custom configuration for =org-mode=.
