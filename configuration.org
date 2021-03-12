@@ -711,6 +711,8 @@
        (use-package org-drill
          :ensure t
          :defer t)
+       (use-package htmlize
+         :ensure t)
        (require 'ox-latex)
        (setq org-tags-column -65
              org-latex-listings 't
@@ -1187,6 +1189,20 @@
   Much of this section, especially with regards to Rust development,
   is stolen verbatim from [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Robert Krahn]]. Thank you!
 
+** Web Mode
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package web-mode
+       :ensure t
+       :defer t
+       :config
+       (setq web-mode-markup-indent-offset 2
+             web-mode-css-indent-offset 2)
+       (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+       (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+       (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode)))
+   #+END_SRC
+
 ** Ivy
 
    Let's use Ivy for completion. See: [[https://github.com/abo-abo/swiper][https://github.com/abo-abo/swiper]]
@@ -1256,6 +1272,10 @@
        :config
        ;; comment to disable rustfmt on save
        (setq rustic-format-on-save t)
+       ;; These three make things significantly less flashy...
+       (setq lsp-eldoc-hook nil
+             lsp-enable-symbol-highlighting nil
+             lsp-signature-auto-activate nil)
        (add-hook 'rustic-mode-hook 'loomcom/rustic-mode-hook))
 
      (defun loomcom/rustic-mode-hook ()
@@ -1282,6 +1302,11 @@
    LSP is a language server protocol mode to allow working with
    various LSP daemons.
 
+   Note that I've disabled lsp-ui-mode because I've discovered I'm
+   finding it to be very distracting. If you want to turn it back
+   on, just add =:config (add-hook 'lsp-mode-hook 'lsp-ui-mode)=
+   to lsp-mode.
+
    #+BEGIN_SRC emacs-lisp
      (use-package lsp-mode
        :ensure t
@@ -1293,9 +1318,7 @@
        (lsp-rust-analyzer-cargo-load-out-dirs-from-check t)
        (lsp-eldoc-render-all nil)
        (lsp-eldoc-hook nil)
-       (lsp-idle-delay 0.6)
-       :config
-       (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+       (lsp-idle-delay 2.0))
 
      (use-package lsp-ui
        :ensure t
@@ -1314,7 +1337,7 @@
        :ensure t
        :defer t
        :custom
-       (company-idle-delay 0.5) ;; how long to wait until popup
+       (company-idle-delay 2.0) ;; how long to wait until popup
        ;; (company-begin-commands nil) ;; uncomment to disable popup
        :bind
        (:map company-mode-map
@@ -1423,10 +1446,12 @@
      (setq loomcom-footer
            (concat
             "<div id=\"footer\">\n"
-            "<p>Proudly "
+            "Proudly "
             "<a href=\"https://loomcom.com/blog/0110_emacs_blogging_for_fun_and_profit.html\">published</a> with "
             "<a href=\"https://www.gnu.org/software/emacs/\">Emacs</a> and "
-            "<a href=\"https://orgmode.org/\">Org Mode</a>"
+            "<a href=\"https://orgmode.org/\">Org Mode</a>. This work is licensed "
+            "under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">CC "
+            "BY-SA 4.0</a> License"
             "</div>"))
    #+END_SRC
 
