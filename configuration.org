@@ -1126,7 +1126,8 @@
        :ensure t
        :diminish yas-minor-mode
        :config
-       (add-to-list 'auto-mode-alist '("~/.emacs.d/snippets"))
+       (setq yas-snippet-dirs
+           (append yas-snippet-dirs '("~/.emacs.d/snippets")))
        (yas-global-mode))
 
      (use-package yasnippet-snippets
@@ -1198,6 +1199,8 @@
        :config
        (setq web-mode-markup-indent-offset 2
              web-mode-css-indent-offset 2)
+       :init
+       (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
        (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
        (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
        (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode)))
