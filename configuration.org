@@ -773,7 +773,12 @@
          '(("d" "default" plain (function org-roam--capture-get-point)
             "%?"
             :file-name "%<%Y%m%d%H%M%S>-${slug}"
-            :head "#+AUTHOR: %n\n#+DATE: %<%Y-%m-%d>\n#+TITLE: ${title}\n#+STARTUP: showall inlineimages\n#+OPTIONS: toc:nil num:nil\n\n- tags :: \n\n")))
+            :head "#+AUTHOR: %n\n"
+                  "#+DATE: %<%Y-%m-%d>\n"
+                  "#+TITLE: ${title}\n"
+                  "#+STARTUP: showall inlineimages\n"
+                  "#+OPTIONS: toc:nil num:nil\n\n"
+                  "- tags :: \n\n")))
         :bind (:map org-roam-mode-map
                     (("C-c n l" . org-roam)
                      ("C-c n f" . org-roam-find-file)
