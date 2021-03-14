@@ -49,7 +49,6 @@
 #+LATEX_HEADER: \predate{\begin{center}\fontsize{12pt}{12pt}\selectfont}
 #+LATEX_HEADER: \postdate{\par\end{center}\vspace{0em}}
 
-
 % Section/subsection headings:
 
 %Section
@@ -65,15 +64,14 @@
 #+LATEX_HEADER: \usepackage{enumitem}
 #+LATEX_HEADER: \setlist{itemsep=-2pt} % or \setlist{noitemsep} to leave space around whole list
 
+%Section
+#+LATEX_HEADER: \titleformat{\section} {\Large}{\thesection}{1em}{\textbf{#1}} % Section header formatting
+#+LATEX_HEADER: \titlespacing\section{0pt}{5pt}{-5pt} % left margin, space before section header, space after section header
 
-# %Section
-# #+LATEX_HEADER: \titleformat{\section} {\Large}{\thesection}{1em}{\textbf{#1}} % Section header formatting
-# #+LATEX_HEADER: \titlespacing\section{0pt}{5pt}{-5pt} % left margin, space before section header, space after section header
+%Subsection
+#+LATEX_HEADER: \titleformat{\subsection} {\large}{\thesubsection}{1em}{\textbf{#1}}
+#+LATEX_HEADER: \titlespacing\subsection{0pt}{5pt}{-5pt} % left margin, space before subsection header, space after subsection header
 
-# %Subsection
-# #+LATEX_HEADER: \titleformat{\subsection} {\large}{\thesubsection}{1em}{\textbf{#1}}
-\titlespacing\subsection{0pt}{5pt}{-5pt} % left margin, space before subsection header, space after subsection header
-
-# %Subsubsection
-# #+LATEX_HEADER: \titleformat{\subsubsection} {\large}{\thesubsubsection}{1em}{#1}
-\titlespacing\subsubsection{0pt}{5pt}{-5pt} % left margin, space before subsection header, space after subsection header
+%Subsubsection
+#+LATEX_HEADER: \titleformat{\subsubsection} {\large}{\thesubsubsection}{1em}{#1}
+#+LATEX_HEADER: \titlespacing\subsubsection{0pt}{5pt}{-5pt} % left margin, space before subsection header, space after subsection header
