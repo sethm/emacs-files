@@ -1,7 +1,6 @@
 #+AUTHOR: Seth Morabito
 #+EMAIL:  web@loomcom.com
 #+TITLE:  GNU Emacs Configuration File
-#+DATE:   2 November 2020
 #+OPTIONS: toc:1 ':t
 #+STARTUP: showall
 
@@ -79,9 +78,9 @@
    to do its thing.
 
    #+BEGIN_SRC emacs-lisp
-     (when (and (fboundp 'native-comp-available-p)
+     (when (and (fboundp #'native-comp-available-p)
                 (native-comp-available-p)
-                (functionp 'json-serialize))
+                (functionp #'json-serialize))
        (setq comp-deferred-compilation t))
    #+END_SRC
 
@@ -364,21 +363,21 @@
 
    #+BEGIN_SRC emacs-lisp
      (global-set-key (kbd "C-<left>")
-                     '(lambda ()
-                        (interactive)
-                        (ignore-errors (windmove-left))))
+                     #'(lambda ()
+                         (interactive)
+                         (ignore-errors (windmove-left))))
      (global-set-key (kbd "C-<right>")
-                     '(lambda ()
-                        (interactive)
-                        (ignore-errors (windmove-right))))
+                     #'(lambda ()
+                         (interactive)
+                         (ignore-errors (windmove-right))))
      (global-set-key (kbd "C-<up>")
-                     '(lambda ()
-                        (interactive)
-                        (ignore-errors (windmove-up))))
+                     #'(lambda ()
+                         (interactive)
+                         (ignore-errors (windmove-up))))
      (global-set-key (kbd "C-<down>")
-                     '(lambda ()
-                        (interactive)
-                        (ignore-errors (windmove-down))))
+                     #'(lambda ()
+                         (interactive)
+                         (ignore-errors (windmove-down))))
    #+END_SRC
 
 
@@ -774,11 +773,11 @@
             "%?"
             :file-name "%<%Y%m%d%H%M%S>-${slug}"
             :head "#+AUTHOR: %n\n"
-                  "#+DATE: %<%Y-%m-%d>\n"
-                  "#+TITLE: ${title}\n"
-                  "#+STARTUP: showall inlineimages\n"
-                  "#+OPTIONS: toc:nil num:nil\n\n"
-                  "- tags :: \n\n")))
+            "#+DATE: %<%Y-%m-%d>\n"
+            "#+TITLE: ${title}\n"
+            "#+STARTUP: showall inlineimages\n"
+            "#+OPTIONS: toc:nil num:nil\n\n"
+            "- tags :: \n\n")))
         :bind (:map org-roam-mode-map
                     (("C-c n l" . org-roam)
                      ("C-c n f" . org-roam-find-file)
@@ -1132,7 +1131,7 @@
        :diminish yas-minor-mode
        :config
        (setq yas-snippet-dirs
-           (append yas-snippet-dirs '("~/.emacs.d/snippets")))
+             (append yas-snippet-dirs '("~/.emacs.d/snippets")))
        (yas-global-mode))
 
      (use-package yasnippet-snippets
@@ -1143,17 +1142,17 @@
 
 ** Tera Mode
 
-    One of my projects uses [[https://tera.netlify.app/][the Tera template language]], so I add
-    support here. Unfortunately, ~tera-mode~ is not in ELPA or MELPA,
-    so I have it checked out as a sub-module. I also just lazily enable
-    ~tera-mode~ by hand when I need it.
+   One of my projects uses [[https://tera.netlify.app/][the Tera template language]], so I add
+   support here. Unfortunately, ~tera-mode~ is not in ELPA or MELPA,
+   so I have it checked out as a sub-module. I also just lazily enable
+   ~tera-mode~ by hand when I need it.
 
-    #+BEGIN_SRC emacs-lisp
-      (add-to-list 'load-path "~/.emacs.d/vendor/tera-mode")
-      (require 'tera-mode)
-      ;; Set offset for HTML/XML-like things
-      (setq sgml-basic-offset 4)
-    #+END_SRC
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "~/.emacs.d/vendor/tera-mode")
+     (require 'tera-mode)
+     ;; Set offset for HTML/XML-like things
+     (setq sgml-basic-offset 4)
+   #+END_SRC
 
 ** Markdown
 
@@ -1320,6 +1319,10 @@
        :ensure t
        :defer t
        :commands lsp
+       :config
+       ;; Improve performance
+       (setq read-process-output-max (* 1024 1024))
+       (setq gc-cons-threshold 100000000)
        :custom
        (lsp-rust-analyzer-cargo-watch-command "clippy")
        (lsp-rust-analyzer-proc-macro-enable t)
