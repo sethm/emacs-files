@@ -380,14 +380,21 @@
                          (ignore-errors (windmove-down))))
    #+END_SRC
 
-
 ** Other Key Bindings
 
 *** Shortcut for "Goto Line"
 
     #+BEGIN_SRC emacs-lisp
-      (global-set-key "\C-xl" 'goto-line)
+      (global-set-key (kbd "C-x l") #'goto-line)
     #+END_SRC
+
+*** Shortcut for "Delete Trailing Whitespace"
+
+
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "C-c C-x w") #'delete-trailing-whitespace)
+    #+END_SRC
+
 
 ** Miscellaneous Settings
 
@@ -1219,6 +1226,16 @@
        :ensure t
        :config
        (ivy-mode 1))
+   #+END_SRC
+
+** SQL Indent Mode
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package sql-indent
+       :ensure t
+       :defer t
+       :config
+       (add-hook 'sql-mode-hook #'sqlind-minor-mode))
    #+END_SRC
 
 ** Lisp Editing
