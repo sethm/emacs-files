@@ -380,6 +380,19 @@
                          (ignore-errors (windmove-down))))
    #+END_SRC
 
+** A Resize Helper
+
+   I like a standard editor size of 88 by 66 characters (If you know why, you win a cookie!)
+   This helper will set that size automatically.
+
+   #+BEGIN_SRC emacs-lisp
+     (defun set-frame-standard-size () (interactive)
+            (set-frame-size (selected-frame) 88 66))
+
+     (defun set-frame-double-size () (interactive)
+            (set-frame-size (selected-frame) 176 66))
+   #+END_SRC
+   
 ** Other Key Bindings
 
 *** Shortcut for "Goto Line"
@@ -495,15 +508,28 @@
 
 ** Window Frame
 
-   By default, the Emacs frame (what you or I would call a window)
-   title is *user@host*. I much prefer the frame title to show the
-   actual name of the currently selected buffer.
+*** Title
+    
+    By default, the Emacs frame (what you or I would call a window)
+    title is *user@host*. I much prefer the frame title to show the
+    actual name of the currently selected buffer.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq-default frame-title-format "%b")
-     (setq frame-title-format "%b")
-   #+END_SRC
+    #+BEGIN_SRC emacs-lisp
+      (setq-default frame-title-format "%b")
+      (setq frame-title-format "%b")
+    #+END_SRC
 
+*** Fringe
+
+    I waffle back and forth on whether I like fringe on my windows
+    or not. Fringe is a little bit of space to the right and left,
+    basically inner and outer margins. Some days I like it, some days
+    I don't? Who can say. Anyway, for now, this turns it off.
+
+    #+BEGIN_SRC emacs-lisp
+      (fringe-mode 0)
+    #+END_SRC
+   
 ** Changing Font Size on the Fly
 
    By default, you can increase or decrease the font face size in a
@@ -571,13 +597,7 @@
 
 ** Line Numbers
 
-   Display line numbers in all programming-modes.
-
-   #+BEGIN_SRC emacs-lisp
-     (add-hook 'prog-mode-hook #'display-line-numbers-mode)
-   #+END_SRC
-
-   Furthermore, I like to see /(Line,Column)/ displayed in the modeline.
+   I like to see /(Line,Column)/ displayed in the modeline.
 
    #+BEGIN_SRC emacs-lisp
      (setq line-number-mode t)
