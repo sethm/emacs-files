@@ -1391,7 +1391,7 @@
          :custom
          (lsp-ui-peek-always-show t)
          (lsp-ui-sideline-show-hover t)
-         (lsp-ui-doc-enable t))
+         (lsp-ui-doc-enable t)))
    #+END_SRC
 
 ** Company
