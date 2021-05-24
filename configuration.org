@@ -519,17 +519,6 @@
       (setq frame-title-format "%b")
     #+END_SRC
 
-*** Fringe
-
-    I waffle back and forth on whether I like fringe on my windows
-    or not. Fringe is a little bit of space to the right and left,
-    basically inner and outer margins. Some days I like it, some days
-    I don't? Who can say. Anyway, for now, this turns it off.
-
-    #+BEGIN_SRC emacs-lisp
-      (fringe-mode 0)
-    #+END_SRC
-   
 ** Changing Font Size on the Fly
 
    By default, you can increase or decrease the font face size in a
