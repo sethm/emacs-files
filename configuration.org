@@ -392,7 +392,7 @@
      (defun set-frame-double-size () (interactive)
             (set-frame-size (selected-frame) 176 66))
    #+END_SRC
-   
+
 ** Other Key Bindings
 
 *** Shortcut for "Goto Line"
@@ -509,7 +509,7 @@
 ** Window Frame
 
 *** Title
-    
+
     By default, the Emacs frame (what you or I would call a window)
     title is *user@host*. I much prefer the frame title to show the
     actual name of the currently selected buffer.
@@ -797,10 +797,8 @@
         :defer t
         :config
         (require 'org-roam-protocol)
-        (when (file-exists-p (expand-file-name "~/Nextcloud/org-roam"))
-          (setq
-           org-roam-directory "~/Nextcloud/org-roam"
-           org-roam-index-file "~/Nextcloud/org-roam/index.org"))
+        (setq org-roam-directory "~/Documents/org-roam"
+              org-roam-index-file "~/Documents/org-roam/index.org")
         (setq
          org-roam-capture-templates
          '(("d" "default" plain (function org-roam--capture-get-point)
