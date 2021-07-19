@@ -474,7 +474,8 @@
 
    #+BEGIN_SRC emacs-lisp
      (when window-system
-       (let* ((families '("Hack"
+       (let* ((families '("Roboto Mono"
+                          "Hack"
                           "Input Mono"
                           "Inconsolata"
                           "Dejavu"
