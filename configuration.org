@@ -1319,15 +1319,17 @@
              lsp-rust-analyzer-cargo-load-out-dirs-from-check t
              lsp-eldoc-render-all nil
              lsp-eldoc-hook nil
-             lsp-idle-delay 2.0)
-       (use-package lsp-ui
-         :ensure t
-         :defer t
-         :commands lsp-ui-mode
-         :custom
-         (lsp-ui-peek-always-show t)
-         (lsp-ui-sideline-show-hover t)
-         (lsp-ui-doc-enable t)))
+             lsp-idle-delay 2.0))
+
+     (use-package lsp-ui
+       :ensure t
+       :defer t
+       :commands lsp-ui-mode
+       :custom
+       (lsp-ui-peek-always-show t)
+       (lsp-ui-sideline-show-hover t)
+       (lsp-ui-doc-enable t)
+       (lsp-ui-doc-delay 2))
    #+END_SRC
 
 ** Company
