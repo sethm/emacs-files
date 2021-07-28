@@ -623,6 +623,13 @@
      (show-paren-mode t)
    #+END_SRC
 
+   I like automatic pair matching, but you might want to turn this off
+   if you find it annoying.
+
+   #+BEGIN_SRC emacs-lisp
+     (electric-pair-mode)
+   #+END_SRC
+
 ** Mac OS X Specific Tweaks
 
    GNU Emacs running on recent versions of MacOS in particular exhibit
@@ -1012,6 +1019,23 @@
                      ("\\paragraph{%s}" . "\\paragraph*{%s}")
                      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
     #+END_SRC
+
+** Org Roam
+
+   #+BEGIN_SRC emacs-lisp
+     (when (file-directory-p (expand-file-name "~/Nextcloud/org-roam/"))
+       (use-package org-roam
+         :ensure t
+         :init
+         (setq org-roam-v2-ack t)
+         :custom
+         (org-roam-directory (expand-file-name "~/Nextcloud/org-roam/"))
+         :bind (("C-c n l" . org-roam-buffer-toggle)
+                ("C-c n f" . org-roam-node-find)
+                ("C-c n i" . org-roam-node-insert))
+         :config
+         (org-roam-setup)))
+   #+END_SRC
 
 ** Org Superstar
 
