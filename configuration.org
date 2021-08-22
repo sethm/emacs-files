@@ -1295,10 +1295,6 @@
        :config
        ;; comment to disable rustfmt on save
        (setq rustic-format-on-save t)
-       ;; These three make things significantly less flashy...
-       (setq lsp-eldoc-hook nil
-             lsp-enable-symbol-highlighting nil
-             lsp-signature-auto-activate nil)
        (add-hook 'rustic-mode-hook 'loomcom/rustic-mode-hook))
 
      (defun loomcom/rustic-mode-hook ()
@@ -1342,9 +1338,18 @@
              lsp-rust-analyzer-proc-macro-enable t
              lsp-rust-analyzer-cargo-watch-command "clippy"
              lsp-rust-analyzer-cargo-load-out-dirs-from-check t
+             ;; These three make things significantly less flashy...
              lsp-eldoc-render-all nil
              lsp-eldoc-hook nil
-             lsp-idle-delay 2.0))
+             lsp-idle-delay 2.0
+             lsp-eldoc-hook nil
+             lsp-enable-symbol-highlighting nil
+             lsp-signature-auto-activate nil
+             ;; Do not automatically include headers for me!
+             lsp-clients-clangd-args '("--header-insertion=never")
+             ;; Do not auto-format for me!
+             lsp-enable-indentation nil
+             lsp-enable-on-type-formatting nil))
 
      (use-package lsp-ui
        :ensure t
