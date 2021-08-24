@@ -688,10 +688,13 @@
 ** Theme
 
    #+BEGIN_SRC emacs-lisp
-     (use-package color-theme-sanityinc-tomorrow
+     (use-package soft-stone-theme
        :ensure t
        :config
-       (load-theme 'sanityinc-tomorrow-bright t))
+       (load-theme 'soft-stone t))
+
+     (use-package color-theme-sanityinc-tomorrow
+       :ensure t)
    #+END_SRC
 
 ** Org Mode
