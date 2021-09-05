@@ -312,6 +312,14 @@
        (setq exec-path (append exec-path '("/usr/local/bin")))
        (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
 
+     (when (file-exists-p "/opt/homebrew/bin")
+       (setq exec-path (append exec-path '("/opt/homebrew/bin")))
+       (setenv "PATH" (concat (getenv "PATH") ":/opt/homebrew/bin")))
+
+     (when (file-exists-p "/opt/homebrew/opt/llvm/bin")
+       (setq exec-path (append exec-path '("/opt/homebrew/opt/llvm/bin")))
+       (setenv "PATH" (concat (getenv "PATH") ":/opt/homebrew/opt/llvm/bin")))
+
      (when (file-exists-p (expand-file-name "~/bin"))
        (setq exec-path (append exec-path '("~/bin")))
        (setenv "PATH" (concat (getenv "PATH") ":$HOME/bin")))
