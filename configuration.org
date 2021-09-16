@@ -1934,6 +1934,16 @@ that defines the project.
 :CUSTOM_ID: misc-hacks
 :END:
 
+
+** Emacs 28
+
+Turn on native compilation of packages
+
+#+BEGIN_SRC emacs-lisp
+  (when (>= emacs-major-version 28)
+    (setq package-native-compile 1))
+#+END_SRC
+
 ** Emacs 27
 
 Beginning in Emacs 27, a new attribute, =:extend=, was added to
