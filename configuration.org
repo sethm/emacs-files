@@ -1055,6 +1055,14 @@ This adds support the LaTeX class =koma-article= on LaTeX export.
     (setq auth-sources '("~/.authinfo.gpg")))
 #+END_SRC
 
+** Twittering
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package twittering-mode
+       :defer t
+       :ensure t)
+   #+END_SRC
+
 ** Sly
 
 Sly is a Common Lisp IDE that is a fork of SLIME, with some
