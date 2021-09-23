@@ -482,9 +482,9 @@ ignored.
 
 #+BEGIN_SRC emacs-lisp
   (when window-system
-    (let* ((families '("Hack"
+    (let* ((families '("Input Mono"
                        "Roboto Mono"
-                       "Input Mono"
+                       "Hack"
                        "Inconsolata"
                        "Dejavu"
                        "Menlo"
