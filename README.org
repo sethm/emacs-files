@@ -45,7 +45,7 @@ is as follows:
 
 *** Build =org-mode=
 
-    : $ cd ~/.emacs.d/org-mode
+    : $ cd ~/.emacs.d/vendor/org-mode
     : $ make
 
 ** License

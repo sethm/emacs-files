@@ -6,1977 +6,1996 @@
 
 * Table of Contents
 
-  - [[#introduction][Introduction]]
-  - [[#basic-setup][Basic Setup]]
-  - [[#behavior][Behavior]]
-  - [[#appearance][Appearance]]
-  - [[#package-management][Package Management]]
-  - [[#development][Development and Languages]]
-  - [[#webpage-publishing][Webpage Publishing]]
-  - [[#misc-hacks][Miscellaneous Hacks]]
+- [[#introduction][Introduction]]
+- [[#basic-setup][Basic Setup]]
+- [[#behavior][Behavior]]
+- [[#appearance][Appearance]]
+- [[#package-management][Package Management]]
+- [[#development][Development and Languages]]
+- [[#webpage-publishing][Webpage Publishing]]
+- [[#misc-hacks][Miscellaneous Hacks]]
 
 * Introduction
-  :PROPERTIES:
-  :CUSTOM_ID: introduction
-  :END:
+:PROPERTIES:
+:CUSTOM_ID: introduction
+:END:
 
-  This document contains my entire GNU Emacs configuration file in
-  /Literate Programming/ style. Literate Programming strives to invert
-  the normal programming paradigm; Instead of source code scattered with
-  comments, Literate Programming encourages code to be written as a
-  human readable document, in prose, with source code blocks embedded
-  inside of it. The source code is later interpreted, while the human
-  readable prose is ignored by the interpreter or compiler.
+This document contains my entire GNU Emacs configuration file in
+/Literate Programming/ style. Literate Programming strives to invert
+the normal programming paradigm; Instead of source code scattered with
+comments, Literate Programming encourages code to be written as a
+human readable document, in prose, with source code blocks embedded
+inside of it. The source code is later interpreted, while the human
+readable prose is ignored by the interpreter or compiler.
 
-  The magic here is provided by =org-babel=, which provides a method for
-  extracting and evaluating Emacs Lisp expressions inside an =org-mode=
-  file.
+The magic here is provided by =org-babel=, which provides a method for
+extracting and evaluating Emacs Lisp expressions inside an =org-mode=
+file.
 
-  *There is one more thing:* Emacs comes with a built-in version of Org
-  Mode that is usually out of date. Because I like to live on the
-  bleeding edge of Org Mode, I provide my own checkout as a git
-  submodule. The first two lines of my =init.el= file then add this
-  submodule to the load path. This is required to use the submodule
-  version of org mode. My =init.el= looks like this, in its entirety:
+*There is one more thing:* Emacs comes with a built-in version of Org
+Mode that is usually out of date. Because I like to live on the
+bleeding edge of Org Mode, I provide my own checkout as a git
+submodule. The first two lines of my =init.el= file then add this
+submodule to the load path. This is required to use the submodule
+version of org mode. My =init.el= looks like this, in its entirety:
 
-  #+BEGIN_EXAMPLE
-    (add-to-list 'load-path "~/.emacs.d/vendor/org-mode/lisp")
-    (add-to-list 'load-path "~/.emacs.d/vendor/org-mode/contrib/lisp")
+#+BEGIN_EXAMPLE
+  (add-to-list 'load-path "~/.emacs.d/vendor/org-mode/lisp")
+  (add-to-list 'load-path "~/.emacs.d/vendor/org-contrib/lisp")
 
-    (org-babel-load-file "~/.emacs.d/configuration.org")
-  #+END_EXAMPLE
+  (org-babel-load-file "~/.emacs.d/configuration.org")
+#+END_EXAMPLE
 
-  To finish the bootstrap, all you need to do is:
+To finish the bootstrap, all you need to do is:
 
-  #+BEGIN_EXAMPLE
-  $ cd ~/.emacs.d
-  $ git submodule init
-  $ git submodule update
-  $ cd ~/.emacs.d/org-mode
-  $ make
-  #+END_EXAMPLE
+#+BEGIN_EXAMPLE
+$ cd ~/.emacs.d
+$ git submodule init
+$ git submodule update
+$ cd ~/.emacs.d/org-mode
+$ make
+#+END_EXAMPLE
 
 * Basic Setup
-  :PROPERTIES:
-  :CUSTOM_ID: basic-setup
-  :END:
+:PROPERTIES:
+:CUSTOM_ID: basic-setup
+:END:
 
 ** Hack: Turn Off cl Deprecation Warnings
 
-   Some of the packages I use still do ~(require 'cl)~, which is now
-   deprecated in favor of ~(require 'cl-lib)~. I don't use this
-   deprecated library myself, so this hack simply silences those
-   deprecation warnings.
+Some of the packages I use still do ~(require 'cl)~, which is now
+deprecated in favor of ~(require 'cl-lib)~. I don't use this
+deprecated library myself, so this hack simply silences those
+deprecation warnings.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq byte-compile-warnings '(cl-functions))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq byte-compile-warnings '(cl-functions))
+#+END_SRC
 
 ** Native Compilation
 
-   If (and only if) Emacs has native compilation available, set it up
-   to do its thing.
+If (and only if) Emacs has native compilation available, set it up
+to do its thing.
 
-   #+BEGIN_SRC emacs-lisp
-     (when (and (fboundp #'native-comp-available-p)
-                (native-comp-available-p)
-                (functionp #'json-serialize))
-       (setq comp-deferred-compilation t))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (when (and (fboundp #'native-comp-available-p)
+             (native-comp-available-p)
+             (functionp #'json-serialize))
+    (setq comp-deferred-compilation t))
+#+END_SRC
 
 ** Where to store Customization
 
-   First things first. Because I use =org-babel= and literate programming
-   style for my config, I want my =init.el= file to be as small as
-   possible. For that reason, I want Emacs to put all of its generated
-   fluff into a separate file that is actually outside the Emacs
-   directory.
+First things first. Because I use =org-babel= and literate programming
+style for my config, I want my =init.el= file to be as small as
+possible. For that reason, I want Emacs to put all of its generated
+fluff into a separate file that is actually outside the Emacs
+directory.
 
-   #+BEGIN_SRC emacs-lisp
-     (let ((local-custom-file "~/.emacs-custom.el"))
-       (when (not (file-exists-p local-custom-file))
-         (write-region "" nil local-custom-file))
-       (setq custom-file local-custom-file)
-       (load custom-file))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (let ((local-custom-file "~/.emacs-custom.el"))
+    (when (not (file-exists-p local-custom-file))
+      (write-region "" nil local-custom-file))
+    (setq custom-file local-custom-file)
+    (load custom-file))
+#+END_SRC
 
 ** Default Directory
 
-   Some builds of emacs on exotic operating systems don't automatically
-   know that I want my home directory to be the default find-file
-   directory.
+Some builds of emacs on exotic operating systems don't automatically
+know that I want my home directory to be the default find-file
+directory.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq default-directory (expand-file-name "~/"))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq default-directory (expand-file-name "~/"))
+#+END_SRC
 
 ** Reducing Clutter
 
-   Next, I like to immediately reduce what I consider to be visual
-   clutter. Your milage may vary, but for me this means turning off
-   startup messages, the splash screen, tool bar, and tooltips.
+Next, I like to immediately reduce what I consider to be visual
+clutter. Your milage may vary, but for me this means turning off
+startup messages, the splash screen, tool bar, and tooltips.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq warning-minimum-level :emergency)
-     (setq inhibit-startup-message t)
-     (setq inhibit-splash-screen t)
-     (tool-bar-mode -1)
-     (tooltip-mode -1)
-     (scroll-bar-mode -1)
-     (if (display-graphic-p)
-         (menu-bar-mode t)
-       (menu-bar-mode -1))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq warning-minimum-level :emergency)
+  (setq inhibit-startup-message t)
+  (setq inhibit-splash-screen t)
+  (tool-bar-mode -1)
+  (tooltip-mode -1)
+  (scroll-bar-mode -1)
+  (if (display-graphic-p)
+      (menu-bar-mode t)
+    (menu-bar-mode -1))
+#+END_SRC
 
 * Behavior
-  :PROPERTIES:
-  :CUSTOM_ID: behavior
-  :END:
+:PROPERTIES:
+:CUSTOM_ID: behavior
+:END:
 
 ** Better Defaults
 
-   A few minor tweaks that I enjoy. First, I like to take space from all
-   windows whenever I split a window
+A few minor tweaks that I enjoy. First, I like to take space from all
+windows whenever I split a window
 
-   #+BEGIN_SRC emacs-lisp
-     (setq-default window-combination-resize t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq-default window-combination-resize t)
+#+END_SRC
 
-   Next, stretch the cursor to fill a full glyph cell
+Next, stretch the cursor to fill a full glyph cell
 
-   #+BEGIN_SRC emacs-lisp
-     (setq-default x-stretch-cursor t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq-default x-stretch-cursor t)
+#+END_SRC
 
 ** Tidying Up the Working Directory
 
-   Emacs, by default, keeps backup files in the current working
-   directory. I much prefer to keep all backup files together in one
-   place. This will put them all into the directory
-   =~/.emacs.d/backups/=, creating the directory if it does not exist.
+Emacs, by default, keeps backup files in the current working
+directory. I much prefer to keep all backup files together in one
+place. This will put them all into the directory
+=~/.emacs.d/backups/=, creating the directory if it does not exist.
 
-   #+BEGIN_SRC emacs-lisp
-     (if (not (file-exists-p "~/.emacs.d/backups/"))
-         (make-directory "~/.emacs.d/backups/" t))
-     (setq backup-directory-alist
-           '(("." . "~/.emacs.d/backups/")))
-     (setq auto-save-file-name-transforms
-           '((".*" "~/.emacs.d/backups/" t)))
-     (setq backup-by-copying t)
-     (setq auto-save-default t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (if (not (file-exists-p "~/.emacs.d/backups/"))
+      (make-directory "~/.emacs.d/backups/" t))
+  (setq backup-directory-alist
+        '(("." . "~/.emacs.d/backups/")))
+  (setq auto-save-file-name-transforms
+        '((".*" "~/.emacs.d/backups/" t)))
+  (setq backup-by-copying t)
+  (setq auto-save-default t)
+#+END_SRC
 
-   Next, these settings control how many backup versions to keep, and
-   specify that older versions should be silently deleted (don't warn
-   me).
+Next, these settings control how many backup versions to keep, and
+specify that older versions should be silently deleted (don't warn
+me).
 
-   #+BEGIN_SRC emacs-lisp
-     (setq kept-old-versions 2)
-     (setq kept-new-versions 5)
-     (setq delete-old-versions t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq kept-old-versions 2)
+  (setq kept-new-versions 5)
+  (setq delete-old-versions t)
+#+END_SRC
 
-   Spelling is important (I'm terrible at spelling).
+Spelling is important (I'm terrible at spelling).
 
-   #+BEGIN_SRC emacs-lisp
-     (cond
-      ((executable-find "aspell")
-       (setq ispell-program-name "aspell"))
-      ((executable-find "hunspell")
-       (setq ispell-program-name "hunspell")
-       (setq ispell-local-dictionary "en_US")
-       (setq ispell-local-dictionary-alist
-             '(("en_US" "[[:alpha]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8))))
-      (t (setq ispell-program-name nil)))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (cond
+   ((executable-find "aspell")
+    (setq ispell-program-name "aspell"))
+   ((executable-find "hunspell")
+    (setq ispell-program-name "hunspell")
+    (setq ispell-local-dictionary "en_US")
+    (setq ispell-local-dictionary-alist
+          '(("en_US" "[[:alpha]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8))))
+   (t (setq ispell-program-name nil)))
+#+END_SRC
 
-   On macOS, I turn off ~--dired~ (because ~ls~ does not support it).
+On macOS, I turn off ~--dired~ (because ~ls~ does not support it).
 
-   #+BEGIN_SRC emacs-lisp
-     (when (string= system-type "darwin")
-       (setq dired-use-ls-dired nil))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (when (string= system-type "darwin")
+    (setq dired-use-ls-dired nil))
+#+END_SRC
 
-   I completely disable lockfiles, which I don't need, and which only
-   cause trouble.
+I completely disable lockfiles, which I don't need, and which only
+cause trouble.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq create-lockfiles nil)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq create-lockfiles nil)
+#+END_SRC
 
-   Lastly, I disable the default "Control-Z" behavior of suspending
-   emacs, because I find that I accidentally hit this key combo way
-   too often when my clumsy fingers are trying to hit "Control-X"
+Lastly, I disable the default "Control-Z" behavior of suspending
+emacs, because I find that I accidentally hit this key combo way too
+often when my clumsy fingers are trying to hit "Control-X"
 
-   #+BEGIN_SRC emacs-lisp
-     (global-unset-key [(control z)])
-     (global-unset-key [(control x)(control z)])
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (global-unset-key [(control z)])
+  (global-unset-key [(control x)(control z)])
+#+END_SRC
 
 ** Scrolling
 
-   =scroll-step= controls the number of lines that the window will scroll
-   automatically when the cursor moves off the screen. By default, it
-   will jump you so that the cursor is centered (vertically) after
-   scrolling. I really don't like this behavior, so I set it to =1= so
-   the window will only move by a single line.
+=scroll-step= controls the number of lines that the window will scroll
+automatically when the cursor moves off the screen. By default, it
+will jump you so that the cursor is centered (vertically) after
+scrolling. I really don't like this behavior, so I set it to =1= so
+the window will only move by a single line.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq scroll-step 1)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq scroll-step 1)
+#+END_SRC
 
-   Next, setting =scroll-conservatively= to a very large number will
-   further prevent automatic centering. The value =10,000= comes from a
-   suggestion on the [[https://www.emacswiki.org/emacs/SmoothScrolling][Emacs Wiki]].
+Next, setting =scroll-conservatively= to a very large number will
+further prevent automatic centering. The value =10,000= comes from a
+suggestion on the [[https://www.emacswiki.org/emacs/SmoothScrolling][Emacs Wiki]].
 
-   #+BEGIN_SRC emacs-lisp
-     (setq scroll-conservatively 10000)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq scroll-conservatively 10000)
+#+END_SRC
 
 ** Indentation
 
-   I always prefer 4 spaces for indents.
+I always prefer 4 spaces for indents.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq-default c-basic-offset 4)
-     (setq-default sh-basic-offset 4)
-     (setq-default tab-width 4)
-     (setq-default indent-tabs-mode nil)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq-default c-basic-offset 4)
+  (setq-default sh-basic-offset 4)
+  (setq-default tab-width 4)
+  (setq-default indent-tabs-mode nil)
+#+END_SRC
 
-   And next, I want to fix how multi-line initialization in C-like
-   languages is handled (for example, when initializing an array or a
-   struct). By default, elements after the =brace-list-intro=
-   character get lined up directly below it, like this:
+And next, I want to fix how multi-line initialization in C-like
+languages is handled (for example, when initializing an array or a
+struct). By default, elements after the =brace-list-intro= character
+get lined up directly below it, like this:
 
-   #+BEGIN_EXAMPLE
-   int array[3] = {
-                   0,
-                   1,
-                   2,
-   };
-   #+END_EXAMPLE
+#+BEGIN_EXAMPLE
+int array[3] = {
+                0,
+                1,
+                2,
+};
+#+END_EXAMPLE
 
-   By setting the correct value for =c-set-offset 'brace-list-intro=,
-   I can get what I consider to be a much better offset that
-   looks like this:
+By setting the correct value for =c-set-offset 'brace-list-intro=, I
+can get what I consider to be a much better offset that looks like
+this:
 
-   #+BEGIN_EXAMPLE
-   int array[3] = {
-       0,
-       1,
-       2,
-   };
-   #+END_EXAMPLE
+#+BEGIN_EXAMPLE
+int array[3] = {
+    0,
+    1,
+    2,
+};
+#+END_EXAMPLE
 
-   Here's the setting:
+Here's the setting:
 
-   #+BEGIN_SRC emacs-lisp
-     (c-set-offset 'brace-list-intro '+)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (c-set-offset 'brace-list-intro '+)
+#+END_SRC
 
 ** Tramp
 
-   /Tramp/ is a useful mode that allows editing files remotely.
+/Tramp/ is a useful mode that allows editing files remotely.
 
-   The first thing I like to do is set the default connection method.
+The first thing I like to do is set the default connection method.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq tramp-default-method "ssh")
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq tramp-default-method "ssh")
+#+END_SRC
 
-   Then, I up some default values to make editing large directories
-   happy.
+Then, I up some default values to make editing large directories
+happy.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq max-lisp-eval-depth 4000)   ; default is 400
-     (setq max-specpdl-size 5000)      ; default is 1000
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq max-lisp-eval-depth 4000)   ; default is 400
+  (setq max-specpdl-size 5000)      ; default is 1000
+#+END_SRC
 
 ** Recent Files
 
-   Keep a list of recently opened files
+Keep a list of recently opened files
 
-   #+BEGIN_SRC emacs-lisp
-     (recentf-mode 1)
-     (setq-default recent-save-file "~/.emacs.d/recentf")
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (recentf-mode 1)
+  (setq-default recent-save-file "~/.emacs.d/recentf")
+#+END_SRC
 
 ** Exec Path
 
-   If certain directories exist, they should be added to the
-   exec-path.
+If certain directories exist, they should be added to the exec-path.
 
-   #+BEGIN_SRC emacs-lisp
-     (when (file-exists-p "/usr/local/bin")
-       (setq exec-path (append exec-path '("/usr/local/bin")))
-       (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
-     
-     (when (file-exists-p "/opt/homebrew/bin")
-       (setq exec-path (append exec-path '("/opt/homebrew/bin")))
-       (setenv "PATH" (concat (getenv "PATH") ":/opt/homebrew/bin")))
-     
-     (when (file-exists-p "/opt/homebrew/opt/llvm/bin")
-       (setq exec-path (append exec-path '("/opt/homebrew/opt/llvm/bin")))
-       (setenv "PATH" (concat (getenv "PATH") ":/opt/homebrew/opt/llvm/bin")))
-     
-     (when (file-exists-p (expand-file-name "~/bin"))
-       (setq exec-path (append exec-path '("~/bin")))
-       (setenv "PATH" (concat (getenv "PATH") ":$HOME/bin")))
-     
-     (when (file-exists-p "/Library/TeX/texbin")
-       (setq exec-path (append exec-path '("/Library/TeX/texbin")))
-       (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin")))
-     
-     (when (file-exists-p "~/.cargo/bin")
-       ;; Add to front of the list
-       (add-to-list 'exec-path "~/.cargo/bin")
-       (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin")))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (when (file-exists-p "/usr/local/bin")
+    (setq exec-path (append exec-path '("/usr/local/bin")))
+    (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
+
+  (when (file-exists-p "/opt/homebrew/bin")
+    (setq exec-path (append exec-path '("/opt/homebrew/bin")))
+    (setenv "PATH" (concat (getenv "PATH") ":/opt/homebrew/bin")))
+
+  (when (file-exists-p "/opt/homebrew/opt/llvm/bin")
+    (setq exec-path (append exec-path '("/opt/homebrew/opt/llvm/bin")))
+    (setenv "PATH" (concat (getenv "PATH") ":/opt/homebrew/opt/llvm/bin")))
+
+  (when (file-exists-p (expand-file-name "~/bin"))
+    (setq exec-path (append exec-path '("~/bin")))
+    (setenv "PATH" (concat (getenv "PATH") ":$HOME/bin")))
+
+  (when (file-exists-p "/Library/TeX/texbin")
+    (setq exec-path (append exec-path '("/Library/TeX/texbin")))
+    (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin")))
+
+  (when (file-exists-p "~/.cargo/bin")
+    ;; Add to front of the list
+    (add-to-list 'exec-path "~/.cargo/bin")
+    (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin")))
+#+END_SRC
 
 ** Encryption
 
-   Enable integration between Emacs and GPG.
+Enable integration between Emacs and GPG.
 
-   #+BEGIN_SRC emacs-lisp
-     (setenv "GPG_AGENT_INFO" nil)
-     (require 'epa-file)
-     (require 'password-cache)
-     (setq epg-pgp-program "gpg")
-     (setq password-cache-expiry (* 15 60))
-     (setq epa-file-cache-passphrase-for-symmetric-encryption t)
-     (setq epa-pinentry-mode 'loopback)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setenv "GPG_AGENT_INFO" nil)
+  (require 'epa-file)
+  (require 'password-cache)
+  (setq epg-pgp-program "gpg")
+  (setq password-cache-expiry (* 15 60))
+  (setq epa-file-cache-passphrase-for-symmetric-encryption t)
+  (setq epa-pinentry-mode 'loopback)
+#+END_SRC
 
 ** Window Navigation
 
-   I frequently split my Emacs windows both horizontally and
-   vertically. Navigation between windows with =C-x o= is tedious, so
-   I use =C-<arrow>= to navigate between windows. (N.B.: This
-   overrides the default behavior of moving forward or backward by
-   word using =C-<right>= nad =C-<left>=, so keep that in mind)
+I frequently split my Emacs windows both horizontally and
+vertically. Navigation between windows with =C-x o= is tedious, so I
+use =C-<arrow>= to navigate between windows. (N.B.: This overrides the
+default behavior of moving forward or backward by word using
+=C-<right>= nad =C-<left>=, so keep that in mind)
 
-   The typical way of doing this would be just to set the following
-   in your config:
+The typical way of doing this would be just to set the following in
+your config:
 
-   #+BEGIN_EXAMPLE
-     (windmove-default-keybindings 'ctrl)
-   #+END_EXAMPLE
+#+BEGIN_EXAMPLE
+  (windmove-default-keybindings 'ctrl)
+#+END_EXAMPLE
 
-   However, there's one downside here: If you accidentally try to
-   navigate to a window that doesn't exist, it raises an error and/or
-   traps into the debugger (if ~debug-on-error~ is enabled). No good!
-   So instead, I wrap in a lambda that ignores errors (Inspired by:
-   [[https://www.emacswiki.org/emacs/WindMove][EmacsWiki WindMove]])
+However, there's one downside here: If you accidentally try to
+navigate to a window that doesn't exist, it raises an error and/or
+traps into the debugger (if ~debug-on-error~ is enabled). No good!  So
+instead, I wrap in a lambda that ignores errors (Inspired by:
+[[https://www.emacswiki.org/emacs/WindMove][EmacsWiki WindMove]])
 
-   #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "C-<left>")
-                     #'(lambda ()
-                         (interactive)
-                         (ignore-errors (windmove-left))))
-     (global-set-key (kbd "C-<right>")
-                     #'(lambda ()
-                         (interactive)
-                         (ignore-errors (windmove-right))))
-     (global-set-key (kbd "C-<up>")
-                     #'(lambda ()
-                         (interactive)
-                         (ignore-errors (windmove-up))))
-     (global-set-key (kbd "C-<down>")
-                     #'(lambda ()
-                         (interactive)
-                         (ignore-errors (windmove-down))))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-<left>")
+                  #'(lambda ()
+                      (interactive)
+                      (ignore-errors (windmove-left))))
+  (global-set-key (kbd "C-<right>")
+                  #'(lambda ()
+                      (interactive)
+                      (ignore-errors (windmove-right))))
+  (global-set-key (kbd "C-<up>")
+                  #'(lambda ()
+                      (interactive)
+                      (ignore-errors (windmove-up))))
+  (global-set-key (kbd "C-<down>")
+                  #'(lambda ()
+                      (interactive)
+                      (ignore-errors (windmove-down))))
+#+END_SRC
 
 ** A Resize Helper
 
-   I like a standard editor size of 88 by 66 characters (If you know why, you win a cookie!)
-   This helper will set that size automatically.
+I like a standard editor size of 88 by 66 characters (If you know why,
+you win a cookie!)  This helper will set that size automatically.
 
-   #+BEGIN_SRC emacs-lisp
-     (defun set-frame-standard-size () (interactive)
-            (set-frame-size (selected-frame) 88 66))
-     
-     (defun set-frame-double-size () (interactive)
-            (set-frame-size (selected-frame) 176 66))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defun set-frame-standard-size () (interactive)
+         (set-frame-size (selected-frame) 88 66))
+
+  (defun set-frame-double-size () (interactive)
+         (set-frame-size (selected-frame) 176 66))
+#+END_SRC
 
 ** Other Key Bindings
 
 *** Shortcut for "Goto Line"
 
-    #+BEGIN_SRC emacs-lisp
-      (global-set-key (kbd "C-x l") #'goto-line)
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x l") #'goto-line)
+#+END_SRC
 
 *** Shortcut for "Delete Trailing Whitespace"
 
 
-    #+BEGIN_SRC emacs-lisp
-      (global-set-key (kbd "C-c C-x w") #'delete-trailing-whitespace)
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c C-x w") #'delete-trailing-whitespace)
+#+END_SRC
 
 
 ** Miscellaneous Settings
 
-   Turn off the infernal bell, both visual and audible.
+Turn off the infernal bell, both visual and audible.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq ring-bell-function 'ignore)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq ring-bell-function 'ignore)
+#+END_SRC
 
-   Enable the =upcase-region= function. I still have no idea
-   why this is disabled by default.
+Enable the =upcase-region= function. I still have no idea why this is
+disabled by default.
 
-   #+BEGIN_SRC emacs-lisp
-     (put 'upcase-region 'disabled nil)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (put 'upcase-region 'disabled nil)
+#+END_SRC
 
-   Whenever we visit a buffer that has no active edits, but the file
-   has changed on disk, automatically reload it.
+Whenever we visit a buffer that has no active edits, but the file has
+changed on disk, automatically reload it.
 
-   #+BEGIN_SRC emacs-lisp
-     (global-auto-revert-mode t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (global-auto-revert-mode t)
+#+END_SRC
 
-   I'm really not smart sometimes, so I need emacs to warn me when I
-   try to quit it.
+I'm really not smart sometimes, so I need emacs to warn me when I try
+to quit it.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq confirm-kill-emacs 'yes-or-no-p)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq confirm-kill-emacs 'yes-or-no-p)
+#+END_SRC
 
-   Remote X11 seems to have problems with delete for me (mostly
-   XQuartz, I believe), so I force erase to be backspace.
+Remote X11 seems to have problems with delete for me (mostly XQuartz,
+I believe), so I force erase to be backspace.
 
-   #+BEGIN_SRC emacs-lisp
-     (when (eq window-system 'x)
-       (normal-erase-is-backspace-mode 1))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (when (eq window-system 'x)
+    (normal-erase-is-backspace-mode 1))
+#+END_SRC
 
-   When functions are redefined with =defadvice=, a warning is
-   emitted. This is annoying, so I disable these warnings.
+When functions are redefined with =defadvice=, a warning is
+emitted. This is annoying, so I disable these warnings.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq ad-redefinition-action 'accept)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq ad-redefinition-action 'accept)
+#+END_SRC
 
-   Tell Python mode to use Python 3
+Tell Python mode to use Python 3
 
-   #+BEGIN_SRC emacs-lisp
-     (setq python-shell-interpreter "python3")
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq python-shell-interpreter "python3")
+#+END_SRC
 
 * Appearance
-  :PROPERTIES:
-  :CUSTOM_ID: appearance
-  :END:
+:PROPERTIES:
+:CUSTOM_ID: appearance
+:END:
 
 ** Default Face
 
-   Not all fonts are installed on all systems where I use Emacs. This
-   code will iterate over a list of fonts, in order of my personal
-   preference, and set the default face to the first one available. Of
-   course, if Emacs is not running in a windowing system, this is
-   ignored.
+Not all fonts are installed on all systems where I use Emacs. This
+code will iterate over a list of fonts, in order of my personal
+preference, and set the default face to the first one available. Of
+course, if Emacs is not running in a windowing system, this is
+ignored.
 
-   #+BEGIN_SRC emacs-lisp
-     (when window-system
-       (let* ((families '("Roboto Mono"
-                          "Hack"
-                          "Input Mono"
-                          "Inconsolata"
-                          "Dejavu"
-                          "Menlo"
-                          "Monaco"
-                          "Courier New"
-                          "Courier"
-                          "fixed"))
-              (selected-family (cl-dolist (fam families)
-                                 (when (member fam (font-family-list))
-                                   (cl-return fam)))))
-         (set-face-attribute 'default nil
-                             :family selected-family
-                             :weight 'medium
-                             :height 140)))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (when window-system
+    (let* ((families '("Roboto Mono"
+                       "Hack"
+                       "Input Mono"
+                       "Inconsolata"
+                       "Dejavu"
+                       "Menlo"
+                       "Monaco"
+                       "Courier New"
+                       "Courier"
+                       "fixed"))
+           (selected-family (cl-dolist (fam families)
+                              (when (member fam (font-family-list))
+                                (cl-return fam)))))
+      (set-face-attribute 'default nil
+                          :family selected-family
+                          :weight 'medium
+                          :height 140)))
+#+END_SRC
+
+I also want to make my org-mode headers a little bigger.
+
+#+BEGIN_SRC emacs-lisp
+  (set-face-attribute 'org-level-1 nil :height 1.3)
+  (set-face-attribute 'org-level-2 nil :height 1.1)
+  (set-face-attribute 'org-level-3 nil :slant 'italic)
+  (set-face-attribute 'org-level-4 nil :slant 'italic)
+#+END_SRC
+
 
 ** Window Frame
 
 *** Title
 
-    By default, the Emacs frame (what you or I would call a window)
-    title is *user@host*. I much prefer the frame title to show the
-    actual name of the currently selected buffer.
+By default, the Emacs frame (what you or I would call a window)
+title is *user@host*. I much prefer the frame title to show the
+actual name of the currently selected buffer.
 
-    #+BEGIN_SRC emacs-lisp
-      (setq-default frame-title-format "%b")
-      (setq frame-title-format "%b")
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq-default frame-title-format "%b")
+  (setq frame-title-format "%b")
+#+END_SRC
 
 ** Changing Font Size on the Fly
 
-   By default, you can increase or decrease the font face size in a
-   single window with =C-x C-+= or =C-x C--=, respectively. This is
-   fine, but it applies to the /current window only/ (*note*: In
-   Emacs, a /window/ is what you or I would probably call a frame or a
-   pane... yes, I know, just work with it). I like to map =C-+= and
-   =C--= to functions that will change the height of the default face
-   in ALL windows.
+By default, you can increase or decrease the font face size in a
+single window with =C-x C-+= or =C-x C--=, respectively. This is
+fine, but it applies to the /current window only/ (*note*: In
+Emacs, a /window/ is what you or I would probably call a frame or a
+pane... yes, I know, just work with it). I like to map =C-+= and
+=C--= to functions that will change the height of the default face
+in ALL windows.
 
-   First, I create a base function to do the change by a certain
-   amount in a certain direction.
+First, I create a base function to do the change by a certain
+amount in a certain direction.
 
-   #+BEGIN_SRC emacs-lisp
-     (defun change-face-size (dir-func &optional delta)
-       "Increase or decrease font size in all frames and windows.
-     
-     ,* DIR-FUNC is a direction function (embiggen-default-face) or
-       (ensmallen-default-face)
-     ,* DELTA is an amount to increase.  By default, the value is 10."
-       (progn
-         (set-face-attribute
-          'default nil :height
-          (funcall dir-func (face-attribute 'default :height) delta))))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defun change-face-size (dir-func &optional delta)
+    "Increase or decrease font size in all frames and windows.
 
-   Then, I create two little helper functions to bump the size up or
-   down.
+  ,* DIR-FUNC is a direction function (embiggen-default-face) or
+    (ensmallen-default-face)
+  ,* DELTA is an amount to increase.  By default, the value is 10."
+    (progn
+      (set-face-attribute
+       'default nil :height
+       (funcall dir-func (face-attribute 'default :height) delta))))
+#+END_SRC
 
-   #+BEGIN_SRC emacs-lisp
-     (defun embiggen-default-face (&optional delta)
-       "Increase the default font.
-     
-     ,* DELTA is the amount (in point units) to increase the font size.
-       If not specified, the dfault is 10."
-       (interactive)
-       (let ((incr (or delta 10)))
-         (change-face-size '+ incr)))
-     
-     (defun ensmallen-default-face (&optional delta)
-       "Decrease the default font.
-     
-     ,* DELTA is the amount (in point units) to decrease the font size.
-       If not specified, the default is 10."
-       (interactive)
-       (let ((incr (or delta 10)))
-         (change-face-size '- incr)))
-   #+END_SRC
+Then, I create two little helper functions to bump the size up or
+down.
 
-   And, finally, bind those functions to the right keys.
+#+BEGIN_SRC emacs-lisp
+  (defun embiggen-default-face (&optional delta)
+    "Increase the default font.
 
-   #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "C-+")  'embiggen-default-face)
-     (global-set-key (kbd "C--")  'ensmallen-default-face)
-   #+END_SRC
+  ,* DELTA is the amount (in point units) to increase the font size.
+    If not specified, the dfault is 10."
+    (interactive)
+    (let ((incr (or delta 10)))
+      (change-face-size '+ incr)))
+
+  (defun ensmallen-default-face (&optional delta)
+    "Decrease the default font.
+
+  ,* DELTA is the amount (in point units) to decrease the font size.
+    If not specified, the default is 10."
+    (interactive)
+    (let ((incr (or delta 10)))
+      (change-face-size '- incr)))
+#+END_SRC
+
+And, finally, bind those functions to the right keys.
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-+")  'embiggen-default-face)
+  (global-set-key (kbd "C--")  'ensmallen-default-face)
+#+END_SRC
 
 ** Shell Colors
 
-   Turn on ANSI colors in the shell.
+Turn on ANSI colors in the shell.
 
-   #+BEGIN_SRC emacs-lisp
-     (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
-     (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+  (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+#+END_SRC
 
 ** Line Numbers
 
-   I like to see /(Line,Column)/ displayed in the modeline.
+I like to see /(Line,Column)/ displayed in the modeline.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq line-number-mode t)
-     (setq column-number-mode t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq line-number-mode t)
+  (setq column-number-mode t)
+#+END_SRC
 
 ** Show the Time
 
-   I like having the day, date, and time displayed in my
-   modeline. (Note that it's pointless to display seconds here, since
-   the modeline does not automatically update every second, for
-   efficiency purposes)
+I like having the day, date, and time displayed in my
+modeline. (Note that it's pointless to display seconds here, since
+the modeline does not automatically update every second, for
+efficiency purposes)
 
-   #+BEGIN_SRC emacs-lisp
-     (setq display-time-day-and-date t)
-     (display-time-mode 1)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq display-time-day-and-date t)
+  (display-time-mode 1)
+#+END_SRC
 
 ** Line Wrapping
 
-   By default, if a frame has been split horizontally,
-   partial windows will not wrap.
+By default, if a frame has been split horizontally,
+partial windows will not wrap.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq truncate-partial-width-windows nil)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq truncate-partial-width-windows nil)
+#+END_SRC
 
 ** Parentheses
 
-   Whenever the cursor is on a paren, highlight the matching paren.
+Whenever the cursor is on a paren, highlight the matching paren.
 
-   #+BEGIN_SRC emacs-lisp
-     (show-paren-mode t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (show-paren-mode t)
+#+END_SRC
 
-   I like automatic pair matching, but you might want to turn this off
-   if you find it annoying.
+I like automatic pair matching, but you might want to turn this off
+if you find it annoying.
 
-   #+BEGIN_SRC emacs-lisp
-     (electric-pair-mode)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (electric-pair-mode)
+#+END_SRC
 
 ** Mac OS X Specific Tweaks
 
-   GNU Emacs running on recent versions of MacOS in particular exhibit
-   some pretty ugly UI elements. Further, I don't like having to use
-   the /Option/ key for /Meta/, so I switch things around on the
-   keyboard. Note, though, that this block is only evaluated when the
-   windowing system is ='ns=, so this won't do anything at all on
-   Linux.
+GNU Emacs running on recent versions of MacOS in particular exhibit
+some pretty ugly UI elements. Further, I don't like having to use
+the /Option/ key for /Meta/, so I switch things around on the
+keyboard. Note, though, that this block is only evaluated when the
+windowing system is ='ns=, so this won't do anything at all on
+Linux.
 
-   #+BEGIN_SRC emacs-lisp
-     (when (eq window-system 'ns)
-       (add-to-list 'frameset-filter-alist
-                    '(ns-transparent-titlebar . :never))
-       (add-to-list 'frameset-filter-alist
-                    '(ns-appearance . :never))
-       (setq mac-option-modifier 'super
-             mac-command-modifier 'meta
-             mac-function-modifier 'hyper
-             mac-right-option-modifier 'super))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (when (eq window-system 'ns)
+    (add-to-list 'frameset-filter-alist
+                 '(ns-transparent-titlebar . :never))
+    (add-to-list 'frameset-filter-alist
+                 '(ns-appearance . :never))
+    (setq mac-option-modifier 'super
+          mac-command-modifier 'meta
+          mac-function-modifier 'hyper
+          mac-right-option-modifier 'super))
+#+END_SRC
 
 * Package Management
-  :PROPERTIES:
-  :CUSTOM_ID: package-management
-  :END:
+:PROPERTIES:
+:CUSTOM_ID: package-management
+:END:
 
 ** Basic Setup
 
-   We'll begin by requiring =package= mode and setting up URLs to the
-   package archives.
+We'll begin by requiring =package= mode and setting up URLs to the
+package archives.
 
-   #+BEGIN_SRC emacs-lisp
-     (require 'package)
-     (setq package-enable-at-startup t)
-     (setq package-archives '(("org" . "https://orgmode.org/elpa/")
-                              ("gnu" . "https://elpa.gnu.org/packages/")
-                              ("melpa" . "https://melpa.org/packages/")))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (setq package-enable-at-startup t)
+  (setq package-archives '(("org" . "https://orgmode.org/elpa/")
+                           ("gnu" . "https://elpa.gnu.org/packages/")
+                           ("melpa" . "https://melpa.org/packages/")))
+#+END_SRC
 
-   Then, actually initialize things.
+Then, actually initialize things.
 
-   #+BEGIN_SRC emacs-lisp
-     (package-initialize)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (package-initialize)
+#+END_SRC
 
-   And then, if the =use-package= package is not installed, install it
-   immediately.
+And then, if the =use-package= package is not installed, install it
+immediately.
 
-   #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'use-package)
-       (package-refresh-contents)
-       (package-install 'use-package))
-     (require 'use-package)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (require 'use-package)
+#+END_SRC
 
 ** Theme
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package zenburn-theme
-       :ensure t
-       :config
-       (setq zenburn-use-variable-pitch t
-             zenburn-scale-org-headlintes t
-             zenburn-scale-outline-headlines t)
-       (load-theme 'zenburn t))
-   #+END_SRC
+I've become enamored of the Zenburn theme.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package zenburn-theme
+    :ensure t
+    :config
+    (setq zenburn-use-variable-pitch t
+          zenburn-scale-org-headlintes t
+          zenburn-scale-outline-headlines t)
+    (load-theme 'zenburn t))
+#+END_SRC
 
 ** Org Mode
 
-   Next is =org-mode=, which I use constantly, day in and day out.
+Next is =org-mode=, which I use constantly, day in and day out.
 
-   #+BEGIN_SRC emacs-lisp
-     (defun my-org-agenda-format-date-aligned (date)
-       "Format a DATE string for display in the daily/weekly agenda, or timeline.
-     This function makes sure that dates are aligned for easy reading."
-       (require 'cal-iso)
-       (let* ((dayname (calendar-day-name date 1 nil))
-              (day (cadr date))
-              (day-of-week (calendar-day-of-week date))
-              (month (car date))
-              (monthname (calendar-month-name month 1))
-              (year (nth 2 date))
-              (iso-week (org-days-to-iso-week
-                         (calendar-absolute-from-gregorian date)))
-              (weekyear (cond ((and (= month 1) (>= iso-week 52))
-                               (1- year))
-                              ((and (= month 12) (<= iso-week 1))
-                               (1+ year))
-                              (t year)))
-              (weekstring (if (= day-of-week 1)
-                              (format " W%02d" iso-week)
-                            "")))
-         (format "%-2s. %2d %s"
-                 dayname day monthname)))
-     
-     (eval-and-compile
-       (setq org-load-paths '("~/.emacs.d/org-mode/lisp"
-                              "~/.emacs.d/org-mode/contrib/lisp")))
-     
-     (use-package org
-       :load-path org-load-paths
-       :ensure t
-       :defer t
-       :config
-       (use-package org-drill
-         :ensure t
-         :defer t)
-       (use-package htmlize
-         :ensure t)
-       (require 'ox-latex)
-       (setq org-tags-column -65
-             org-latex-listings 't
-             org-export-default-language "en"
-             org-export-with-smart-quotes t
-             org-agenda-tags-column -65
-             org-deadline-warning-days 14
-             org-table-shrunk-column-indicator ""
-             org-agenda-block-separator (string-to-char " ")
-             org-adapt-indentation t
-             org-fontify-whole-heading-line t
-             org-agenda-format-date 'my-org-agenda-format-date-aligned
-             ;; Use CSS for htmlizing HTML output
-             org-html-htmlize-output-type 'css
-             ;; Open up org-mode links in the same buffer
-             org-link-frame-setup '((file . find-file))))
-     
-     
-     (with-eval-after-load 'ox-latex
-       (add-to-list 'org-latex-classes
-                    '("org-plain-latex"
-                      "\\documentclass{article}
-     [NO-DEFAULT-PACKAGES]
-     [PACKAGES]
-     [EXTRA]"
-                      ("\\section{%s}" . "\\section*{%s}")
-                      ("\\subsection{%s}" . "\\subsection*{%s}")
-                      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                      ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                      ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defun my-org-agenda-format-date-aligned (date)
+    "Format a DATE string for display in the daily/weekly agenda, or timeline.
+  This function makes sure that dates are aligned for easy reading."
+    (require 'cal-iso)
+    (let* ((dayname (calendar-day-name date 1 nil))
+           (day (cadr date))
+           (day-of-week (calendar-day-of-week date))
+           (month (car date))
+           (monthname (calendar-month-name month 1))
+           (year (nth 2 date))
+           (iso-week (org-days-to-iso-week
+                      (calendar-absolute-from-gregorian date)))
+           (weekyear (cond ((and (= month 1) (>= iso-week 52))
+                            (1- year))
+                           ((and (= month 12) (<= iso-week 1))
+                            (1+ year))
+                           (t year)))
+           (weekstring (if (= day-of-week 1)
+                           (format " W%02d" iso-week)
+                         "")))
+      (format "%-2s. %2d %s"
+              dayname day monthname)))
 
-   I have a lot of custom configuration for =org-mode=.
+  (eval-and-compile
+    (setq org-load-paths '("~/.emacs.d/org-mode/lisp"
+                           "~/.emacs.d/org-contrib/lisp")))
+
+  (use-package org
+    :load-path org-load-paths
+    :ensure t
+    :defer t
+    :config
+    (use-package org-drill
+      :ensure t
+      :defer t)
+    (use-package htmlize
+      :ensure t)
+    (require 'ox-latex)
+    (setq org-tags-column -65
+          org-latex-listings 't
+          org-export-default-language "en"
+          org-export-with-smart-quotes t
+          org-agenda-tags-column -65
+          org-deadline-warning-days 14
+          org-table-shrunk-column-indicator ""
+          org-agenda-block-separator (string-to-char " ")
+          org-adapt-indentation nil
+          org-fontify-whole-heading-line t
+          org-agenda-format-date 'my-org-agenda-format-date-aligned
+          ;; Use CSS for htmlizing HTML output
+          org-html-htmlize-output-type 'css
+          ;; Open up org-mode links in the same buffer
+          org-link-frame-setup '((file . find-file))))
+
+
+  (with-eval-after-load 'ox-latex
+    (add-to-list 'org-latex-classes
+                 '("org-plain-latex"
+                   "\\documentclass{article}
+  [NO-DEFAULT-PACKAGES]
+  [PACKAGES]
+  [EXTRA]"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+#+END_SRC
+
+I have a lot of custom configuration for =org-mode=.
 
 *** Timestamp Helpers
 
-    When I keep a long-running notes file, I like each top level entry
-    to have a ~DATE:~ property set. This function automatically inserts
-    the current timestamp as a property.
+When I keep a long-running notes file, I like each top level entry to
+have a ~DATE:~ property set. This function automatically inserts the
+current timestamp as a property.
 
-    #+BEGIN_SRC emacs-lisp
-      (defun timestamp-notes-entry ()
-        "Insert a DATE property in the current heading with the current
-      timestamp."
-        (interactive)
-        (org-set-property
-         "DATE"
-         (format-time-string "<%F %a %H:%M>" (current-time))))
-      
-      (define-key org-mode-map (kbd "C-c C-x t") #'timestamp-notes-entry)
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defun timestamp-notes-entry ()
+    "Insert a DATE property in the current heading with the current
+  timestamp."
+    (interactive)
+    (org-set-property
+     "DATE"
+     (format-time-string "<%F %a %H:%M>" (current-time))))
+
+  (define-key org-mode-map (kbd "C-c C-x t") #'timestamp-notes-entry)
+#+END_SRC
 
 *** Org Agenda
 
-    Org Agenda is a great way of tracking time and progress on various
-    projects and repeatable tasks. It's built into org-mode.
+Org Agenda is a great way of tracking time and progress on various
+projects and repeatable tasks. It's built into org-mode.
 
-    I add a quick and easy way to get into =org-agenda= from any
-    =org-mode= buffer by pressing =C-c a=.
+I add a quick and easy way to get into =org-agenda= from any
+=org-mode= buffer by pressing =C-c a=.
 
-    #+BEGIN_SRC emacs-lisp
-      (global-set-key (kbd "C-c a") 'org-agenda)
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c a") 'org-agenda)
+#+END_SRC
 
-    Next, I add a custom =org-agenda= command to show the next three
-    weeks.
+Next, I add a custom =org-agenda= command to show the next three
+weeks.
 
-    #+BEGIN_SRC emacs-lisp
-      (setq org-agenda-custom-commands
-            '(("n" "Agenda / INTR / PROG / NEXT"
-               ((agenda "" nil)
-                (todo "INTR" nil)
-                (todo "PROG" nil)
-                (todo "NEXT" nil)))
-              ("W" "Next Week" agenda ""
-               ((org-agenda-span 7)
-                (org-agenda-start-on-weekday 0)))
-              ("N" "Next Three Weeks" agenda ""
-               ((org-agenda-span 21)
-                (org-agenda-start-on-weekday 0)))))
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-custom-commands
+        '(("n" "Agenda / INTR / PROG / NEXT"
+           ((agenda "" nil)
+            (todo "INTR" nil)
+            (todo "PROG" nil)
+            (todo "NEXT" nil)))
+          ("W" "Next Week" agenda ""
+           ((org-agenda-span 7)
+            (org-agenda-start-on-weekday 0)))
+          ("N" "Next Three Weeks" agenda ""
+           ((org-agenda-span 21)
+            (org-agenda-start-on-weekday 0)))))
+#+END_SRC
 
-    Then, I define some faces and use them for deadlines in
-    =org-agenda=.
+Then, I define some faces and use them for deadlines in
+=org-agenda=.
 
-    #+BEGIN_SRC emacs-lisp
-      (defface deadline-soon-face
-        '((t (:foreground "#ff0000"
-                          :weight bold
-                          :slant italic
-                          :underline t))) t)
-      (defface deadline-near-face
-        '((t (:foreground "#ffa500"
-                          :weight bold
-                          :slant italic))) t)
-      (defface deadline-distant-face
-        '((t (:foreground "#ffff00"
-                          :weight bold
-                          :slant italic))) t)
-      
-      (setq org-agenda-deadline-faces
-            '((0.75 . deadline-soon-face)
-              (0.5  . deadline-near-face)
-              (0.25 . deadline-distant-face)
-              (0.0  . deadline-distant-face)))
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defface deadline-soon-face
+    '((t (:foreground "#ff0000"
+                      :weight bold
+                      :slant italic
+                      :underline t))) t)
+  (defface deadline-near-face
+    '((t (:foreground "#ffa500"
+                      :weight bold
+                      :slant italic))) t)
+  (defface deadline-distant-face
+    '((t (:foreground "#ffff00"
+                      :weight bold
+                      :slant italic))) t)
 
-    Then I set my =org-todo-keywords= so that I can manage my workflow
-    states the way I like to. Although my own list is very linear and
-    simple, they can become quite complex if need be!
+  (setq org-agenda-deadline-faces
+        '((0.75 . deadline-soon-face)
+          (0.5  . deadline-near-face)
+          (0.25 . deadline-distant-face)
+          (0.0  . deadline-distant-face)))
+#+END_SRC
 
-    #+BEGIN_SRC emacs-lisp
-      (setq org-todo-keywords
-            '((sequence
-               "TODO(t)"
-               "NEXT(n)"
-               "PROG(p)"
-               "INTR(i)"
-               "DONE(d)")))
-    #+END_SRC
+Then I set my =org-todo-keywords= so that I can manage my workflow
+states the way I like to. Although my own list is very linear and
+simple, they can become quite complex if need be!
 
-    And finally, I set some file locations. This is a bit convoluted
-    because I use Agenda both for work and for home. At work, I keep a
-    file called =~/.org-agenda-setup.el= that contains my agenda files
-    and archive location information. At home, I just use what's baked
-    into this file.
+#+BEGIN_SRC emacs-lisp
+  (setq org-todo-keywords
+        '((sequence
+           "TODO(t)"
+           "NEXT(n)"
+           "PROG(p)"
+           "INTR(i)"
+           "DONE(d)")))
+#+END_SRC
 
-    Also note that I like to keep archived Agenda items in a separate
-    directory, rather than the default behavior of renaming them to
-    =<original-file-name>.org_archive=.
+And finally, I set some file locations. This is a bit convoluted
+because I use Agenda both for work and for home. At work, I keep a
+file called =~/.org-agenda-setup.el= that contains my agenda files and
+archive location information. At home, I just use what's baked into
+this file.
 
-    #+BEGIN_SRC emacs-lisp
-      (if (file-exists-p "~/.org-agenda-setup.el")
-          (load "~/.org-agenda-setup.el")
-        (progn
-          (global-set-key (kbd "C-c o")
-                          (lambda ()
-                            (interactive)
-                            (find-file "~/Nextcloud/agenda/agenda.org")))
-          (setq org-habit-show-habits-only-for-today nil
-                org-agenda-files (file-expand-wildcards "~/Nextcloud/agenda/*.org")
-                org-default-notes-file "~/Nextcloud/agenda/agenda.org")))
-    #+END_SRC
+Also note that I like to keep archived Agenda items in a separate
+directory, rather than the default behavior of renaming them to
+=<original-file-name>.org_archive=.
+
+#+BEGIN_SRC emacs-lisp
+  (if (file-exists-p "~/.org-agenda-setup.el")
+      (load "~/.org-agenda-setup.el")
+    (progn
+      (global-set-key (kbd "C-c o")
+                      (lambda ()
+                        (interactive)
+                        (find-file "~/Nextcloud/agenda/agenda.org")))
+      (setq org-habit-show-habits-only-for-today nil
+            org-agenda-files (file-expand-wildcards "~/Nextcloud/agenda/*.org")
+            org-default-notes-file "~/Nextcloud/agenda/agenda.org")))
+#+END_SRC
 
 *** Org Super Agenda
 
-    #+BEGIN_SRC emacs-lisp
-      (use-package org-super-agenda
-        :ensure t
-        :defer t
-        :after org-agenda
-        :init
-        (setq org-super-agenda-groups
-              '((:name "Next"
-                       :time-grid t
-                       :todo "NEXT"
-                       :order 1)
-                (:name "Language"
-                       :time-grid t
-                       :tag "language"
-                       :order 2)
-                (:name "Study"
-                       :time-grid t
-                       :tag "study"
-                       :order 3)
-                (:discard (:not (:todo "TODO")))))
-        :config
-        (org-super-agenda-mode)
-        (setq org-agenda-compact-blocks nil
-              org-agenda-span 'day
-              org-agenda-todo-ignore-scheduled 'future
-              org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled
-              org-super-agenda-header-separator ""
-              org-columns-default-format "%35ITEM %TODO %3PRIORITY %TAGS")
-        (set-face-attribute 'org-super-agenda-header nil
-                            :weight 'bold))
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package org-super-agenda
+    :ensure t
+    :defer t
+    :after org-agenda
+    :init
+    (setq org-super-agenda-groups
+          '((:name "Next"
+                   :time-grid t
+                   :todo "NEXT"
+                   :order 1)
+            (:name "Language"
+                   :time-grid t
+                   :tag "language"
+                   :order 2)
+            (:name "Study"
+                   :time-grid t
+                   :tag "study"
+                   :order 3)
+            (:discard (:not (:todo "TODO")))))
+    :config
+    (org-super-agenda-mode)
+    (setq org-agenda-compact-blocks nil
+          org-agenda-span 'day
+          org-agenda-todo-ignore-scheduled 'future
+          org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled
+          org-super-agenda-header-separator ""
+          org-columns-default-format "%35ITEM %TODO %3PRIORITY %TAGS")
+    (set-face-attribute 'org-super-agenda-header nil
+                        :weight 'bold))
+#+END_SRC
 
 *** Org Capture
 
-    To capture new notes, I configure Org Capture with a quick
-    key binding of =C-c c=.
+To capture new notes, I configure Org Capture with a quick
+key binding of =C-c c=.
 
-    #+BEGIN_SRC emacs-lisp
-      (global-set-key (kbd "C-c c") 'org-capture)
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c c") 'org-capture)
+#+END_SRC
 
 *** Org-Babel Language Integration
 
-    I want to be able to support C, Emacs Lisp, and GraphViz blocks in org-babel.
+I want to be able to support C, Emacs Lisp, and GraphViz blocks in org-babel.
 
-    #+BEGIN_SRC emacs-lisp
-      (org-babel-do-load-languages
-       'org-babel-load-languages '((C . t)
-                                   (emacs-lisp . t)
-                                   (dot . t)))
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages '((C . t)
+                               (emacs-lisp . t)
+                               (dot . t)))
+#+END_SRC
 
 *** Adding YouTube Links
 
-    This block adds a link handler for YouTube links in =org-mode=
-    buffers.
+This block adds a link handler for YouTube links in =org-mode=
+buffers.
 
-    #+BEGIN_SRC emacs-lisp
-      (defvar youtube-iframe-format
-        (concat "<iframe width=\"440\""
-                " height=\"335\""
-                " src=\"https://www.youtube.com/embed/%s\""
-                " frameborder=\"0\""
-                " allowfullscreen>%s</iframe>"))
-      
-      (org-link-set-parameters
-       "youtube"
-       :follow (lambda (id)
-                 (browse-url
-                  (concat "https://www.youtube.com/embed/" id)))
-       :export (lambda (path desc backend)
-                 (cl-case backend
-                   (html (format youtube-iframe-format
-                                 path (or desc "")))
-                   (latex (format "\href{%s}{%s}"
-                                  path (or desc "video"))))))
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defvar youtube-iframe-format
+    (concat "<iframe width=\"440\""
+            " height=\"335\""
+            " src=\"https://www.youtube.com/embed/%s\""
+            " frameborder=\"0\""
+            " allowfullscreen>%s</iframe>"))
+
+  (org-link-set-parameters
+   "youtube"
+   :follow (lambda (id)
+             (browse-url
+              (concat "https://www.youtube.com/embed/" id)))
+   :export (lambda (path desc backend)
+             (cl-case backend
+               (html (format youtube-iframe-format
+                             path (or desc "")))
+               (latex (format "\href{%s}{%s}"
+                              path (or desc "video"))))))
+#+END_SRC
 
 *** HTML Export Tweaks
 
-    I prefer to insert periods after section numbers when exporting
-    =org-mode= files to HTML. This tweak enables that.
+I prefer to insert periods after section numbers when exporting
+=org-mode= files to HTML. This tweak enables that.
 
-    #+BEGIN_SRC emacs-lisp
-      (defun my-html-filter-headline-yesdot (text backend info)
-        "Ensure dots in headlines.
-      ,* TEXT is the text being exported.
-      ,* BACKEND is the backend (e.g. 'html).
-      ,* INFO is ignored."
-        (when (org-export-derived-backend-p backend 'html)
-          (save-match-data
-            (when (let ((case-fold-search t))
-                    (string-match
-                     (rx (group "<span class=\"section-number-" (+ (char digit)) "\">"
-                                (+ (char digit ".")))
-                         (group "</span>"))
-                     text))
-              (replace-match "\\1.\\2"
-                             t nil text)))))
-      
-      (eval-after-load 'ox
-        '(progn
-           (add-to-list 'org-export-filter-headline-functions
-                        'my-html-filter-headline-yesdot)))
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defun my-html-filter-headline-yesdot (text backend info)
+    "Ensure dots in headlines.
+  ,* TEXT is the text being exported.
+  ,* BACKEND is the backend (e.g. 'html).
+  ,* INFO is ignored."
+    (when (org-export-derived-backend-p backend 'html)
+      (save-match-data
+        (when (let ((case-fold-search t))
+                (string-match
+                 (rx (group "<span class=\"section-number-" (+ (char digit)) "\">"
+                            (+ (char digit ".")))
+                     (group "</span>"))
+                 text))
+          (replace-match "\\1.\\2"
+                         t nil text)))))
+
+  (eval-after-load 'ox
+    '(progn
+       (add-to-list 'org-export-filter-headline-functions
+                    'my-html-filter-headline-yesdot)))
+#+END_SRC
 
 *** Display Options
 
-    I turn on Pretty Entities, which allows Emacs, in graphics mode,
-    to render unicode symbols, math symbols, and so on. I also set
-    a custom ellipsis character that will be shown when sections or
-    blocks are collapsed.
+I turn on Pretty Entities, which allows Emacs, in graphics mode,
+to render unicode symbols, math symbols, and so on. I also set
+a custom ellipsis character that will be shown when sections or
+blocks are collapsed.
 
-    #+BEGIN_SRC emacs-lisp
-      (setq org-pretty-entities t
-            org-ellipsis "⬇")
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq org-pretty-entities t
+        org-ellipsis "...")
+#+END_SRC
 
 *** Export Settings
 
-    This adds support the LaTeX class =koma-article= on LaTeX export.
+This adds support the LaTeX class =koma-article= on LaTeX export.
 
-    #+BEGIN_SRC emacs-lisp
-      (add-to-list 'org-latex-classes
-                   '("koma-article"
-                     "\\documentclass{scrartcl}"
-                     ("\\section{%s}" . "\\section*{%s}")
-                     ("\\subsection{%s}" . "\\subsection*{%s}")
-                     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                     ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-latex-classes
+               '("koma-article"
+                 "\\documentclass{scrartcl}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+END_SRC
 
 ** Org Roam
 
-   #+BEGIN_SRC emacs-lisp
-     (when (file-directory-p (expand-file-name "~/Nextcloud/org-roam/"))
-       (use-package org-roam
-         :ensure t
-         :init
-         (setq org-roam-v2-ack t)
-         :custom
-         (org-roam-directory (expand-file-name "~/Nextcloud/org-roam/"))
-         :bind (("C-c n l" . org-roam-buffer-toggle)
-                ("C-c n f" . org-roam-node-find)
-                ("C-c n i" . org-roam-node-insert))
-         :config
-         (org-roam-setup)))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (when (file-directory-p (expand-file-name "~/Nextcloud/org-roam/"))
+    (use-package org-roam
+      :ensure t
+      :init
+      (setq org-roam-v2-ack t)
+      :custom
+      (org-roam-directory (expand-file-name "~/Nextcloud/org-roam/"))
+      :bind (("C-c n l" . org-roam-buffer-toggle)
+             ("C-c n f" . org-roam-node-find)
+             ("C-c n i" . org-roam-node-insert))
+      :config
+      (org-roam-setup)))
+#+END_SRC
 
 ** Org Superstar
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package org-superstar
-       :ensure t
-       :defer t
-       :init
-       (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
-       :config
-       (setq org-hide-leading-stars nil
-             org-superstar-prettify-item-bullets nil
-             org-superstar-leading-bullet ?\s
-             org-indent-mode-turns-on-hiding-stars nil))
-   #+END_SRC
+Org Superstar replaces the default asterisk style Org-Mode headers
+with nicer looking defaults using Unicode.
+
+The only "trick" in this config is to (counter-intuitively) turn /off/
+~org-hide-leading-stars~, and then replace all leading stars with the
+null character (~?\00~), which effectively makes all headlines appear
+flush against the left margin.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-superstar
+    :ensure t
+    :defer t
+    :init
+    (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+    :config
+    (setq org-hide-leading-stars nil
+          org-superstar-prettify-item-bullets nil
+          org-superstar-leading-bullet ?\00
+          org-indent-mode-turns-on-hiding-stars nil))
+#+END_SRC
 
 ** Support for Encrypted Authinfo
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package auth-source
-       :ensure t
-       :defer t
-       :config
-       (setq auth-sources '("~/.authinfo.gpg")))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package auth-source
+    :ensure t
+    :defer t
+    :config
+    (setq auth-sources '("~/.authinfo.gpg")))
+#+END_SRC
 
 ** Twittering
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package twittering-mode
-       :defer t
-       :ensure t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package twittering-mode
+    :defer t
+    :ensure t)
+#+END_SRC
 
 ** Sly
 
-   Sly is a Common Lisp IDE that is a fork of SLIME, with some
-   additional features.
+Sly is a Common Lisp IDE that is a fork of SLIME, with some
+additional features.
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package sly
-       :defer t
-       :ensure t
-       :config
-       (setq inferior-lisp-program "sbcl"))
-     
-     (use-package sly-quicklisp
-       :defer t
-       :ensure t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package sly
+    :defer t
+    :ensure t
+    :config
+    (setq inferior-lisp-program "sbcl"))
+
+  (use-package sly-quicklisp
+    :defer t
+    :ensure t)
+#+END_SRC
 
 ** GraphViz (dot) Mode
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package graphviz-dot-mode
-       :defer t
-       :ensure t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package graphviz-dot-mode
+    :defer t
+    :ensure t)
+#+END_SRC
 
 ** Git Integration
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package magit
-       :ensure t
-       :defer t
-       :init
-       (global-set-key (kbd "C-x g") 'magit-status)
-       (add-hook 'prog-mode-hook #'git-gutter-mode))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t
+    :defer t
+    :init
+    (global-set-key (kbd "C-x g") 'magit-status)
+    (add-hook 'prog-mode-hook #'git-gutter-mode))
+#+END_SRC
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package git-gutter
-       :defer t
-       :ensure t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package git-gutter
+    :defer t
+    :ensure t)
+#+END_SRC
 
 ** YAML
 
-   YAML mode is useful for editing Docker files.
+YAML mode is useful for editing Docker files.
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package yaml-mode
-       :defer t
-       :ensure t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package yaml-mode
+    :defer t
+    :ensure t)
+#+END_SRC
 
 ** Snow
 
-   This is just a bit of fun. See: [[https://github.com/alphapapa/snow.el]["Let It Snow" on GitHub]].
+This is just a bit of fun. See: [[https://github.com/alphapapa/snow.el]["Let It Snow" on GitHub]].
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package snow
-       :defer t
-       :ensure t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package snow
+    :defer t
+    :ensure t)
+#+END_SRC
 
 ** Snippets
 
-   Snippets build in support for typing a few keys, pressing tab, and
-   getting a complete template inserted into your buffer. I use these
-   heavily. In addition to the built-in snippets that come from the
-   =yasnippet-snippets= package, I have some custom snippets defined
-   in the =snippets= directory.
+Snippets build in support for typing a few keys, pressing tab, and
+getting a complete template inserted into your buffer. I use these
+heavily. In addition to the built-in snippets that come from the
+=yasnippet-snippets= package, I have some custom snippets defined
+in the =snippets= directory.
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package yasnippet
-       :ensure t
-       :diminish yas-minor-mode
-       :config
-       (setq yas-snippet-dirs
-             (append yas-snippet-dirs '("~/.emacs.d/snippets")))
-       (yas-global-mode))
-     
-     (use-package yasnippet-snippets
-       :ensure t
-       :after yasnippet
-       :config (yasnippet-snippets-initialize))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :diminish yas-minor-mode
+    :config
+    (setq yas-snippet-dirs
+          (append yas-snippet-dirs '("~/.emacs.d/snippets")))
+    (yas-global-mode))
+
+  (use-package yasnippet-snippets
+    :ensure t
+    :after yasnippet
+    :config (yasnippet-snippets-initialize))
+#+END_SRC
 
 ** Tera Mode
 
-   One of my projects uses [[https://tera.netlify.app/][the Tera template language]], so I add
-   support here. Unfortunately, ~tera-mode~ is not in ELPA or MELPA,
-   so I have it checked out as a sub-module. I also just lazily enable
-   ~tera-mode~ by hand when I need it.
+One of my projects uses [[https://tera.netlify.app/][the Tera template language]], so I add
+support here. Unfortunately, ~tera-mode~ is not in ELPA or MELPA,
+so I have it checked out as a sub-module. I also just lazily enable
+~tera-mode~ by hand when I need it.
 
-   #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/vendor/tera-mode")
-     (require 'tera-mode)
-     ;; Set offset for HTML/XML-like things
-     (setq sgml-basic-offset 4)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/.emacs.d/vendor/tera-mode")
+  (require 'tera-mode)
+  ;; Set offset for HTML/XML-like things
+  (setq sgml-basic-offset 4)
+#+END_SRC
 
 ** Markdown
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package markdown-mode
-       :ensure t
-       :defer t
-       :commands (markdown-mode gfm-mode)
-       :mode (("README\\.md\\'" . gfm-mode)
-              ("\\.md\\'" . markdown-mode)
-              ("\\.markdown\\'" . markdown-mode))
-       :init (setq markdown-command "multimarkdown"))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :defer t
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
+#+END_SRC
 
 ** Gemini
 
-   [[https://gemini.circumlunar.space/][Gemini]] is a new project I'm kind of interested in. These packages
-   will help support my interest in it.
+[[https://gemini.circumlunar.space/][Gemini]] is a new project I'm kind of interested in. These packages
+will help support my interest in it.
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package elpher
-       :ensure t
-       :defer t)
-     
-     (use-package gemini-mode
-       :ensure t
-       :defer t)
-     
-     (use-package ox-gemini
-       :ensure t
-       :defer t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package elpher
+    :ensure t
+    :defer t)
+
+  (use-package gemini-mode
+    :ensure t
+    :defer t)
+
+  (use-package ox-gemini
+    :ensure t
+    :defer t)
+#+END_SRC
 
 * Development and Languages
-  :PROPERTIES:
-  :CUSTOM_ID: development
-  :END:
+:PROPERTIES:
+:CUSTOM_ID: development
+:END:
 
-  Much of this section, especially with regards to Rust development,
-  is stolen verbatim from [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Robert Krahn]]. Thank you!
+Much of this section, especially with regards to Rust development,
+is stolen verbatim from [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/][Robert Krahn]]. Thank you!
 
 ** Web Mode
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package web-mode
-       :ensure t
-       :defer t
-       :config
-       (setq web-mode-markup-indent-offset 2
-             web-mode-css-indent-offset 2)
-       :init
-       (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
-       (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-       (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-       (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode)))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package web-mode
+    :ensure t
+    :defer t
+    :config
+    (setq web-mode-markup-indent-offset 2
+          web-mode-css-indent-offset 2)
+    :init
+    (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode)))
+#+END_SRC
 
 ** Ivy
 
-   Let's use Ivy for completion. See: [[https://github.com/abo-abo/swiper][https://github.com/abo-abo/swiper]]
+Let's use Ivy for completion. See: [[https://github.com/abo-abo/swiper][https://github.com/abo-abo/swiper]]
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package ivy
-       :ensure t
-       :config
-       (ivy-mode 1))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy
+    :ensure t
+    :config
+    (ivy-mode 1))
+#+END_SRC
 
 ** SQL Indent Mode
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package sql-indent
-       :ensure t
-       :defer t
-       :config
-       (add-hook 'sql-mode-hook #'sqlind-minor-mode))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package sql-indent
+    :ensure t
+    :defer t
+    :config
+    (add-hook 'sql-mode-hook #'sqlind-minor-mode))
+#+END_SRC
 
 ** Lisp Editing
 
-   I really like paredit, especially for Lisp, but I don't like the
-   default key bindings, so I tweak them heavily. Primarily, the
-   problem is that I use =C-<left>= and =C-<right>= to navigate
-   between windows in Emacs, so I don't want to use them for
-   Paredit. Instead, I remap these to =C-S-<left>= and =C-S-<right>=,
-   respectively.
+I really like paredit, especially for Lisp, but I don't like the
+default key bindings, so I tweak them heavily. Primarily, the
+problem is that I use =C-<left>= and =C-<right>= to navigate
+between windows in Emacs, so I don't want to use them for
+Paredit. Instead, I remap these to =C-S-<left>= and =C-S-<right>=,
+respectively.
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package paredit
-       :ensure t
-       :defer t
-       :init
-       (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
-       (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
-       (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-       (add-hook 'lisp-mode-hook #'enable-paredit-mode)
-       (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-       (add-hook 'scheme-mode-hook #'enable-paredit-mode)
-       :config
-       ;; Unmap defaults
-       (define-key paredit-mode-map (kbd "C-<left>") nil)
-       (define-key paredit-mode-map (kbd "C-<right>") nil)
-       ;; Map new keys
-       (define-key paredit-mode-map (kbd "C-S-<left>")
-         'paredit-forward-barf-sexp)
-       (define-key paredit-mode-map (kbd "C-S-<right>")
-         'paredit-forward-slurp-sexp))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package paredit
+    :ensure t
+    :defer t
+    :init
+    (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
+    (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+    (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+    (add-hook 'lisp-mode-hook #'enable-paredit-mode)
+    (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+    (add-hook 'scheme-mode-hook #'enable-paredit-mode)
+    :config
+    ;; Unmap defaults
+    (define-key paredit-mode-map (kbd "C-<left>") nil)
+    (define-key paredit-mode-map (kbd "C-<right>") nil)
+    ;; Map new keys
+    (define-key paredit-mode-map (kbd "C-S-<left>")
+      'paredit-forward-barf-sexp)
+    (define-key paredit-mode-map (kbd "C-S-<right>")
+      'paredit-forward-slurp-sexp))
+#+END_SRC
 
 ** Haskell
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package haskell-mode
-       :ensure t
-       :defer t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package haskell-mode
+    :ensure t
+    :defer t)
+#+END_SRC
 
 ** Rustic
 
-   Support for the Rust Programming Language.
+Support for the Rust Programming Language.
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package rustic
-       :ensure t
-       :bind (:map rustic-mode-map
-                   ("M-j" . lsp-ui-imenu)
-                   ("M-?" . lsp-find-references)
-                   ("C-c C-c l" . flycheck-list-errors)
-                   ("C-c C-c a" . lsp-execute-code-action)
-                   ("C-c C-c r" . lsp-rename)
-                   ("C-c C-c q" . lsp-workspace-restart)
-                   ("C-c C-c Q" . lsp-workspace-shutdown)
-                   ("C-c C-c s" . lsp-rust-analyzer-status))
-       :config
-       ;; comment to disable rustfmt on save
-       (setq rustic-format-on-save t)
-       (add-hook 'rustic-mode-hook 'loomcom/rustic-mode-hook))
-     
-     (defun loomcom/rustic-mode-hook ()
-       ;; so that run C-c C-c C-r works without having to confirm
-       (setq-local buffer-save-without-query t))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package rustic
+    :ensure t
+    :bind (:map rustic-mode-map
+                ("M-j" . lsp-ui-imenu)
+                ("M-?" . lsp-find-references)
+                ("C-c C-c l" . flycheck-list-errors)
+                ("C-c C-c a" . lsp-execute-code-action)
+                ("C-c C-c r" . lsp-rename)
+                ("C-c C-c q" . lsp-workspace-restart)
+                ("C-c C-c Q" . lsp-workspace-shutdown)
+                ("C-c C-c s" . lsp-rust-analyzer-status))
+    :config
+    ;; comment to disable rustfmt on save
+    (setq rustic-format-on-save t)
+    (add-hook 'rustic-mode-hook 'loomcom/rustic-mode-hook))
+
+  (defun loomcom/rustic-mode-hook ()
+    ;; so that run C-c C-c C-r works without having to confirm
+    (setq-local buffer-save-without-query t))
+#+END_SRC
 
 ** CCLS
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package ccls
-       :ensure t
-       :defer t
-       :config
-       (setq ccls-executable "ccls")
-       (setq lsp-prefer-flymake nil)
-       (setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
-       :hook ((c-mode c++-mode objc-mode) .
-              (lambda () (require 'ccls) (lsp))))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package ccls
+    :ensure t
+    :defer t
+    :config
+    (setq ccls-executable "ccls")
+    (setq lsp-prefer-flymake nil)
+    (setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+    :hook ((c-mode c++-mode objc-mode) .
+           (lambda () (require 'ccls) (lsp))))
+#+END_SRC
 
 ** LSP Mode
 
-   LSP is a language server protocol mode to allow working with
-   various LSP daemons.
+LSP is a language server protocol mode to allow working with
+various LSP daemons.
 
-   Note that I've disabled lsp-ui-mode because I've discovered I'm
-   finding it to be very distracting. If you want to turn it back
-   on, just add =:config (add-hook 'lsp-mode-hook 'lsp-ui-mode)=
-   to lsp-mode.
+Note that I've disabled lsp-ui-mode because I've discovered I'm
+finding it to be very distracting. If you want to turn it back
+on, just add =:config (add-hook 'lsp-mode-hook 'lsp-ui-mode)=
+to lsp-mode.
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package lsp-mode
-       :ensure t
-       :defer t
-       :commands lsp
-       :config
-       ;; Improve performance and enable features
-       (setq read-process-output-max (* 1024 1024)
-             gc-cons-threshold 100000000
-             lsp-rust-analyzer-proc-macro-enable t
-             lsp-rust-analyzer-cargo-watch-command "clippy"
-             lsp-rust-analyzer-cargo-load-out-dirs-from-check t
-             ;; These three make things significantly less flashy...
-             lsp-eldoc-render-all nil
-             lsp-eldoc-hook nil
-             lsp-idle-delay 1.0
-             lsp-eldoc-hook nil
-             lsp-enable-symbol-highlighting nil
-             lsp-signature-auto-activate nil
-             ;; Do not automatically include headers for me!
-             lsp-clients-clangd-args '("--header-insertion=never")
-             ;; Do not auto-format for me!
-             lsp-enable-indentation nil
-             lsp-enable-on-type-formatting nil))
-     
-     (use-package lsp-ui
-       :ensure t
-       :defer t
-       :commands lsp-ui-mode
-       :custom
-       (lsp-ui-peek-always-show t)
-       (lsp-ui-sideline-show-hover t)
-       (lsp-ui-doc-enable t)
-       (lsp-ui-doc-delay 2))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :defer t
+    :commands lsp
+    :config
+    ;; Improve performance and enable features
+    (setq read-process-output-max (* 1024 1024)
+          gc-cons-threshold 100000000
+          lsp-rust-analyzer-proc-macro-enable t
+          lsp-rust-analyzer-cargo-watch-command "clippy"
+          lsp-rust-analyzer-cargo-load-out-dirs-from-check t
+          ;; These three make things significantly less flashy...
+          lsp-eldoc-render-all nil
+          lsp-eldoc-hook nil
+          lsp-idle-delay 1.0
+          lsp-eldoc-hook nil
+          lsp-enable-symbol-highlighting nil
+          lsp-signature-auto-activate nil
+          ;; Do not automatically include headers for me!
+          lsp-clients-clangd-args '("--header-insertion=never")
+          ;; Do not auto-format for me!
+          lsp-enable-indentation nil
+          lsp-enable-on-type-formatting nil))
+
+  (use-package lsp-ui
+    :ensure t
+    :defer t
+    :commands lsp-ui-mode
+    :custom
+    (lsp-ui-peek-always-show t)
+    (lsp-ui-sideline-show-hover t)
+    (lsp-ui-doc-enable t)
+    (lsp-ui-doc-delay 2))
+#+END_SRC
 
 ** Company
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package company
-       :ensure t
-       :defer t
-       :custom
-       (company-idle-delay 1.0) ;; how long to wait until popup
-       ;; (company-begin-commands nil) ;; uncomment to disable popup
-       :bind
-       (:map company-mode-map
-             ("<tab>" . tab-indent-or-complete)
-             ("TAB" . tab-indent-or-complete))
-       (:map company-active-map
-             ("C-n". company-select-next)
-             ("C-p". company-select-previous)
-             ("M-<". company-select-first)
-             ("M->". company-select-last)))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :defer t
+    :custom
+    (company-idle-delay 1.0) ;; how long to wait until popup
+    ;; (company-begin-commands nil) ;; uncomment to disable popup
+    :bind
+    (:map company-mode-map
+          ("<tab>" . tab-indent-or-complete)
+          ("TAB" . tab-indent-or-complete))
+    (:map company-active-map
+          ("C-n". company-select-next)
+          ("C-p". company-select-previous)
+          ("M-<". company-select-first)
+          ("M->". company-select-last)))
+#+END_SRC
 
 ** Helpers!
 
-   #+BEGIN_SRC emacs-lisp
-     (defun company-yasnippet-or-completion ()
-       (interactive)
-       (or (do-yas-expand)
-           (company-complete-common)))
-     
-     (defun check-expansion ()
-       (save-excursion
-         (if (looking-at "\\_>") t
-           (backward-char 1)
-           (if (looking-at "\\.") t
-             (backward-char 1)
-             (if (looking-at "::") t nil)))))
-     
-     (defun do-yas-expand ()
-       (let ((yas/fallback-behavior 'return-nil))
-         (yas/expand)))
-     
-     (defun tab-indent-or-complete ()
-       (interactive)
-       (if (minibufferp)
-           (minibuffer-complete)
-         (if (or (not yas/minor-mode)
-                 (null (do-yas-expand)))
-             (if (check-expansion)
-                 (company-complete-common)
-               (indent-for-tab-command)))))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defun company-yasnippet-or-completion ()
+    (interactive)
+    (or (do-yas-expand)
+        (company-complete-common)))
+
+  (defun check-expansion ()
+    (save-excursion
+      (if (looking-at "\\_>") t
+        (backward-char 1)
+        (if (looking-at "\\.") t
+          (backward-char 1)
+          (if (looking-at "::") t nil)))))
+
+  (defun do-yas-expand ()
+    (let ((yas/fallback-behavior 'return-nil))
+      (yas/expand)))
+
+  (defun tab-indent-or-complete ()
+    (interactive)
+    (if (minibufferp)
+        (minibuffer-complete)
+      (if (or (not yas/minor-mode)
+              (null (do-yas-expand)))
+          (if (check-expansion)
+              (company-complete-common)
+            (indent-for-tab-command)))))
+#+END_SRC
 
 ** Flycheck
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package flycheck
-       :ensure t)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t)
+#+END_SRC
 
 * Email
-  :PROPERTIES:
-  :CUSTOM_ID: email
-  :END:
+:PROPERTIES:
+:CUSTOM_ID: email
+:END:
 
-  Email configuration is all in an external, optional file.
+Email configuration is all in an external, optional file.
 
-  #+BEGIN_SRC emacs-lisp
-    (let ((mail-conf (expand-file-name "~/.emacs-mail.el")))
-      (when (file-exists-p mail-conf)
-        (load-file mail-conf)))
-  #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (let ((mail-conf (expand-file-name "~/.emacs-mail.el")))
+    (when (file-exists-p mail-conf)
+      (load-file mail-conf)))
+#+END_SRC
 
 * Webpage Publishing
-  :PROPERTIES:
-  :CUSTOM_ID: webpage-publishing
-  :END:
+:PROPERTIES:
+:CUSTOM_ID: webpage-publishing
+:END:
 
 ** Introduction
 
-   I keep my main homepage ([[https://loomcom.com/][https://loomcom.com/]]) entirely in
-   =org-mode=. This section details how =org-publish= is used to
-   transform a mass of Org files into a website.
+I keep my main homepage ([[https://loomcom.com/][https://loomcom.com/]]) entirely in
+=org-mode=. This section details how =org-publish= is used to
+transform a mass of Org files into a website.
 
 ** Basic Setup
 
-   First I define a few paths and a pointer to the header file, for
-   conveninience.
+First I define a few paths and a pointer to the header file, for
+conveninience.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq loomcom-project-dir "~/Projects/loomcom/")
-     (setq loomcom-org-dir (concat loomcom-project-dir "org/"))
-     (setq loomcom-www-dir (concat loomcom-project-dir "www/"))
-     (setq loomcom-blog-org-dir (concat loomcom-org-dir "blog/"))
-     (setq loomcom-blog-www-dir (concat loomcom-www-dir "blog/"))
-     (setq loomcom-blog-pattern "^\\([0-9]\\{4\\}\\)")
-     (setq loomcom-header-file
-           (concat loomcom-project-dir "org/header.html"))
-     (setq loomcom-posts-per-page 12)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq loomcom-project-dir "~/Projects/loomcom/")
+  (setq loomcom-org-dir (concat loomcom-project-dir "org/"))
+  (setq loomcom-www-dir (concat loomcom-project-dir "www/"))
+  (setq loomcom-blog-org-dir (concat loomcom-org-dir "blog/"))
+  (setq loomcom-blog-www-dir (concat loomcom-www-dir "blog/"))
+  (setq loomcom-blog-pattern "^\\([0-9]\\{4\\}\\)")
+  (setq loomcom-header-file
+        (concat loomcom-project-dir "org/header.html"))
+  (setq loomcom-posts-per-page 12)
+#+END_SRC
 
-   Next, I define some additional tags to be used in headers and
-   footers.
+Next, I define some additional tags to be used in headers and
+footers.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq loomcom-head
-           (concat
-            "<meta name=\"twitter:site\" content=\"@twylo\" />\n"
-            "<meta name=\"twitter:creator\" content=\"@twylo\" />\n"
-            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n"
-            "<link rel=\"icon\" type=\"image/png\" href=\"/images/icon/favicon-32x32.png\" />\n"
-            "<link rel=\"apple-touch-icon-precomposed\" href=\"/images/icon/apple-touch-icon.png\" />\n"
-            "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/faces.css\">\n"
-            "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">\n"))
-     
-     (setq loomcom-footer
-           (concat
-            "<div id=\"footer\">\n"
-            "Proudly "
-            "<a href=\"https://loomcom.com/blog/0110_emacs_blogging_for_fun_and_profit.html\">published</a> with "
-            "<a href=\"https://www.gnu.org/software/emacs/\">Emacs</a> and "
-            "<a href=\"https://orgmode.org/\">Org Mode</a>. This work is licensed "
-            "under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">CC "
-            "BY-SA 4.0</a> License"
-            "</div>"))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq loomcom-head
+        (concat
+         "<meta name=\"twitter:site\" content=\"@twylo\" />\n"
+         "<meta name=\"twitter:creator\" content=\"@twylo\" />\n"
+         "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n"
+         "<link rel=\"icon\" type=\"image/png\" href=\"/images/icon/favicon-32x32.png\" />\n"
+         "<link rel=\"apple-touch-icon-precomposed\" href=\"/images/icon/apple-touch-icon.png\" />\n"
+         "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/faces.css\">\n"
+         "<link rel=\"stylesheet\" type=\"text/css\" href=\"/res/style.css\">\n"))
+
+  (setq loomcom-footer
+        (concat
+         "<div id=\"footer\">\n"
+         "Proudly "
+         "<a href=\"https://loomcom.com/blog/0110_emacs_blogging_for_fun_and_profit.html\">published</a> with "
+         "<a href=\"https://www.gnu.org/software/emacs/\">Emacs</a> and "
+         "<a href=\"https://orgmode.org/\">Org Mode</a>. This work is licensed "
+         "under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">CC "
+         "BY-SA 4.0</a> License"
+         "</div>"))
+#+END_SRC
 
 ** Helper Function: Build a Preview for a Blog Page
 
-   When I publish a post to my blog, I want the ability to publish a
-   summary of the post to the main blog index page, followed by a
-   /"Read More..."/ link that will take you to the full article.
+When I publish a post to my blog, I want the ability to publish a
+summary of the post to the main blog index page, followed by a
+/"Read More..."/ link that will take you to the full article.
 
-   This helper function builds the preview string by returning
-   anything in the post up to the first line that reads
-   =#+BEGIN_more=.
+This helper function builds the preview string by returning
+anything in the post up to the first line that reads
+=#+BEGIN_more=.
 
-   #+BEGIN_SRC emacs-lisp
-     (defun loomcom--get-preview (filename)
-       "Get a preview string for a file.
-     This function returns a list, '(<needs-more> <preview-string>),
-     where <needs-more> is nil or non-nil, and indicates whether
-     a \"Read More →\" link is needed.
-     
-     FILENAME The file to get a preview for."
-       (with-temp-buffer
-         (insert-file-contents (concat loomcom-blog-org-dir filename))
-         (goto-char (point-min))
-         (let ((content-start (or
-                               ;; Look for the first non-keyword line
-                               (and (re-search-forward "^[^#]" nil t)
-                                    (match-beginning 0))
-                               ;; Failing that, assume we're malformed and
-                               ;; have no content
-                               (buffer-size)))
-               (marker (or
-                        (and (re-search-forward "^#\\+BEGIN_more$" nil t)
-                             (match-beginning 0))
-                        (buffer-size))))
-           ;; Return a pair of '(needs-more preview-string)
-           (list (not (= marker (buffer-size)))
-                 (buffer-substring content-start marker)))))
-   #+END_src
+#+BEGIN_SRC emacs-lisp
+  (defun loomcom--get-preview (filename)
+    "Get a preview string for a file.
+  This function returns a list, '(<needs-more> <preview-string>),
+  where <needs-more> is nil or non-nil, and indicates whether
+  a \"Read More →\" link is needed.
+
+  FILENAME The file to get a preview for."
+    (with-temp-buffer
+      (insert-file-contents (concat loomcom-blog-org-dir filename))
+      (goto-char (point-min))
+      (let ((content-start (or
+                            ;; Look for the first non-keyword line
+                            (and (re-search-forward "^[^#]" nil t)
+                                 (match-beginning 0))
+                            ;; Failing that, assume we're malformed and
+                            ;; have no content
+                            (buffer-size)))
+            (marker (or
+                     (and (re-search-forward "^#\\+BEGIN_more$" nil t)
+                          (match-beginning 0))
+                     (buffer-size))))
+        ;; Return a pair of '(needs-more preview-string)
+        (list (not (= marker (buffer-size)))
+              (buffer-substring content-start marker)))))
+#+END_src
 
 ** Helper Functions: New Blog Entry
 
-   These functions allow me to easily add a new blog entry by calling
-   ~M-x loomcom-blog-new~, which will prompt for a title and create
-   the appropriate file.
+These functions allow me to easily add a new blog entry by calling
+~M-x loomcom-blog-new~, which will prompt for a title and create
+the appropriate file.
 
-   #+BEGIN_SRC emacs-lisp
-     
-     (defun loomcom--blog-entry-p (fname)
-       "Return true if `fname' is a blog entry"
-       (string-match loomcom-blog-pattern fname))
-     
-     (defun loomcom--make-file-name (number title)
-       (let ((stub
-              (replace-regexp-in-string "[^a-z]+" "_" (downcase title) nil 'literal)))
-         (format
-          "%s_%s.org"
-          number
-          (replace-regexp-in-string "^_\\|_$" "" stub nil 'literal))))
-     
-     (defun loomcom-blog-new ()
-       "Create a new blog entry."
-       (interactive)
-       (if (file-exists-p loomcom-blog-org-dir)
-           (progn
-             (org-mode)
-             (let* ((blog-files (sort
-                                 (seq-filter 'loomcom--blog-entry-p
-                                             (directory-files loomcom-blog-org-dir)) 'string>))
-                    (match (string-match loomcom-blog-pattern (car blog-files)))
-                    (last-num (match-string 1 (car blog-files)))
-                    (next-num (format "%04d" (+ 1 (string-to-number last-num))))
-                    (human-title (read-from-minibuffer "New Entry Title: "))
-                    (new-file (loomcom--make-file-name next-num human-title))
-                    (snippet (cl-find "New Blog File" (yas--all-templates
-                                                       (yas--get-snippet-tables 'org-mode))
-                                      :key #'yas--template-name :test #'string=)))
-               (find-file (concat loomcom-blog-org-dir new-file))
-               (yas-expand-snippet snippet)
-               (insert human-title)
-               (yas-next-field)
-               (yas-next-field)
-               (yas-next-field)))
-         (error "Blog directory does not exist.")))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  
+  (defun loomcom--blog-entry-p (fname)
+    "Return true if `fname' is a blog entry"
+    (string-match loomcom-blog-pattern fname))
+
+  (defun loomcom--make-file-name (number title)
+    (let ((stub
+           (replace-regexp-in-string "[^a-z]+" "_" (downcase title) nil 'literal)))
+      (format
+       "%s_%s.org"
+       number
+       (replace-regexp-in-string "^_\\|_$" "" stub nil 'literal))))
+
+  (defun loomcom-blog-new ()
+    "Create a new blog entry."
+    (interactive)
+    (if (file-exists-p loomcom-blog-org-dir)
+        (progn
+          (org-mode)
+          (let* ((blog-files (sort
+                              (seq-filter 'loomcom--blog-entry-p
+                                          (directory-files loomcom-blog-org-dir)) 'string>))
+                 (match (string-match loomcom-blog-pattern (car blog-files)))
+                 (last-num (match-string 1 (car blog-files)))
+                 (next-num (format "%04d" (+ 1 (string-to-number last-num))))
+                 (human-title (read-from-minibuffer "New Entry Title: "))
+                 (new-file (loomcom--make-file-name next-num human-title))
+                 (snippet (cl-find "New Blog File" (yas--all-templates
+                                                    (yas--get-snippet-tables 'org-mode))
+                                   :key #'yas--template-name :test #'string=)))
+            (find-file (concat loomcom-blog-org-dir new-file))
+            (yas-expand-snippet snippet)
+            (insert human-title)
+            (yas-next-field)
+            (yas-next-field)
+            (yas-next-field)))
+      (error "Blog directory does not exist.")))
+#+END_SRC
 
 ** Helper Function: Insert A Page Header
 
-   #+BEGIN_SRC emacs-lisp
-     
-     (defun loomcom--header (_)
-       "Insert the header of the page."
-       (with-temp-buffer
-         (insert-file-contents loomcom-header-file)
-         (buffer-string)))
-     
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  
+  (defun loomcom--header (_)
+    "Insert the header of the page."
+    (with-temp-buffer
+      (insert-file-contents loomcom-header-file)
+      (buffer-string)))
+
+#+END_SRC
 
 ** Building a Sitemap for a Group of Pages
 
-   My blog uses a paginated index, which is actually not supported by default
-   in =org-publish=, so I do a lot of work to tweak it here.
+My blog uses a paginated index, which is actually not supported by default
+in =org-publish=, so I do a lot of work to tweak it here.
 
-   The first thing I do is define a function that will return a sitemap for a
-   single page.
+The first thing I do is define a function that will return a sitemap for a
+single page.
 
-   #+BEGIN_SRC emacs-lisp
-     (defun loomcom--sitemap-for-group (title previous-page next-page list)
-       "Generate the sitemap for one group of pages.
-     
-     TITLE  The title of the page
-     PREVIOUS-PAGE  The previous index page to link to.
-     NEXT-PAGE  The next index page to link to.
-     LIST  The group of pages."
-       (let ((previous-link (if previous-page
-                                (format "[[%s][← Previous Page]]" previous-page)
-                              ""))
-             (next-link (if next-page
-                            (format "[[%s][Next Page →]]" next-page)
-                          "")))
-         (concat "#+TITLE: " title "\n\n"
-                 "#+BEGIN_pagination\n"
-                 (format "- %s\n" previous-link)
-                 (format "- %s\n" next-link)
-                 "#+END_pagination\n\n"
-                 (string-join (mapcar #'car (cdr list)) "\n\n"))))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defun loomcom--sitemap-for-group (title previous-page next-page list)
+    "Generate the sitemap for one group of pages.
 
-   Next, a function that will return a single entry in the sitemap.
-   This is the actual entry that shows up on the index page!
+  TITLE  The title of the page
+  PREVIOUS-PAGE  The previous index page to link to.
+  NEXT-PAGE  The next index page to link to.
+  LIST  The group of pages."
+    (let ((previous-link (if previous-page
+                             (format "[[%s][← Previous Page]]" previous-page)
+                           ""))
+          (next-link (if next-page
+                         (format "[[%s][Next Page →]]" next-page)
+                       "")))
+      (concat "#+TITLE: " title "\n\n"
+              "#+BEGIN_pagination\n"
+              (format "- %s\n" previous-link)
+              (format "- %s\n" next-link)
+              "#+END_pagination\n\n"
+              (string-join (mapcar #'car (cdr list)) "\n\n"))))
+#+END_SRC
 
-   #+BEGIN_SRC emacs-lisp
-     (defun loomcom--sitemap-entry (entry project)
-       "Sitemap (Blog Main Page) Entry Formatter.
-     
-     ENTRY  The sitemap entry to format.
-     PROJECT  The project structure."
-       (when (not (directory-name-p entry))
-         (format (string-join
-                  '("* [[file:%s][%s]]\n"
-                    "  :PROPERTIES:\n"
-                    "  :PUBDATE: %s\n"
-                    "  :END:\n"
-                    "#+BEGIN_published\n"
-                    "%s\n"
-                    "#+END_published\n"
-                    "%s"))
-                 entry
-                 (org-publish-find-title entry project)
-                 (format-time-string (cdr org-time-stamp-formats) (org-publish-find-date entry project))
-                 (format-time-string "%A, %B %_d %Y at %l:%M %p %Z" (org-publish-find-date entry project))
-                 (let* ((preview (loomcom--get-preview entry))
-                        (needs-more (car preview))
-                        (preview-text (cadr preview)))
-                   (if needs-more
-                       (format
-                        (concat
-                         "%s\n\n"
-                         "#+BEGIN_morelink\n"
-                         "[[file:%s][Read More →]]\n"
-                         "#+END_morelink\n")
-                        preview-text entry)
-                     (format "%s" preview-text))))))
-     
-   #+END_SRC
+Next, a function that will return a single entry in the sitemap.
+This is the actual entry that shows up on the index page!
 
-   Then we define a function that will take a subset of all the blog
-   posts that are to be published, and turn them into a list.
+#+BEGIN_SRC emacs-lisp
+  (defun loomcom--sitemap-entry (entry project)
+    "Sitemap (Blog Main Page) Entry Formatter.
 
-   #+BEGIN_SRC emacs-lisp
-     (defun loomcom--sitemap-files-to-lisp (files project)
-       "Convert a group of entries into a list.
-     
-     FILES  The group of entries to list-ify.
-     PROJECT  The project structure."
-       (let ((root (expand-file-name
-                    (file-name-as-directory
-                     (org-publish-property :base-directory project)))))
-         (cons 'unordered
-               (mapcar
-                (lambda (f)
-                  (list (loomcom--sitemap-entry (file-relative-name f root) project)))
-                files))))
-   #+END_SRC
+  ENTRY  The sitemap entry to format.
+  PROJECT  The project structure."
+    (when (not (directory-name-p entry))
+      (format (string-join
+               '("* [[file:%s][%s]]\n"
+                 "  :PROPERTIES:\n"
+                 "  :PUBDATE: %s\n"
+                 "  :END:\n"
+                 "#+BEGIN_published\n"
+                 "%s\n"
+                 "#+END_published\n"
+                 "%s"))
+              entry
+              (org-publish-find-title entry project)
+              (format-time-string (cdr org-time-stamp-formats) (org-publish-find-date entry project))
+              (format-time-string "%A, %B %_d %Y at %l:%M %p %Z" (org-publish-find-date entry project))
+              (let* ((preview (loomcom--get-preview entry))
+                     (needs-more (car preview))
+                     (preview-text (cadr preview)))
+                (if needs-more
+                    (format
+                     (concat
+                      "%s\n\n"
+                      "#+BEGIN_morelink\n"
+                      "[[file:%s][Read More →]]\n"
+                      "#+END_morelink\n")
+                     preview-text entry)
+                  (format "%s" preview-text))))))
 
-   And here is the function that takes the entire set of articles to
-   be published, and turns them into groups of =n= elements.
+#+END_SRC
 
-   #+BEGIN_SRC emacs-lisp
-     (defun loomcom--group (source n)
-       "Group a list by 'n' elements.
-     
-     SOURCE  The list.
-     N  The number to group the list by."
-       (if (not (cl-endp (nthcdr n source)))
-           (cons (cl-subseq source 0 n)
-                 (loomcom--group (nthcdr n source) n))
-         (list source)))
-   #+END_SRC
+Then we define a function that will take a subset of all the blog
+posts that are to be published, and turn them into a list.
 
-   Next, there's a helper function to find the date of an entry.  This
-   mainly exists to help performance, because the sorting algorithm
-   used to sort all the blog entries is very expensive and gets called
-   n^2 times. Without this little helper and date cache, things would
-   be a lot slower.
+#+BEGIN_SRC emacs-lisp
+  (defun loomcom--sitemap-files-to-lisp (files project)
+    "Convert a group of entries into a list.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq loomcom-sitemap-file-dates (make-hash-table))
-     
-     (defun loomcom--find-date (file-name project)
-       "Find the date for a file and cache it.
-     
-     FILE-NAME  The file in which to find a date.
-     PROJECT  The project structure."
-       (let ((maybe-date (gethash file-name loomcom-sitemap-file-dates nil)))
-         (if maybe-date
-             maybe-date
-           (let ((new-date (org-publish-find-date file-name project)))
-             (puthash file-name new-date loomcom-sitemap-file-dates)
-             new-date))))
-   #+END_SRC
+  FILES  The group of entries to list-ify.
+  PROJECT  The project structure."
+    (let ((root (expand-file-name
+                 (file-name-as-directory
+                  (org-publish-property :base-directory project)))))
+      (cons 'unordered
+            (mapcar
+             (lambda (f)
+               (list (loomcom--sitemap-entry (file-relative-name f root) project)))
+             files))))
+#+END_SRC
 
-   I override the entire =org-html-template= function because I want to
-   wrap the HTML body in a /wrapper/ div, and also want to add the
-   document date under the title and subtitle, if available.
+And here is the function that takes the entire set of articles to
+be published, and turns them into groups of =n= elements.
 
-   #+BEGIN_SRC emacs-lisp
-     (fmakunbound 'org-html-template)
-     
-     (defun org-html-template (contents info)
-       "Return complete document string after HTML conversion.
-     CONTENTS is the transcoded contents string.  INFO is a plist
-     holding export options."
-       (concat
-        (when (and (not (org-html-html5-p info)) (org-html-xhtml-p info))
-          (let* ((xml-declaration (plist-get info :html-xml-declaration))
-                 (decl (or (and (stringp xml-declaration) xml-declaration)
-                           (cdr (assoc (plist-get info :html-extension)
-                                       xml-declaration))
-                           (cdr (assoc "html" xml-declaration))
-                           "")))
-            (when (not (or (not decl) (string= "" decl)))
-              (format "%s\n"
-                      (format decl
-                              (or (and org-html-coding-system
-                                       (fboundp 'coding-system-get)
-                                       (coding-system-get org-html-coding-system 'mime-charset))
-                                  "iso-8859-1"))))))
-        (org-html-doctype info)
-        "\n"
-        (concat "<html"
-                (when (org-html-xhtml-p info)
-                  (format
-                   " xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"%s\" xml:lang=\"%s\""
-                   (plist-get info :language) (plist-get info :language)))
-                ">\n")
-        "<head>\n"
-        (org-html--build-meta-info info)
-        (org-html--build-head info)
-        (org-html--build-mathjax-config info)
-        "</head>\n"
-        "<body lang=\"en-US\">\n"
-        "<div id=\"wrapper\">\n"
-        (let ((link-up (org-trim (plist-get info :html-link-up)))
-              (link-home (org-trim (plist-get info :html-link-home))))
-          (unless (and (string= link-up "") (string= link-home ""))
-            (format (plist-get info :html-home/up-format)
-                    (or link-up link-home)
-                    (or link-home link-up))))
-        ;; Preamble.
-        (org-html--build-pre/postamble 'preamble info)
-        ;; Document contents.
-        (let ((div (assq 'content (plist-get info :html-divs))))
-          (format "<%s id=\"%s\">\n" (nth 1 div) (nth 2 div)))
-        ;; Document title.
-        (when (plist-get info :with-title)
-          (let* ((title (plist-get info :title))
-                 (subtitle (plist-get info :subtitle))
-                 (with-date (plist-get info :with-date))
-                 (date-fmt (plist-get info :html-metadata-timestamp-format))
-                 (date (org-export-get-date info date-fmt)))
-            (when title
-              (format
-               (if (plist-get info :html-html5-fancy)
-                   "<header>\n<h1 class=\"title\">%s</h1>\n%s%s</header>"
-                 "<h1 class=\"title\">%s%s%s</h1>\n")
-               (org-export-data title info)
-               (if subtitle
-                   (format
-                    (if (plist-get info :html-html5-fancy)
-                        "<p class=\"subtitle\">%s</p>\n"
-                      "\n<br>\n<span class=\"subtitle\">%s</span>\n")
-                    (org-export-data subtitle info))
-                 "")
-               (if (and with-date date)
-                   (format "\n<h2 class=\"date\">%s</h2>" date)
-                 "")))))
-        contents
-        (format "</%s>\n" (nth 1 (assq 'content (plist-get info :html-divs))))
-        ;; Postamble.
-        (org-html--build-pre/postamble 'postamble info)
-        ;; Closing document.
-        "</div>\n</body>\n</html>"))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defun loomcom--group (source n)
+    "Group a list by 'n' elements.
 
-   Then, the meat of the matter. This is a complete rewrite of the
-   default =org-publish-sitemap= function that comes built into Org Mode.
-   It redefines the behavior to add support for publishing a multi-page
-   sitemap.
+  SOURCE  The list.
+  N  The number to group the list by."
+    (if (not (cl-endp (nthcdr n source)))
+        (cons (cl-subseq source 0 n)
+              (loomcom--group (nthcdr n source) n))
+      (list source)))
+#+END_SRC
 
-   #+BEGIN_SRC emacs-lisp
-     ;; Un-define the original version of 'org-publish-sitemap'
-     (fmakunbound 'org-publish-sitemap)
-     
-     ;; Define our own version.
-     (defun org-publish-sitemap (project &optional sitemap-filename)
-       "Publish the blog.
-     
-     This is actually a heavily modified and customized version of the
-     function by the same name in ox-publish.el.  It allows the
-     generation of a sitemap with multiple pages.
-     
-     PROJECT  The project structure.
-     SITEMAP-FILENAME  The filename to use as the default index."
-       (let* ((base (file-name-sans-extension (or sitemap-filename "index.org")))
-              (root (file-name-as-directory (expand-file-name
-                                             (concat loomcom-org-dir "blog/"))))
-              (title (or (org-publish-property :sitemap-title project)
-                         (concat "Sitemap for project " (car project))))
-              (sort-predicate
-               (lambda (a b)
-                 (let* ((adate (loomcom--find-date a project))
-                        (bdate (loomcom--find-date b project))
-                        (A (+ (lsh (car adate) 16) (cadr adate)))
-                        (B (+ (lsh (car bdate) 16) (cadr bdate))))
-                   (>= A B))))
-              (file-filter (lambda (f) (not (string-match (format "%s.*\\.org" base) f))))
-              (files (seq-filter file-filter (org-publish-get-base-files project))))
-         (message (format "Generating blog indexes for %s" title))
-         (let* ((pages (sort files sort-predicate))
-                (page-groups (loomcom--group pages loomcom-posts-per-page))
-                (page-number 0))
-           (dolist (group page-groups page-number)
-             (let ((fname (if (eq 0 page-number)
-                              (concat root (format "%s.org" base))
-                            (concat root (format "%s_%d.org" base page-number))))
-                   (previous-page (cond ((eq 0 page-number) nil)
-                                        ((eq 1 page-number) (concat root (format "%s.org" base)))
-                                        (t (concat root (format "%s_%d.org" base (- page-number 1))))))
-                   (next-page (if (eq (- (length page-groups) 1) page-number)
-                                  nil
-                                (concat root (format "%s_%d.org" base (+ page-number 1))))))
-               (setq page-number (+ 1 page-number))
-               (with-temp-file fname
-                 (insert
-                  (loomcom--sitemap-for-group
-                   title
-                   previous-page
-                   next-page
-                   (loomcom--sitemap-files-to-lisp group project)))))))))
-   #+END_SRC
+Next, there's a helper function to find the date of an entry.  This
+mainly exists to help performance, because the sorting algorithm
+used to sort all the blog entries is very expensive and gets called
+n^2 times. Without this little helper and date cache, things would
+be a lot slower.
 
-   And finally, at long last, the actual configuration for Org Publish
-   that defines the project.
+#+BEGIN_SRC emacs-lisp
+  (setq loomcom-sitemap-file-dates (make-hash-table))
 
-   #+BEGIN_SRC emacs-lisp
-     (setq org-publish-timestamp-directory (concat loomcom-project-dir "cache/"))
-     (setq org-publish-project-alist
-           `(("loomcom"
-              :components ("blog" "pages" "res" "images"))
-     
-             ("blog"
-              :base-directory ,loomcom-blog-org-dir
-              :base-extension "org"
-              :publishing-directory ,loomcom-blog-www-dir
-              :publishing-function org-html-publish-to-html
-              :with-author t
-              :author "Seth Morabito"
-              :email "web@loomcom.com"
-              :with-creator nil
-              :with-date t
-              :section-numbers nil
-              :with-title t
-              :with-toc nil
-              :with-drawers t
-              :with-sub-superscript nil
-              :html-html5-fancy t
-              :html-metadata-timestamp-format "%A, %B %_d %Y at %l:%M %p"
-              :html-doctype "html5"
-              :html-link-home "https://loomcom.com/"
-              :html-link-use-abs-url t
-              :html-head ,loomcom-head
-              :html-head-extra nil
-              :html-head-include-default-style nil
-              :html-head-include-scripts nil
-              :html-viewport nil
-              :html-link-up ""
-              :html-link-home ""
-              :html-preamble loomcom--header
-              :html-postamble ,loomcom-footer
-              :auto-sitemap t
-              :sitemap-filename "index.org"
-              :sitemap-title "Seth Morabito ∴ A Weblog"
-              :sitemap-sort-files anti-chronologically)
-     
-             ("pages"
-              :base-directory ,loomcom-org-dir
-              :base-extension "org"
-              :exclude ".*blog/.*"
-              :publishing-directory ,loomcom-www-dir
-              :publishing-function org-html-publish-to-html
-              :section-numbers nil
-              :recursive t
-              :with-title t
-              :with-toc nil
-              :with-drawers t
-              :with-sub-superscript nil
-              :with-author t
-              :author "Seth Morabito"
-              :email "web@loomcom.com"
-              :html-html5-fancy t
-              :with-creator nil
-              :with-date nil
-              :html-link-home "/"
-              :html-head nil
-              :html-doctype "html5"
-              :html-head ,loomcom-head
-              :html-head-extra nil
-              :html-head-include-default-style nil
-              :html-head-include-scripts nil
-              :html-link-up ""
-              :html-link-home ""
-              :html-preamble loomcom--header
-              :html-postamble ,loomcom-footer
-              :html-viewport nil)
-     
-             ("res"
-              :base-directory ,loomcom-org-dir
-              :base-extension "css\\|js\\|woff2\\|woff\\|ttf"
-              :recursive t
-              :publishing-directory ,loomcom-www-dir
-              :publishing-function org-publish-attachment)
-     
-             ("images"
-              :base-directory ,loomcom-org-dir
-              :base-extension "png\\|jpg\\|gif\\|pdf\\|svg"
-              :recursive t
-              :publishing-directory ,loomcom-www-dir
-              :publishing-function org-publish-attachment)))
-   #+END_SRC
+  (defun loomcom--find-date (file-name project)
+    "Find the date for a file and cache it.
+
+  FILE-NAME  The file in which to find a date.
+  PROJECT  The project structure."
+    (let ((maybe-date (gethash file-name loomcom-sitemap-file-dates nil)))
+      (if maybe-date
+          maybe-date
+        (let ((new-date (org-publish-find-date file-name project)))
+          (puthash file-name new-date loomcom-sitemap-file-dates)
+          new-date))))
+#+END_SRC
+
+I override the entire =org-html-template= function because I want to
+wrap the HTML body in a /wrapper/ div, and also want to add the
+document date under the title and subtitle, if available.
+
+#+BEGIN_SRC emacs-lisp
+  (fmakunbound 'org-html-template)
+
+  (defun org-html-template (contents info)
+    "Return complete document string after HTML conversion.
+  CONTENTS is the transcoded contents string.  INFO is a plist
+  holding export options."
+    (concat
+     (when (and (not (org-html-html5-p info)) (org-html-xhtml-p info))
+       (let* ((xml-declaration (plist-get info :html-xml-declaration))
+              (decl (or (and (stringp xml-declaration) xml-declaration)
+                        (cdr (assoc (plist-get info :html-extension)
+                                    xml-declaration))
+                        (cdr (assoc "html" xml-declaration))
+                        "")))
+         (when (not (or (not decl) (string= "" decl)))
+           (format "%s\n"
+                   (format decl
+                           (or (and org-html-coding-system
+                                    (fboundp 'coding-system-get)
+                                    (coding-system-get org-html-coding-system 'mime-charset))
+                               "iso-8859-1"))))))
+     (org-html-doctype info)
+     "\n"
+     (concat "<html"
+             (when (org-html-xhtml-p info)
+               (format
+                " xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"%s\" xml:lang=\"%s\""
+                (plist-get info :language) (plist-get info :language)))
+             ">\n")
+     "<head>\n"
+     (org-html--build-meta-info info)
+     (org-html--build-head info)
+     (org-html--build-mathjax-config info)
+     "</head>\n"
+     "<body lang=\"en-US\">\n"
+     "<div id=\"wrapper\">\n"
+     (let ((link-up (org-trim (plist-get info :html-link-up)))
+           (link-home (org-trim (plist-get info :html-link-home))))
+       (unless (and (string= link-up "") (string= link-home ""))
+         (format (plist-get info :html-home/up-format)
+                 (or link-up link-home)
+                 (or link-home link-up))))
+     ;; Preamble.
+     (org-html--build-pre/postamble 'preamble info)
+     ;; Document contents.
+     (let ((div (assq 'content (plist-get info :html-divs))))
+       (format "<%s id=\"%s\">\n" (nth 1 div) (nth 2 div)))
+     ;; Document title.
+     (when (plist-get info :with-title)
+       (let* ((title (plist-get info :title))
+              (subtitle (plist-get info :subtitle))
+              (with-date (plist-get info :with-date))
+              (date-fmt (plist-get info :html-metadata-timestamp-format))
+              (date (org-export-get-date info date-fmt)))
+         (when title
+           (format
+            (if (plist-get info :html-html5-fancy)
+                "<header>\n<h1 class=\"title\">%s</h1>\n%s%s</header>"
+              "<h1 class=\"title\">%s%s%s</h1>\n")
+            (org-export-data title info)
+            (if subtitle
+                (format
+                 (if (plist-get info :html-html5-fancy)
+                     "<p class=\"subtitle\">%s</p>\n"
+                   "\n<br>\n<span class=\"subtitle\">%s</span>\n")
+                 (org-export-data subtitle info))
+              "")
+            (if (and with-date date)
+                (format "\n<h2 class=\"date\">%s</h2>" date)
+              "")))))
+     contents
+     (format "</%s>\n" (nth 1 (assq 'content (plist-get info :html-divs))))
+     ;; Postamble.
+     (org-html--build-pre/postamble 'postamble info)
+     ;; Closing document.
+     "</div>\n</body>\n</html>"))
+#+END_SRC
+
+Then, the meat of the matter. This is a complete rewrite of the
+default =org-publish-sitemap= function that comes built into Org Mode.
+It redefines the behavior to add support for publishing a multi-page
+sitemap.
+
+#+BEGIN_SRC emacs-lisp
+  ;; Un-define the original version of 'org-publish-sitemap'
+  (fmakunbound 'org-publish-sitemap)
+
+  ;; Define our own version.
+  (defun org-publish-sitemap (project &optional sitemap-filename)
+    "Publish the blog.
+
+  This is actually a heavily modified and customized version of the
+  function by the same name in ox-publish.el.  It allows the
+  generation of a sitemap with multiple pages.
+
+  PROJECT  The project structure.
+  SITEMAP-FILENAME  The filename to use as the default index."
+    (let* ((base (file-name-sans-extension (or sitemap-filename "index.org")))
+           (root (file-name-as-directory (expand-file-name
+                                          (concat loomcom-org-dir "blog/"))))
+           (title (or (org-publish-property :sitemap-title project)
+                      (concat "Sitemap for project " (car project))))
+           (sort-predicate
+            (lambda (a b)
+              (let* ((adate (loomcom--find-date a project))
+                     (bdate (loomcom--find-date b project))
+                     (A (+ (lsh (car adate) 16) (cadr adate)))
+                     (B (+ (lsh (car bdate) 16) (cadr bdate))))
+                (>= A B))))
+           (file-filter (lambda (f) (not (string-match (format "%s.*\\.org" base) f))))
+           (files (seq-filter file-filter (org-publish-get-base-files project))))
+      (message (format "Generating blog indexes for %s" title))
+      (let* ((pages (sort files sort-predicate))
+             (page-groups (loomcom--group pages loomcom-posts-per-page))
+             (page-number 0))
+        (dolist (group page-groups page-number)
+          (let ((fname (if (eq 0 page-number)
+                           (concat root (format "%s.org" base))
+                         (concat root (format "%s_%d.org" base page-number))))
+                (previous-page (cond ((eq 0 page-number) nil)
+                                     ((eq 1 page-number) (concat root (format "%s.org" base)))
+                                     (t (concat root (format "%s_%d.org" base (- page-number 1))))))
+                (next-page (if (eq (- (length page-groups) 1) page-number)
+                               nil
+                             (concat root (format "%s_%d.org" base (+ page-number 1))))))
+            (setq page-number (+ 1 page-number))
+            (with-temp-file fname
+              (insert
+               (loomcom--sitemap-for-group
+                title
+                previous-page
+                next-page
+                (loomcom--sitemap-files-to-lisp group project)))))))))
+#+END_SRC
+
+And finally, at long last, the actual configuration for Org Publish
+that defines the project.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-publish-timestamp-directory (concat loomcom-project-dir "cache/"))
+  (setq org-publish-project-alist
+        `(("loomcom"
+           :components ("blog" "pages" "res" "images"))
+
+          ("blog"
+           :base-directory ,loomcom-blog-org-dir
+           :base-extension "org"
+           :publishing-directory ,loomcom-blog-www-dir
+           :publishing-function org-html-publish-to-html
+           :with-author t
+           :author "Seth Morabito"
+           :email "web@loomcom.com"
+           :with-creator nil
+           :with-date t
+           :section-numbers nil
+           :with-title t
+           :with-toc nil
+           :with-drawers t
+           :with-sub-superscript nil
+           :html-html5-fancy t
+           :html-metadata-timestamp-format "%A, %B %_d %Y at %l:%M %p"
+           :html-doctype "html5"
+           :html-link-home "https://loomcom.com/"
+           :html-link-use-abs-url t
+           :html-head ,loomcom-head
+           :html-head-extra nil
+           :html-head-include-default-style nil
+           :html-head-include-scripts nil
+           :html-viewport nil
+           :html-link-up ""
+           :html-link-home ""
+           :html-preamble loomcom--header
+           :html-postamble ,loomcom-footer
+           :auto-sitemap t
+           :sitemap-filename "index.org"
+           :sitemap-title "Seth Morabito ∴ A Weblog"
+           :sitemap-sort-files anti-chronologically)
+
+          ("pages"
+           :base-directory ,loomcom-org-dir
+           :base-extension "org"
+           :exclude ".*blog/.*"
+           :publishing-directory ,loomcom-www-dir
+           :publishing-function org-html-publish-to-html
+           :section-numbers nil
+           :recursive t
+           :with-title t
+           :with-toc nil
+           :with-drawers t
+           :with-sub-superscript nil
+           :with-author t
+           :author "Seth Morabito"
+           :email "web@loomcom.com"
+           :html-html5-fancy t
+           :with-creator nil
+           :with-date nil
+           :html-link-home "/"
+           :html-head nil
+           :html-doctype "html5"
+           :html-head ,loomcom-head
+           :html-head-extra nil
+           :html-head-include-default-style nil
+           :html-head-include-scripts nil
+           :html-link-up ""
+           :html-link-home ""
+           :html-preamble loomcom--header
+           :html-postamble ,loomcom-footer
+           :html-viewport nil)
+
+          ("res"
+           :base-directory ,loomcom-org-dir
+           :base-extension "css\\|js\\|woff2\\|woff\\|ttf"
+           :recursive t
+           :publishing-directory ,loomcom-www-dir
+           :publishing-function org-publish-attachment)
+
+          ("images"
+           :base-directory ,loomcom-org-dir
+           :base-extension "png\\|jpg\\|gif\\|pdf\\|svg"
+           :recursive t
+           :publishing-directory ,loomcom-www-dir
+           :publishing-function org-publish-attachment)))
+#+END_SRC
 
 * Miscellaneous Hacks
-  :PROPERTIES:
-  :CUSTOM_ID: misc-hacks
-  :END:
+:PROPERTIES:
+:CUSTOM_ID: misc-hacks
+:END:
 
 
 ** Emacs 28
 
-   Turn on native compilation of packages
+Turn on native compilation of packages
 
-   #+BEGIN_SRC emacs-lisp
-     (when (>= emacs-major-version 28)
-       (setq package-native-compile 1))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (when (>= emacs-major-version 28)
+    (setq package-native-compile 1))
+#+END_SRC
 
 ** Emacs 27
 
-   Beginning in Emacs 27, a new attribute, =:extend=, was added to
-   faces.  It determines whether the background of a face will extend
-   to the right margin or not. It defaults to =nil=, but I prefer it
-   to be set for some things.
+Beginning in Emacs 27, a new attribute, =:extend=, was added to
+faces.  It determines whether the background of a face will extend
+to the right margin or not. It defaults to =nil=, but I prefer it
+to be set for some things.
 
-   #+BEGIN_SRC emacs-lisp
-     (when (>= emacs-major-version 27)
-       (set-face-attribute 'org-block nil :extend t))
-   #+End_SRC
+#+BEGIN_SRC emacs-lisp
+  (when (>= emacs-major-version 27)
+    (set-face-attribute 'org-block nil :extend t))
+#+End_SRC
 
 ** An Emacs 27 oddity or bug?
 
-   Some time in Emacs 27's development lifetime, the default value of
-   the variable ~truncate-string-ellipsis~ became unbound. It's
-   supposed to be a string that's used when truncating a string to
-   width with the ~truncate-string-to-width~ function.  I think this
-   is a bug, but to work around it, we just define it here.
+Some time in Emacs 27's development lifetime, the default value of
+the variable ~truncate-string-ellipsis~ became unbound. It's
+supposed to be a string that's used when truncating a string to
+width with the ~truncate-string-to-width~ function.  I think this
+is a bug, but to work around it, we just define it here.
 
-   It might also be a bug with mu4e. Maybe mu4e is unbinding the
-   variable?
+It might also be a bug with mu4e. Maybe mu4e is unbinding the
+variable?
 
-   Hopefully we can remove this hack after the bug is fixed, whoever's
-   fault it is.
+Hopefully we can remove this hack after the bug is fixed, whoever's
+fault it is.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq truncate-string-ellipsis "...")
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq truncate-string-ellipsis "...")
+#+END_SRC
