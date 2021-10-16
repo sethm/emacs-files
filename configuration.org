@@ -501,6 +501,23 @@ ignored.
 
 ** Window Frame
 
+*** Fringe and Border
+
+Inspired by Nicholas Rougier's "Nano" Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (setq default-frame-alist
+        (append (list
+                 '(min-height . 1)
+                 '(height     . 45)
+                 '(min-width  . 1)
+                 '(width      . 81)
+                 '(vertical-scroll-bars . nil)
+                 '(internal-border-width . 24)
+                 '(left-fringe    . 1)
+                 '(right-fringe   . 1))))
+#+END_SRC
+
 *** Title
 
 By default, the Emacs frame (what you or I would call a window)
@@ -679,16 +696,11 @@ immediately.
 
 ** Theme
 
-I've become enamored of the Zenburn theme.
-
 #+BEGIN_SRC emacs-lisp
-  (use-package zenburn-theme
+  (use-package nano-theme
     :ensure t
     :config
-    (setq zenburn-use-variable-pitch t
-          zenburn-scale-org-headlintes t
-          zenburn-scale-outline-headlines t)
-    (load-theme 'zenburn t))
+    (load-theme 'nano-dark t))
 #+END_SRC
 
 ** Theme Overrides
@@ -1003,14 +1015,13 @@ This adds support the LaTeX class =koma-article= on LaTeX export.
   (when (file-directory-p (expand-file-name "~/Nextcloud/org-roam/"))
     (use-package org-roam
       :ensure t
-      :init
-      (setq org-roam-v2-ack t)
       :custom
       (org-roam-directory (expand-file-name "~/Nextcloud/org-roam/"))
       :bind (("C-c n l" . org-roam-buffer-toggle)
              ("C-c n f" . org-roam-node-find)
              ("C-c n i" . org-roam-node-insert))
       :config
+      (setq org-roam-v2-ack t)
       (org-roam-setup)))
 #+END_SRC
 
