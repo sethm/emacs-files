@@ -116,9 +116,10 @@ clutter. Your milage may vary, but for me this means turning off
 startup messages, the splash screen, tool bar, and tooltips.
 
 #+BEGIN_SRC emacs-lisp
-  (setq warning-minimum-level :emergency)
-  (setq inhibit-startup-message t)
-  (setq inhibit-splash-screen t)
+  (setq warning-minimum-level :emergency
+        inhibit-startup-message t
+        inhibit-splash-screen t
+        initial-scratch-message nil)
   (tool-bar-mode -1)
   (tooltip-mode -1)
   (scroll-bar-mode -1)
@@ -500,23 +501,6 @@ ignored.
 #+END_SRC
 
 ** Window Frame
-
-*** Fringe and Border
-
-Inspired by Nicholas Rougier's "Nano" Emacs.
-
-#+BEGIN_SRC emacs-lisp
-  (setq default-frame-alist
-        (append (list
-                 '(min-height . 1)
-                 '(height     . 45)
-                 '(min-width  . 1)
-                 '(width      . 81)
-                 '(vertical-scroll-bars . nil)
-                 '(internal-border-width . 24)
-                 '(left-fringe    . 1)
-                 '(right-fringe   . 1))))
-#+END_SRC
 
 *** Title
 
