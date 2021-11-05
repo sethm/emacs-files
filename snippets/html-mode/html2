@@ -3,9 +3,12 @@
 #group : html
 # --
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<HTML>
 <HEAD>
 <TITLE>$1</TITLE>
+<META http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
 </HEAD>
 <BODY>
   $0
 </BODY>
+</HTML>
