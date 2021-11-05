@@ -681,10 +681,11 @@ immediately.
 ** Theme
 
 #+BEGIN_SRC emacs-lisp
-  (use-package nano-theme
+  (use-package zenburn-theme
     :ensure t
     :config
-    (load-theme 'nano-dark t))
+    (when window-system
+      (load-theme 'zenburn t)))
 #+END_SRC
 
 ** Theme Overrides
