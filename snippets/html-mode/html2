@@ -1,0 +1,11 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : HTML 2.0 Boilerplate
+#group : html
+# --
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<HEAD>
+<TITLE>$1</TITLE>
+</HEAD>
+<BODY>
+  $0
+</BODY>

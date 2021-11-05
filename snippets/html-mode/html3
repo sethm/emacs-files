@@ -1,0 +1,13 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : HTML 3.2 Boilerplate
+#group : html
+# --
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>$1</TITLE>
+</HEAD>
+<BODY>
+  $0
+</BODY>
+</HTML>
