@@ -1261,10 +1261,32 @@ respectively.
 
 ** Haskell
 
+I've recently been playing more with Haskell.
+
 #+BEGIN_SRC emacs-lisp
   (use-package haskell-mode
     :ensure t
-    :defer t)
+    :init
+    (progn
+      (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+      (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+      (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+      (setq haskell-process-args-cabal-new-repl
+        '("--ghc-options=-ferror-spans -fshow-loaded-modules"))
+      (setq haskell-process-type 'cabal-new-repl)
+      (setq haskell-stylish-on-save 't)
+      (setq haskell-tags-on-save 't)))
+
+  (use-package flycheck-haskell
+    :ensure t
+    :config
+    (add-hook 'flycheck-mode-hook #'flycheck-haskell-setup)
+    (eval-after-load 'haskell-mode-hook 'flycheck-mode))
+
+  (use-package flymake-hlint
+    :ensure t
+    :config
+    (add-hook 'haskell-mode-hook 'flymake-hlint-load))
 #+END_SRC
 
 ** Rustic
