@@ -681,12 +681,21 @@ immediately.
 
 ** Theme
 
+I like to load a few themes to have on hand (only one
+of which I enable by default, of course).
+
 #+BEGIN_SRC emacs-lisp
-  (use-package zenburn-theme
+  (use-package exotica-theme
     :ensure t
     :config
     (when window-system
-      (load-theme 'zenburn t)))
+      (load-theme 'exotica t)))
+
+  (use-package zenburn-theme
+    :ensure t)
+
+  (use-package darcula-theme
+    :ensure t)
 #+END_SRC
 
 ** Theme Overrides
