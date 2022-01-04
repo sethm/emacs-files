@@ -481,9 +481,8 @@ ignored.
 
 #+BEGIN_SRC emacs-lisp
   (when window-system
-    (let* ((families '("Roboto Mono Light"
+    (let* ((families '("Hack"
                        "Roboto Mono"
-                       "Hack"
                        "Input Mono"
                        "Inconsolata"
                        "Dejavu"
@@ -681,32 +680,19 @@ immediately.
 
 ** Theme
 
-I like to load a few themes to have on hand (only one
-of which I enable by default, of course).
+I never tire of experimenting with themes. This section changes pretty
+often.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package exotica-theme
+  (use-package doom-themes
     :ensure t
     :config
+    (setq doom-themes-enable-bold t
+          doom-themes-enable-italic t)
     (when window-system
-      (load-theme 'exotica t)))
-
-  (use-package zenburn-theme
-    :ensure t)
-
-  (use-package darcula-theme
-    :ensure t)
-#+END_SRC
-
-** Theme Overrides
-
-#+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'org-level-1 nil :height 1.3)
-  (set-face-attribute 'org-level-2 nil :height 1.1)
-  (set-face-attribute 'org-level-3 nil :slant 'italic)
-  (set-face-attribute 'org-level-4 nil :slant 'italic)
-#+END_SRC
-
+      (load-theme 'doom-one t))
+    (doom-themes-visual-bell-config)
+    (doom-themes-org-config))
 #+END_SRC
 
 ** Org Mode
@@ -1025,11 +1011,6 @@ This adds support the LaTeX class =koma-article= on LaTeX export.
 Org Superstar replaces the default asterisk style Org-Mode headers
 with nicer looking defaults using Unicode.
 
-The only "trick" in this config is to (counter-intuitively) turn /off/
-~org-hide-leading-stars~, and then replace all leading stars with the
-null character (~?\00~), which effectively makes all headlines appear
-flush against the left margin.
-
 #+BEGIN_SRC emacs-lisp
   (use-package org-superstar
     :ensure t
@@ -1037,10 +1018,7 @@ flush against the left margin.
     :init
     (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
     :config
-    (setq org-hide-leading-stars nil
-          org-superstar-prettify-item-bullets nil
-          org-superstar-leading-bullet ?\00
-          org-indent-mode-turns-on-hiding-stars nil))
+    (setq org-superstar-leading-bullet " "))
 #+END_SRC
 
 ** Support for Encrypted Authinfo
