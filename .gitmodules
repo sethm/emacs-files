@@ -1,9 +1,0 @@
-[submodule "org-mode"]
-	path = vendor/org-mode
-	url = https://git.savannah.gnu.org/git/emacs/org-mode.git/
-[submodule "tera-mode"]
-	path = vendor/tera-mode
-	url = https://github.com/svavs/tera-mode.git
-[submodule "vendor/org-contrib"]
-	path = vendor/org-contrib
-	url = https://git.sr.ht/~bzg/org-contrib

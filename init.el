@@ -5,7 +5,4 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-to-list 'load-path "~/.emacs.d/vendor/org-mode/lisp")
-(add-to-list 'load-path "~/.emacs.d/vendor/org-contrib/lisp")
-
 (org-babel-load-file "~/.emacs.d/configuration.org")

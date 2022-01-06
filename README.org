@@ -1,7 +1,7 @@
 * My Emacs Configuration
 
 This is my Emacs configuration. It's been written and rewritten and
-refactored and migrated and changed and updated since the late '90s.
+refactored and migrated and changed and updated since the 1990s.
 
 I keep this setup in git because I like to keep it up to date across
 all the computers I use — work laptop, home workstation, home laptop,
@@ -17,40 +17,25 @@ This means that my configuration is a human-readable document that
 puts comments first, and embeds the actual configuration elisp as code
 snippets.
 
-The main file is called [configuration.org](configuration.org), and
-is in =org-mode= format.
+The main file is called [configuration.org](configuration.org), and is
+in =org-mode= format.
 
-Files found in =~/.emacs.d/local= are ignore by Git, but added to
-the load path.
+Files found in =~/.emacs.d/local= (if it exists) are ignore by Git,
+but added to the load path.
 
-Files found in =~/.emacs.d/lisp= are checked into Git, and added to
-the load path.
+** Usage
 
-** Getting Started
+If you already have an .emacs.d directory, make a backup!
 
-The process for bootstrapping all this stuff is complicated
-a little bit by the fact that I use the latest =org-mode=
-as a Git submodule. The full process for getting everything running
-is as follows:
+    : $ mv -f ~/.emacs.d ~/.emacs.d.OLD
 
-*** Clone the Repository
+Then, simply clone the project.
 
     : $ git clone git@github.com:sethm/emacs-files.git ~/.emacs.d
 
-*** Update the =org-mode= and =tera-mode= submodules
-
-    : $ cd ~/.emacs.d
-    : $ git submodule init
-    : $ git submodule update
-
-*** Build =org-mode=
-
-    : $ cd ~/.emacs.d/vendor/org-mode
-    : $ make
-
 ** License
 
-Copyright 1995–2020, Seth J. Morabito <web@loomcom.com>
+Copyright 1995–2022, Seth J. Morabito <web@loomcom.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

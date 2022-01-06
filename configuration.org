@@ -29,30 +29,10 @@ readable prose is ignored by the interpreter or compiler.
 
 The magic here is provided by =org-babel=, which provides a method for
 extracting and evaluating Emacs Lisp expressions inside an =org-mode=
-file.
-
-*There is one more thing:* Emacs comes with a built-in version of Org
-Mode that is usually out of date. Because I like to live on the
-bleeding edge of Org Mode, I provide my own checkout as a git
-submodule. The first two lines of my =init.el= file then add this
-submodule to the load path. This is required to use the submodule
-version of org mode. My =init.el= looks like this, in its entirety:
+file. The only thing needed in the main Emacs init file is this line:
 
 #+BEGIN_EXAMPLE
-  (add-to-list 'load-path "~/.emacs.d/vendor/org-mode/lisp")
-  (add-to-list 'load-path "~/.emacs.d/vendor/org-contrib/lisp")
-
   (org-babel-load-file "~/.emacs.d/configuration.org")
-#+END_EXAMPLE
-
-To finish the bootstrap, all you need to do is:
-
-#+BEGIN_EXAMPLE
-$ cd ~/.emacs.d
-$ git submodule init
-$ git submodule update
-$ cd ~/.emacs.d/org-mode
-$ make
 #+END_EXAMPLE
 
 * Basic Setup
@@ -1122,20 +1102,6 @@ in the =snippets= directory.
     :ensure t
     :after yasnippet
     :config (yasnippet-snippets-initialize))
-#+END_SRC
-
-** Tera Mode
-
-One of my projects uses [[https://tera.netlify.app/][the Tera template language]], so I add
-support here. Unfortunately, ~tera-mode~ is not in ELPA or MELPA,
-so I have it checked out as a sub-module. I also just lazily enable
-~tera-mode~ by hand when I need it.
-
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path "~/.emacs.d/vendor/tera-mode")
-  (require 'tera-mode)
-  ;; Set offset for HTML/XML-like things
-  (setq sgml-basic-offset 4)
 #+END_SRC
 
 ** Markdown
