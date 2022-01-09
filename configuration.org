@@ -670,7 +670,7 @@ often.
     (setq doom-themes-enable-bold t
           doom-themes-enable-italic t)
     (when window-system
-      (load-theme 'doom-one t))
+      (load-theme 'doom-dark+ t))
     (doom-themes-visual-bell-config)
     (doom-themes-org-config))
 #+END_SRC
