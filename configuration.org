@@ -477,7 +477,7 @@ ignored.
       (set-face-attribute 'default nil
                           :family selected-family
                           :weight 'medium
-                          :height 140)))
+                          :height 110)))
 #+END_SRC
 
 ** Window Frame
@@ -672,7 +672,12 @@ often.
     (when window-system
       (load-theme 'doom-dark+ t))
     (doom-themes-visual-bell-config)
-    (doom-themes-org-config))
+    (doom-themes-org-config)
+    (set-face-foreground 'window-divider "#666666")
+    (set-face-foreground 'window-divider-first-pixel "#666666")
+    (set-face-foreground 'window-divider-last-pixel "#666666")
+    (setq window-divider-default-right-width 2)
+    (window-divider-mode t))
 #+END_SRC
 
 ** Org Mode
