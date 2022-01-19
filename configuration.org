@@ -98,14 +98,11 @@ startup messages, the splash screen, tool bar, and tooltips.
 #+BEGIN_SRC emacs-lisp
   (setq warning-minimum-level :emergency
         inhibit-startup-message t
-        inhibit-splash-screen t
-        initial-scratch-message nil)
+        inhibit-splash-screen t)
   (tool-bar-mode -1)
   (tooltip-mode -1)
   (scroll-bar-mode -1)
-  (if (display-graphic-p)
-      (menu-bar-mode t)
-    (menu-bar-mode -1))
+  (menu-bar-mode -1)
 #+END_SRC
 
 * Behavior
