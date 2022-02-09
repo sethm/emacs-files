@@ -458,7 +458,8 @@ ignored.
 
 #+BEGIN_SRC emacs-lisp
   (when window-system
-    (let* ((families '("Hack"
+    (let* ((height 160)  ; TODO: Height based on display type / resolution
+           (families '("Hack"
                        "Roboto Mono"
                        "Input Mono"
                        "Inconsolata"
@@ -474,7 +475,7 @@ ignored.
       (set-face-attribute 'default nil
                           :family selected-family
                           :weight 'medium
-                          :height 110)))
+                          :height height)))
 #+END_SRC
 
 ** Window Frame
