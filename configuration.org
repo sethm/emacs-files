@@ -458,7 +458,9 @@ ignored.
 
 #+BEGIN_SRC emacs-lisp
   (when window-system
-    (let* ((height 160)  ; TODO: Height based on display type / resolution
+    (let* ((dpr (/ (float (display-pixel-width)) ;; display ratio
+                   (float (display-mm-width))))
+           (height (if (> dpr 1.25) 100 140))
            (families '("Hack"
                        "Roboto Mono"
                        "Input Mono"
