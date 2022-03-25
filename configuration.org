@@ -664,20 +664,16 @@ I never tire of experimenting with themes. This section changes pretty
 often.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package doom-themes
+  (use-package modus-themes
     :ensure t
     :config
-    (setq doom-themes-enable-bold t
-          doom-themes-enable-italic t)
     (when window-system
-      (load-theme 'doom-dark+ t))
-    (doom-themes-visual-bell-config)
-    (doom-themes-org-config)
-    (set-face-foreground 'window-divider "#666666")
-    (set-face-foreground 'window-divider-first-pixel "#666666")
-    (set-face-foreground 'window-divider-last-pixel "#666666")
-    (setq window-divider-default-right-width 2)
-    (window-divider-mode t))
+      (load-theme 'modus-operandi t)))
+
+  (use-package olivetti
+    :ensure t
+    :config
+    (setq olivetti-body-width 90))
 #+END_SRC
 
 ** Org Mode
