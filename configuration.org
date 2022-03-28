@@ -458,10 +458,9 @@ ignored.
 
 #+BEGIN_SRC emacs-lisp
   (when window-system
-    (let* ((dpr (/ (float (display-pixel-height)) ;; display ratio
-                   (float (display-mm-height))))
-           (height (if (> dpr 1.5) 140 100))
-           (families '("Hack"
+    (let* ((height 140)
+           (families '("Fira Code"
+                       "Hack"
                        "Roboto Mono"
                        "Input Mono"
                        "Inconsolata"
@@ -474,10 +473,7 @@ ignored.
            (selected-family (cl-dolist (fam families)
                               (when (member fam (font-family-list))
                                 (cl-return fam)))))
-      (set-face-attribute 'default nil
-                          :family selected-family
-                          :weight 'medium
-                          :height height)))
+      (set-face-attribute 'default nil :family selected-family :height height)))
 #+END_SRC
 
 ** Window Frame
@@ -667,6 +663,7 @@ often.
   (use-package modus-themes
     :ensure t
     :config
+    (setq modus-themes-org-blocks 'gray-background)
     (when window-system
       (load-theme 'modus-operandi t)))
 
@@ -719,7 +716,9 @@ Next is =org-mode=, which I use constantly, day in and day out.
     (use-package htmlize
       :ensure t)
     (require 'ox-latex)
-    (setq org-tags-column -65
+    (setq org-hide-emphasis-markers t
+          org-pretty-entities t
+          org-tags-column -65
           org-latex-listings 't
           org-export-default-language "en"
           org-export-with-smart-quotes t
@@ -1442,5 +1441,5 @@ Hopefully we can remove this hack after the bug is fixed, whoever's
 fault it is.
 
 #+BEGIN_SRC emacs-lisp
-  (setq truncate-string-ellipsis "...")
+;;  (setq truncate-string-ellipsis "...")
 #+END_SRC
