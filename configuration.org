@@ -665,7 +665,7 @@ often.
     :config
     (setq modus-themes-org-blocks 'gray-background)
     (when window-system
-      (load-theme 'modus-operandi t)))
+      (load-theme 'modus-vivendi t)))
 
   (use-package olivetti
     :ensure t
