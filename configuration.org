@@ -1001,6 +1001,20 @@ with nicer looking defaults using Unicode.
     (setq org-superstar-leading-bullet " "))
 #+END_SRC
 
+** Perspective
+
+~perspective.el~ is a tool that allows grouping of buffers into separate
+"perspectives", like workgroups in other editors.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package perspective
+    :ensure t
+    :bind (("C-x k" . persp-kill-buffer*))
+    :custom
+    (persp-mode-prefix-key (kbd "C-c M-p"))
+    :init (persp-mode))
+#+END_SRC
+
 ** Support for Encrypted Authinfo
 
 #+BEGIN_SRC emacs-lisp
