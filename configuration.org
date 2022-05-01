@@ -1011,7 +1011,7 @@ with nicer looking defaults using Unicode.
     :ensure t
     :bind (("C-x k" . persp-kill-buffer*))
     :custom
-    (persp-mode-prefix-key (kbd "C-c M-p"))
+    (persp-mode-prefix-key (kbd "C-x M-p"))
     :init (persp-mode))
 #+END_SRC
 
