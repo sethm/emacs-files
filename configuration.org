@@ -663,14 +663,15 @@ often.
   (use-package modus-themes
     :ensure t
     :config
-    (setq modus-themes-org-blocks 'gray-background)
-    (when window-system
-      (load-theme 'modus-vivendi t)))
+    (setq modus-themes-org-blocks 'gray-background))
 
   (use-package olivetti
     :ensure t
     :config
     (setq olivetti-body-width 90))
+
+  (when window-system
+    (load-theme 'wombat t))
 #+END_SRC
 
 ** Org Mode
@@ -910,9 +911,11 @@ I want to be able to support C, Emacs Lisp, and GraphViz blocks in org-babel.
 
 #+BEGIN_SRC emacs-lisp
   (org-babel-do-load-languages
-   'org-babel-load-languages '((C . t)
+   'org-babel-load-languages '((python . t)
+                               (C . t)
                                (emacs-lisp . t)
                                (dot . t)))
+  (setq org-babel-python-command "python3")
 #+END_SRC
 
 *** HTML Export Tweaks
