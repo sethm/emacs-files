@@ -1,0 +1,3 @@
+[submodule "packages/loomcom-blog"]
+	path = lisp/loomcom-blog
+	url = https://github.com/sethm/loomcom-blog.git
