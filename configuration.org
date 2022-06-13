@@ -673,7 +673,12 @@ often.
   (use-package modus-themes
     :ensure t
     :config
-    (setq modus-themes-org-blocks 'gray-background))
+    (setq modus-themes-org-blocks 'gray-background
+          modus-themes-region '(bg-only)
+          modus-themes-bold-constructs t
+          modus-themes-italic-constructs t
+          modus-themes-completions 'opinionated
+          modus-themes-mode-line '(accented borderless padded)))
 
   (use-package olivetti
     :ensure t
@@ -681,7 +686,7 @@ often.
     (setq olivetti-body-width 90))
 
   (when window-system
-    (load-theme 'wombat t))
+    (load-theme 'modus-vivendi t))
 #+END_SRC
 
 ** Org Mode
