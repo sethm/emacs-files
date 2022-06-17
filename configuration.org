@@ -724,11 +724,9 @@ Next is =org-mode=, which I use constantly, day in and day out.
   (use-package org
     :load-path org-load-paths
     :ensure t
-    :defer t
     :config
     (use-package org-drill
-      :ensure t
-      :defer t)
+      :ensure t)
     (use-package htmlize
       :ensure t)
     (require 'ox-latex)
@@ -882,7 +880,6 @@ directory, rather than the default behavior of renaming them to
 #+BEGIN_SRC emacs-lisp
   (use-package org-super-agenda
     :ensure t
-    :defer t
     :after org-agenda
     :init
     (setq org-super-agenda-groups
@@ -1012,7 +1009,6 @@ with nicer looking defaults using Unicode.
 #+BEGIN_SRC emacs-lisp
   (use-package org-superstar
     :ensure t
-    :defer t
     :init
     (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
     :config
@@ -1038,7 +1034,6 @@ with nicer looking defaults using Unicode.
 #+BEGIN_SRC emacs-lisp
   (use-package auth-source
     :ensure t
-    :defer t
     :config
     (setq auth-sources '("~/.authinfo.gpg")))
 #+END_SRC
@@ -1047,7 +1042,6 @@ with nicer looking defaults using Unicode.
 
 #+BEGIN_SRC emacs-lisp
   (use-package twittering-mode
-    :defer t
     :ensure t)
 #+END_SRC
 
@@ -1058,13 +1052,11 @@ additional features.
 
 #+BEGIN_SRC emacs-lisp
   (use-package sly
-    :defer t
     :ensure t
     :config
     (setq inferior-lisp-program "sbcl"))
 
   (use-package sly-quicklisp
-    :defer t
     :ensure t)
 #+END_SRC
 
@@ -1072,7 +1064,6 @@ additional features.
 
 #+BEGIN_SRC emacs-lisp
   (use-package graphviz-dot-mode
-    :defer t
     :ensure t)
 #+END_SRC
 
@@ -1081,7 +1072,6 @@ additional features.
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :ensure t
-    :defer t
     :init
     (global-set-key (kbd "C-x g") 'magit-status)
     (add-hook 'prog-mode-hook #'git-gutter-mode))
@@ -1089,7 +1079,6 @@ additional features.
 
 #+BEGIN_SRC emacs-lisp
   (use-package git-gutter
-    :defer t
     :ensure t)
 #+END_SRC
 
@@ -1099,7 +1088,6 @@ YAML mode is useful for editing Docker files.
 
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode
-    :defer t
     :ensure t)
 #+END_SRC
 
@@ -1109,7 +1097,6 @@ This is just a bit of fun. See: [[https://github.com/alphapapa/snow.el]["Let It 
 
 #+BEGIN_SRC emacs-lisp
   (use-package snow
-    :defer t
     :ensure t)
 #+END_SRC
 
@@ -1141,12 +1128,17 @@ in the =snippets= directory.
 #+BEGIN_SRC emacs-lisp
   (use-package markdown-mode
     :ensure t
-    :defer t
-    :commands (markdown-mode gfm-mode)
-    :mode (("README\\.md\\'" . gfm-mode)
-           ("\\.md\\'" . markdown-mode)
-           ("\\.markdown\\'" . markdown-mode))
-    :init (setq markdown-command "multimarkdown"))
+    :commands
+    (markdown-mode gfm-mode)
+    :mode
+    (("README\\.md\\'" . gfm-mode)
+     ("\\.md\\'" . markdown-mode)
+     ("\\.markdown\\'" . markdown-mode))
+    :init
+    (setq markdown-command "multimarkdown")
+    :config
+    (use-package edit-indirect
+      :ensure t))
 #+END_SRC
 
 ** Gemini
@@ -1156,16 +1148,13 @@ will help support my interest in it.
 
 #+BEGIN_SRC emacs-lisp
   (use-package elpher
-    :ensure t
-    :defer t)
+    :ensure t)
 
   (use-package gemini-mode
-    :ensure t
-    :defer t)
+    :ensure t)
 
   (use-package ox-gemini
-    :ensure t
-    :defer t)
+    :ensure t)
 #+END_SRC
 
 * Development and Languages
@@ -1181,7 +1170,6 @@ is stolen verbatim from [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs
 #+BEGIN_SRC emacs-lisp
   (use-package web-mode
     :ensure t
-    :defer t
     :config
     (setq web-mode-markup-indent-offset 2
           web-mode-css-indent-offset 2)
@@ -1208,7 +1196,6 @@ Let's use Ivy for completion. See: [[https://github.com/abo-abo/swiper][https://
 #+BEGIN_SRC emacs-lisp
   (use-package sql-indent
     :ensure t
-    :defer t
     :config
     (add-hook 'sql-mode-hook #'sqlind-minor-mode))
 #+END_SRC
@@ -1225,7 +1212,6 @@ respectively.
 #+BEGIN_SRC emacs-lisp
   (use-package paredit
     :ensure t
-    :defer t
     :init
     (autoload 'enable-paredit-mode "paredit" "Structural editing of Lisp")
     (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
@@ -1305,7 +1291,6 @@ Support for the Rust Programming Language.
 #+BEGIN_SRC emacs-lisp
   (use-package ccls
     :ensure t
-    :defer t
     :config
     (setq ccls-executable "ccls")
     (setq lsp-prefer-flymake nil)
@@ -1327,7 +1312,6 @@ to lsp-mode.
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode
     :ensure t
-    :defer t
     :commands lsp
     :config
     ;; Improve performance and enable features
@@ -1351,7 +1335,6 @@ to lsp-mode.
 
   (use-package lsp-ui
     :ensure t
-    :defer t
     :commands lsp-ui-mode
     :custom
     (lsp-ui-peek-always-show t)
@@ -1365,7 +1348,6 @@ to lsp-mode.
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
-    :defer t
     :custom
     (company-idle-delay 1.0) ;; how long to wait until popup
     ;; (company-begin-commands nil) ;; uncomment to disable popup
