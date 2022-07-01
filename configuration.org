@@ -135,6 +135,28 @@ Next, stretch the cursor to fill a full glyph cell
   (setq-default x-stretch-cursor t)
 #+END_SRC
 
+** Long line improvements
+
+Here are a few settings that help improve Emacs performance when
+editing very long lines. These tips are taken from [[https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html][200ok.ch]].
+
+First, we tell Emacs that we're really only using left-to-right text.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default bidi-paragraph-direction 'left-to-right)
+
+  (if (version<= "27.1" emacs-version)
+      (setq bidi-inhibit-bpa t))
+#+END_SRC
+
+Next we set global "so-long-mode", which tries to tell Emacs
+to be smarter about opening files with long lines.
+
+#+BEGIN_SRC emacs-lisp
+  (if (version<= "27.1" emacs-version)
+      (global-so-long-mode 1))
+#+END_SRC
+
 ** Tidying Up the Working Directory
 
 Emacs, by default, keeps backup files in the current working
@@ -643,8 +665,7 @@ package archives.
 #+BEGIN_SRC emacs-lisp
   (require 'package)
   (setq package-enable-at-startup t)
-  (setq package-archives '(("org" . "https://orgmode.org/elpa/")
-                           ("gnu" . "https://elpa.gnu.org/packages/")
+  (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
                            ("melpa" . "https://melpa.org/packages/")))
 #+END_SRC
 
@@ -724,6 +745,8 @@ Next is =org-mode=, which I use constantly, day in and day out.
   (use-package org
     :load-path org-load-paths
     :ensure t
+    ;; I like to have visual-line-mode enabled in org buffers
+    :init (add-hook 'org-mode-hook #'visual-line-mode)
     :config
     (use-package org-drill
       :ensure t)
@@ -747,7 +770,6 @@ Next is =org-mode=, which I use constantly, day in and day out.
           org-html-htmlize-output-type 'css
           ;; Open up org-mode links in the same buffer
           org-link-frame-setup '((file . find-file))))
-
 
   (with-eval-after-load 'ox-latex
     (add-to-list 'org-latex-classes
