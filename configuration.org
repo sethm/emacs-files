@@ -490,7 +490,7 @@ ignored.
 
 #+BEGIN_SRC emacs-lisp
   (when window-system
-    (let* ((height 140)
+    (let* ((height 100)
            (families '("Hack"
                        "Fira Code"
                        "Roboto Mono"
