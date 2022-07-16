@@ -490,10 +490,7 @@ ignored.
 
 #+BEGIN_SRC emacs-lisp
   (when window-system
-    (let* ((height (if (> (display-pixel-height) 1200)
-                       180
-                     100))
-           (families '("Hack"
+    (let* ((families '("Hack"
                        "Fira Code"
                        "Roboto Mono"
                        "Input Mono"
@@ -507,7 +504,7 @@ ignored.
            (selected-family (cl-dolist (fam families)
                               (when (member fam (font-family-list))
                                 (cl-return fam)))))
-      (set-face-attribute 'default nil :family selected-family :height height)))
+      (set-face-attribute 'default nil :family selected-family)))
 #+END_SRC
 
 ** Window Frame
