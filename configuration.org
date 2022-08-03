@@ -135,6 +135,13 @@ Next, stretch the cursor to fill a full glyph cell
   (setq-default x-stretch-cursor t)
 #+END_SRC
 
+I prefer to use ~ibuffer~ when listing buffers
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key [remap list-buffers] 'ibuffer)
+#+END_SRC
+
+
 ** Long line improvements
 
 Here are a few settings that help improve Emacs performance when
