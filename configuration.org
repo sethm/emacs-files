@@ -320,33 +320,29 @@ Keep a list of recently opened files
 
 ** Exec Path
 
-If certain directories exist, they should be added to the exec-path.
+If certain directories exist, they should be added to ~exec-path~, and
+the ~PATH~ environment variable.
 
 #+BEGIN_SRC emacs-lisp
-  (when (file-exists-p "/usr/local/bin")
-    (setq exec-path (append exec-path '("/usr/local/bin")))
-    (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
+  (setq loomcom-append-to-path
+        '("/usr/local/bin"
+          "/opt/homebrew/bin"
+          "/opt/homebrew/opt/llvm/bin"
+          "~/bin"
+          "~/.local/bin"
+          "/Library/TeX/texbin"
+          "~/.cargo/bin"))
 
-  (when (file-exists-p "/opt/homebrew/bin")
-    (setq exec-path (append exec-path '("/opt/homebrew/bin")))
-    (setenv "PATH" (concat (getenv "PATH") ":/opt/homebrew/bin")))
-
-  (when (file-exists-p "/opt/homebrew/opt/llvm/bin")
-    (setq exec-path (append exec-path '("/opt/homebrew/opt/llvm/bin")))
-    (setenv "PATH" (concat (getenv "PATH") ":/opt/homebrew/opt/llvm/bin")))
-
-  (when (file-exists-p (expand-file-name "~/bin"))
-    (setq exec-path (append exec-path '("~/bin")))
-    (setenv "PATH" (concat (getenv "PATH") ":$HOME/bin")))
-
-  (when (file-exists-p "/Library/TeX/texbin")
-    (setq exec-path (append exec-path '("/Library/TeX/texbin")))
-    (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin")))
-
-  (when (file-exists-p "~/.cargo/bin")
-    ;; Add to front of the list
-    (add-to-list 'exec-path "~/.cargo/bin")
-    (setenv "PATH" (concat (getenv "PATH") ":~/.cargo/bin")))
+  (mapc #'(lambda (dir)
+            (when (file-exists-p (expand-file-name dir))
+              ;; Add the directory to exec-path
+              (add-to-list 'exec-path (expand-file-name dir))
+              ;; Add the directory to the PATH environment variable, but
+              ;; replace `~' with `$HOME'
+              (setenv "PATH"
+                      (concat (getenv "PATH")
+                              (concat ":" (replace-regexp-in-string "^~" "$HOME" dir))))))
+        loomcom-append-to-path)
 #+END_SRC
 
 ** Encryption
