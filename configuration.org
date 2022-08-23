@@ -767,7 +767,7 @@ Next is =org-mode=, which I use constantly, day in and day out.
           org-deadline-warning-days 14
           org-table-shrunk-column-indicator ""
           org-agenda-block-separator (string-to-char " ")
-          org-adapt-indentation nil
+          org-adapt-indentation t
           org-fontify-whole-heading-line t
           org-agenda-format-date 'my-org-agenda-format-date-aligned
           ;; Use CSS for htmlizing HTML output
