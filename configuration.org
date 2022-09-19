@@ -491,7 +491,43 @@ preference, and set the default face to the first one available. Of
 course, if Emacs is not running in a windowing system, this is
 ignored.
 
+But there's one problem! Face height on HiDPI displays does not scale
+well, so if you alternate back and forth between HiDPI displays and
+regular displays (like I do) you'll quickly get frustrated with tiny
+fonts or huge fonts, depending on what default height you pick. So, we
+will use a function to get the current display DPI and decide what
+height the default face should be based on that.
+
 #+BEGIN_SRC emacs-lisp
+  ;; Stolen blatently from Stack Overflow
+  (defun loomcom--dpi (&optional frame)
+    "Get the DPI of FRAME (or current if nil)."
+    (cl-flet ((pyth (lambda (w h)
+                      (sqrt (+ (* w w)
+                               (* h h)))))
+              (mm2in (lambda (mm)
+                       (/ mm 25.4))))
+      (let* ((atts (frame-monitor-attributes frame))
+             (pix-w (cl-fourth (assoc 'geometry atts)))
+             (pix-h (cl-fifth (assoc 'geometry atts)))
+             (pix-d (pyth pix-w pix-h))
+             (mm-w (cl-second (assoc 'mm-size atts)))
+             (mm-h (cl-third (assoc 'mm-size atts)))
+             (mm-d (pyth mm-w mm-h)))
+        (/ pix-d (mm2in mm-d)))))
+#+END_SRC
+
+Now we use the calculated DPI to set a scaling factor on the default
+face height.
+
+#+BEGIN_SRC emacs-lisp
+  (defun loomcom--default-face-height ()
+    "Return the optimum face height for the current display."
+    (let ((dpi (loomcom--dpi))
+          (target-height 120.0)
+          (target-dpi 90.0))
+      (floor (* dpi (/ target-height target-dpi)))))
+
   (when window-system
     (let* ((families '("Hack"
                        "Fira Code"
@@ -507,7 +543,9 @@ ignored.
            (selected-family (cl-dolist (fam families)
                               (when (member fam (font-family-list))
                                 (cl-return fam)))))
-      (set-face-attribute 'default nil :family selected-family)))
+      (set-face-attribute 'default nil
+                          :family selected-family
+                          :height (loomcom--default-face-height))))
 #+END_SRC
 
 ** Window Frame
@@ -1025,20 +1063,6 @@ This adds support the LaTeX class =koma-article= on LaTeX export.
       :config
       (setq org-roam-v2-ack t)
       (org-roam-setup)))
-#+END_SRC
-
-** Org Superstar
-
-Org Superstar replaces the default asterisk style Org-Mode headers
-with nicer looking defaults using Unicode.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package org-superstar
-    :ensure t
-    :init
-    (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
-    :config
-    (setq org-superstar-leading-bullet " "))
 #+END_SRC
 
 ** Perspective
