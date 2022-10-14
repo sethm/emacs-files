@@ -596,6 +596,7 @@ I like to see /(Line,Column)/ displayed in the modeline.
 #+BEGIN_SRC emacs-lisp
   (setq line-number-mode t)
   (setq column-number-mode t)
+  (global-display-line-numbers-mode t)
 #+END_SRC
 
 ** Show the Time
@@ -698,6 +699,8 @@ often.
     :ensure t
     :config
     (setq modus-themes-org-blocks 'gray-background
+          modus-themes-mixed-fonts t
+          modus-themes-subtle-line-numbers t
           modus-themes-region '(bg-only)
           modus-themes-bold-constructs nil
           modus-themes-italic-constructs t
@@ -712,7 +715,7 @@ often.
     (setq olivetti-body-width 90))
 
   (when window-system
-    (load-theme 'modus-vivendi t))
+    (modus-themes-load-operandi))
 #+END_SRC
 
 ** Org Mode
