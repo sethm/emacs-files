@@ -493,8 +493,8 @@ ignored.
 
 #+BEGIN_SRC emacs-lisp
   (when window-system
-    (let* ((families '("Hack"
-                       "Fira Code"
+    (let* ((families '("Fira Code"
+                       "Hack"
                        "Roboto Mono"
                        "Input Mono"
                        "Inconsolata"
@@ -699,7 +699,7 @@ often.
     :config
     (setq modus-themes-org-blocks 'gray-background
           modus-themes-region '(bg-only)
-          modus-themes-bold-constructs t
+          modus-themes-bold-constructs nil
           modus-themes-italic-constructs t
           modus-themes-completions '((matches . (extrabold))
                                      (selection . (semibold accented))
@@ -1026,6 +1026,21 @@ This adds support the LaTeX class =koma-article= on LaTeX export.
       :config
       (setq org-roam-v2-ack t)
       (org-roam-setup)))
+#+END_SRC
+
+** Org Superstar
+
+Org Superstar replaces the default asterisk style Org-Mode headers
+with nicer looking defaults using Unicode.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-superstar
+    :ensure t
+    :init
+    (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+    :config
+    (setq org-superstar-leading-bullet " "
+          org-superstar-headline-bullets-list '("🅐" "🅑" "🅒" "🅓" "🅔")))
 #+END_SRC
 
 ** Perspective
