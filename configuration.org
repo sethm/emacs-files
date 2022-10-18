@@ -497,8 +497,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (when window-system
-       (let* ((families '("Fira Code"
-                          "Hack"
+       (let* ((families '("Hack"
                           "Roboto Mono"
                           "Input Mono"
                           "Inconsolata"
@@ -512,7 +511,11 @@
                                  (when (member fam (font-family-list))
                                    (cl-return fam)))))
          (set-face-attribute 'default nil
-                             :family selected-family)))
+                             :family selected-family
+                             :height 120)
+         (set-face-attribute 'fixed-pitch nil
+                             :family selected-family
+                             :height 120)))
    #+END_SRC
 
 ** Window Frame
@@ -701,10 +704,10 @@
        :ensure t
        :config
        (setq modus-themes-org-blocks 'gray-background
-             modus-themes-mixed-fonts t
+             modus-themes-mixed-fonts nil
              modus-themes-subtle-line-numbers t
              modus-themes-region '(bg-only)
-             modus-themes-bold-constructs nil
+             modus-themes-bold-constructs t
              modus-themes-italic-constructs t
              modus-themes-completions '((matches . (extrabold))
                                         (selection . (semibold accented))
@@ -855,15 +858,20 @@
         '((t (:foreground "#ff0000"
                           :weight bold
                           :slant italic
-                          :underline t))) t)
+                          :underline t)))
+        "Soon deadlines")
+
       (defface deadline-near-face
         '((t (:foreground "#ffa500"
                           :weight bold
-                          :slant italic))) t)
+                          :slant italic)))
+        "Near deadlines")
+
       (defface deadline-distant-face
         '((t (:foreground "#ffff00"
                           :weight bold
-                          :slant italic))) t)
+                          :slant italic)))
+        "Distant deadlines")
 
       (setq org-agenda-deadline-faces
             '((0.75 . deadline-soon-face)
@@ -1036,7 +1044,7 @@
          (org-roam-setup)))
    #+END_SRC
 
-** Org Superstar
+** Org Superstar 
 
    Org Superstar replaces the default asterisk style Org-Mode headers
    with nicer looking defaults using Unicode.
@@ -1044,11 +1052,10 @@
    #+BEGIN_SRC emacs-lisp
      (use-package org-superstar
        :ensure t
-       :init
-       (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+       :hook (org-mode . org-superstar-mode)
        :config
        (setq org-superstar-leading-bullet " "
-             org-superstar-headline-bullets-list '("🅐" "🅑" "🅒" "🅓" "🅔")))
+             org-superstar-headline-bullets-list '("•" "‣" "◦" "⁍" "⁃")))
    #+END_SRC
 
 ** Perspective
