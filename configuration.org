@@ -41,17 +41,6 @@
   :CUSTOM_ID: basic-setup
   :END:
 
-** Hack: Turn Off cl Deprecation Warnings
-
-   Some of the packages I use still do ~(require 'cl)~, which is now
-   deprecated in favor of ~(require 'cl-lib)~. I don't use this
-   deprecated library myself, so this hack simply silences those
-   deprecation warnings.
-
-   #+BEGIN_SRC emacs-lisp
-     (setq byte-compile-warnings '(cl-functions))
-   #+END_SRC
-
 ** Native Compilation
 
    If (and only if) Emacs has native compilation available, set it up
