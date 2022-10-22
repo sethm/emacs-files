@@ -740,21 +740,11 @@
          (format "%-2s. %2d %s"
                  dayname day monthname)))
 
-     (eval-and-compile
-       (setq org-load-paths '("~/.emacs.d/org-mode/lisp"
-                              "~/.emacs.d/org-contrib/lisp")))
-
      (use-package org
-       :load-path org-load-paths
        :ensure t
        ;; I like to have visual-line-mode enabled in org buffers
        :init (add-hook 'org-mode-hook #'visual-line-mode)
        :config
-       (use-package org-drill
-         :ensure t)
-       (use-package htmlize
-         :ensure t)
-       (require 'ox-latex)
        (setq org-hide-emphasis-markers t
              org-pretty-entities t
              org-tags-column -65
@@ -766,27 +756,13 @@
              org-table-shrunk-column-indicator ""
              org-agenda-block-separator (string-to-char " ")
              org-adapt-indentation t
+             org-confirm-babel-evaluate nil
              org-fontify-whole-heading-line t
              org-agenda-format-date 'my-org-agenda-format-date-aligned
              ;; Use CSS for htmlizing HTML output
              org-html-htmlize-output-type 'css
              ;; Open up org-mode links in the same buffer
              org-link-frame-setup '((file . find-file))))
-
-     ;; TODO: I have forgotten why I did this. I should have commented this
-     ;; when I originally set it up. Figure it out!
-     (with-eval-after-load 'ox-latex
-       (add-to-list 'org-latex-classes
-                    '("org-plain-latex"
-                      "\\documentclass{article}
-     [NO-DEFAULT-PACKAGES]
-     [PACKAGES]
-     [EXTRA]"
-                      ("\\section{%s}" . "\\section*{%s}")
-                      ("\\subsection{%s}" . "\\subsection*{%s}")
-                      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                      ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                      ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
    #+END_SRC
 
    I have a lot of custom configuration for =org-mode=.
@@ -962,34 +938,6 @@
       (setq org-babel-python-command "python3")
     #+END_SRC
 
-*** HTML Export Tweaks
-
-    I prefer to insert periods after section numbers when exporting
-    =org-mode= files to HTML. This tweak enables that.
-
-    #+BEGIN_SRC emacs-lisp
-      (defun my-html-filter-headline-yesdot (text backend info)
-        "Ensure dots in headlines.
-      ,* TEXT is the text being exported.
-      ,* BACKEND is the backend (e.g. 'html).
-      ,* INFO is ignored."
-        (when (org-export-derived-backend-p backend 'html)
-          (save-match-data
-            (when (let ((case-fold-search t))
-                    (string-match
-                     (rx (group "<span class=\"section-number-" (+ (char digit)) "\">"
-                                (+ (char digit ".")))
-                         (group "</span>"))
-                     text))
-              (replace-match "\\1.\\2"
-                             t nil text)))))
-
-      (eval-after-load 'ox
-        '(progn
-           (add-to-list 'org-export-filter-headline-functions
-                        'my-html-filter-headline-yesdot)))
-    #+END_SRC
-
 *** Display Options
 
     I turn on Pretty Entities, which allows Emacs, in graphics mode,
@@ -999,22 +947,7 @@
 
     #+BEGIN_SRC emacs-lisp
       (setq org-pretty-entities t
-            org-ellipsis "...")
-    #+END_SRC
-
-*** Export Settings
-
-    This adds support the LaTeX class =koma-article= on LaTeX export.
-
-    #+BEGIN_SRC emacs-lisp
-      (add-to-list 'org-latex-classes
-                   '("koma-article"
-                     "\\documentclass{scrartcl}"
-                     ("\\section{%s}" . "\\section*{%s}")
-                     ("\\subsection{%s}" . "\\subsection*{%s}")
-                     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                     ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+            org-ellipsis "↴")
     #+END_SRC
 
 ** Org Roam
