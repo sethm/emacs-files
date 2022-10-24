@@ -966,7 +966,7 @@
          (org-roam-setup)))
    #+END_SRC
 
-** Org Superstar 
+** Org Superstar
 
    Org Superstar replaces the default asterisk style Org-Mode headers
    with nicer looking defaults using Unicode.
@@ -1316,54 +1316,29 @@
        (lsp-ui-doc-delay 2))
    #+END_SRC
 
-** Company
+** Corfu
 
    #+BEGIN_SRC emacs-lisp
-     (use-package company
+     (use-package corfu
        :ensure t
        :custom
-       (company-idle-delay 1.0) ;; how long to wait until popup
-       ;; (company-begin-commands nil) ;; uncomment to disable popup
-       :bind
-       (:map company-mode-map
-             ("<tab>" . tab-indent-or-complete)
-             ("TAB" . tab-indent-or-complete))
-       (:map company-active-map
-             ("C-n". company-select-next)
-             ("C-p". company-select-previous)
-             ("M-<". company-select-first)
-             ("M->". company-select-last)))
-   #+END_SRC
-
-** Helpers!
-
-   #+BEGIN_SRC emacs-lisp
-     (defun company-yasnippet-or-completion ()
-       (interactive)
-       (or (do-yas-expand)
-           (company-complete-common)))
-
-     (defun check-expansion ()
-       (save-excursion
-         (if (looking-at "\\_>") t
-           (backward-char 1)
-           (if (looking-at "\\.") t
-             (backward-char 1)
-             (if (looking-at "::") t nil)))))
-
-     (defun do-yas-expand ()
-       (let ((yas/fallback-behavior 'return-nil))
-         (yas/expand)))
-
-     (defun tab-indent-or-complete ()
-       (interactive)
-       (if (minibufferp)
-           (minibuffer-complete)
-         (if (or (not yas/minor-mode)
-                 (null (do-yas-expand)))
-             (if (check-expansion)
-                 (company-complete-common)
-               (indent-for-tab-command)))))
+       (corfu-cycle t)
+       (corfu-auto t)
+       (corfu-auto-prefix 2)
+       (corfu-auto-delay 0.0)
+       (corfu-quit-at-boundary 'separator)
+       (corfu-echo-documentation 0.25)
+       (corfu-preview-current 'separator)
+       (corfu-preselect-first nil)
+       :bind (:map corfu-map
+                   ("M-SPC" . corfu-insert-separator)
+                   ("RET" . nil)
+                   ("TAB" . corfu-next)
+                   ([tab] . corfu-next)
+                   ("S-TAB" . corfu-previous)
+                   ([backtab] . corfu-previous)
+                   ("S-<return>" . corfu-insert))
+       :init (global-corfu-mode))
    #+END_SRC
 
 ** Flycheck
