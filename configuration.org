@@ -708,8 +708,8 @@
        :config
        (setq olivetti-body-width 90))
 
-     (when window-system
-       (modus-themes-load-operandi))
+     (modus-themes-load-vivendi)
+     ;; (modus-themes-load-operandi)
    #+END_SRC
 
 ** Org Mode
