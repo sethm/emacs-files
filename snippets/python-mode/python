@@ -1,0 +1,12 @@
+#contributor : Seth Morabito <web@loomcom.com>
+#name : python3 boilerplate
+#group : python
+# --
+#!/usr/bin/env python3
+
+def ${1:main}():
+    ${0:pass}
+
+
+if __name__ == "__main__":
+    $1()
