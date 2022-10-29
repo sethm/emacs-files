@@ -1329,7 +1329,7 @@
        (corfu-quit-at-boundary 'separator)
        (corfu-echo-documentation 0.25)
        (corfu-preview-current 'separator)
-       (corfu-preselect-first nil)
+       (corfu-preselect-first t)
        :bind (:map corfu-map
                    ("M-SPC" . corfu-insert-separator)
                    ("RET" . nil)
