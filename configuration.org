@@ -1332,7 +1332,6 @@
        (corfu-preselect-first t)
        :bind (:map corfu-map
                    ("M-SPC" . corfu-insert-separator)
-                   ("RET" . nil)
                    ("TAB" . corfu-next)
                    ([tab] . corfu-next)
                    ("S-TAB" . corfu-previous)

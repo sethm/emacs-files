@@ -1,13 +1,13 @@
-#contributor : Seth Morabito <web@loomcom.com>
-#name : New Blog File
+#contributor : Tilton Raccoon <tilton@tiltonraccoon.com>
+#name : New Tilton Raccoon Blog File
 # --
-#+AUTHOR: Seth Morabito
-#+EMAIL:  web@loomcom.com
+#+AUTHOR: Tilton Raccoon
+#+EMAIL:  tilton@tiltonraccoon.com
 #+TITLE:  $1
 #+DATE:   `(format-time-string "<%Y-%m-%d %a %H:%M>" (current-time))`
 #+HTML_HEAD_EXTRA: <meta name="og:title" content="$1" />
 #+HTML_HEAD_EXTRA: <meta name="twitter:card" content="summary" />
-#+HTML_HEAD_EXTRA: <meta name="twitter:image" content="${2:https://loomcom.com/images/blog/summary.png}" />
+#+HTML_HEAD_EXTRA: <meta name="twitter:image" content="${2:https://tiltonraccoon.com/images/blog/blog_card.jpg}" />
 #+HTML_HEAD_EXTRA: <meta name="twitter:title" content="$1" />
 #+HTML_HEAD_EXTRA: <meta name="twitter:description" content="${3:$1}" />
 #+OPTIONS: toc:nil num:nil ':t
