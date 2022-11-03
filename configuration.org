@@ -593,8 +593,8 @@ I also like seeing line numbers in the gutter, but I want them to be
 and increasing from the current line.
 
 #+BEGIN_SRC emacs-lisp
-  (setq display-line-numbers 'relative)
   (global-display-line-numbers-mode t)
+  (setq display-line-numbers 'relative)
 #+END_SRC
 
 ** Show the Time
@@ -1377,4 +1377,16 @@ understand!
   (let ((mail-conf (expand-file-name "~/.emacs-mail.el")))
     (when (file-exists-p mail-conf)
       (load-file mail-conf)))
+#+END_SRC
+
+* Final Setup
+:PROPERTIES:
+:CUSTOM_ID: final
+:END:
+
+The last thing I do is set the size of the frame exactly the way I
+like it.
+
+#+BEGIN_SRC emacs-lisp
+  (set-frame-standard-size)
 #+END_SRC
