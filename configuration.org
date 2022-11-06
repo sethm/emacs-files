@@ -1378,15 +1378,3 @@ understand!
     (when (file-exists-p mail-conf)
       (load-file mail-conf)))
 #+END_SRC
-
-* Final Setup
-:PROPERTIES:
-:CUSTOM_ID: final
-:END:
-
-The last thing I do is set the size of the frame exactly the way I
-like it.
-
-#+BEGIN_SRC emacs-lisp
-  (set-frame-standard-size)
-#+END_SRC
