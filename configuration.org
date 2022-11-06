@@ -712,9 +712,9 @@ often.
 
   ;;; I can never decide whether I want light or dark...
   ;;; -- vivendi is dark
-  ;; (modus-themes-load-vivendi)
+  (modus-themes-load-vivendi)
   ;;; -- operandi is light
-  (modus-themes-load-operandi)
+  ;; (modus-themes-load-operandi)
 #+END_SRC
 
 ** Org Mode
@@ -959,13 +959,39 @@ collapsed.
   (when (file-directory-p (expand-file-name "~/Nextcloud/org-roam/"))
     (use-package org-roam
       :ensure t
+      :init
+      (setq org-roam-v2-ack t
+            org-roam-dailies-directory "journal/")
       :custom
       (org-roam-directory (expand-file-name "~/Nextcloud/org-roam/"))
+      (org-roam-completion-everywhere t)
+      (org-roam-capture-templates
+       '(("d" "default" plain
+          "%?"
+          :if-new (file+head "%<%Y%m%d>-${slug}.org"
+                             "#+TITLE: ${title}\n")
+          :unnarrowed t)))
+      (org-roam-dailies-capture-templates
+       '(("d" "default" entry
+          "\n* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
+          :target
+          (file+head
+           "%<%Y-%m-%d>.org"
+           "#+TITLE: %u\n#+STARTUP: showall\n\n")
+          :unnarrowed nil ; Show only the current note on entry
+          :empty-lines 1)))
       :bind (("C-c n l" . org-roam-buffer-toggle)
              ("C-c n f" . org-roam-node-find)
-             ("C-c n i" . org-roam-node-insert))
+             ("C-c n i" . org-roam-node-insert)
+             :map org-mode-map
+             ("C-M-i" . completion-at-point)
+             :map org-roam-dailies-map
+             ("Y" . org-roam-dailies-capture-yesterday)
+             ("T" . org-roam-dailies-capture-tomorrow))
+      :bind-keymap ("C-c n d" . org-roam-dailies-map)
       :config
-      (setq org-roam-v2-ack t)
+      (require 'org-roam-dailies)
+      (org-roam-db-autosync-mode)
       (org-roam-setup)))
 #+END_SRC
 
