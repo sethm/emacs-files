@@ -955,16 +955,32 @@ I also set up a couple of notes files.
 
 *** Org-Babel Language Integration
 
-I want to be able to support C, Emacs Lisp, and GraphViz blocks in
-org-babel.
+I want to be able to support C, Emacs Lisp, shell, python, and
+GraphViz blocks in org-babel.
 
 #+BEGIN_SRC emacs-lisp
   (org-babel-do-load-languages
    'org-babel-load-languages '((python . t)
                                (C . t)
+                               (shell . t)
                                (emacs-lisp . t)
                                (dot . t)))
   (setq org-babel-python-command "python3")
+#+END_SRC
+
+Next I want output header-args to be =:results output :wrap EXAMPLE= by
+default. This horrid mess accomplishes that by removing the old
+=:results= and =:wrap= keys from the association list
+=org-babel-default-header-args= and then replacing them.
+
+#+BEGIN_SRC emacs-lisp
+  (cons '(:results . "output")
+        (cons '(:wrap . "EXAMPLE")
+              (assq-delete-all
+               :wrap
+               (assq-delete-all
+                :results
+                org-babel-default-header-args))))
 #+END_SRC
 
 *** Display Options
