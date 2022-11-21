@@ -579,6 +579,18 @@ Turn on ANSI colors in the shell.
   (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 #+END_SRC
 
+** Assembly Mode hack
+
+Tabs are all wrong in assembly mode, so here's a fix.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'asm-mode-hook (lambda ()
+                             (setq indent-tabs mode nil)
+                             (electric-indent-mode)
+                             (setq tab-stop-list (number-sequence 8 60 8))))
+#+END_SRC
+
+
 ** Line Numbers
 
 I like to see /(Line,Column)/ displayed in the modeline.
@@ -1027,11 +1039,13 @@ with nicer looking defaults using Unicode.
     (setq auth-sources '("~/.authinfo.gpg")))
 #+END_SRC
 
-** Twittering
+** Mastodon
 
 #+BEGIN_SRC emacs-lisp
-  (use-package twittering-mode
-    :ensure t)
+  (use-package mastodon
+    :ensure t
+    :config (setq mastodon-instance-url "https://vulpine.club/"
+                  mastodon-active-user "tilton"))
 #+END_SRC
 
 ** Sly
