@@ -984,7 +984,7 @@ collapsed.
                              "#+TITLE: ${title}\n")
           :unnarrowed t)))
       (org-roam-dailies-capture-templates
-       '(("d" "default" entry "\n* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n"
+       '(("d" "default" entry "\n* %?"
           :target (file+head "%<%Y-%m-%d>.org" "#+TITLE: %u\n#+STARTUP: showall\n\n")
           :unnarrowed nil ; Show only the current note on entry
           :empty-lines 1)))
