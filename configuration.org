@@ -939,6 +939,20 @@ of =C-c c=.
   (global-set-key (kbd "C-c c") 'org-capture)
 #+END_SRC
 
+I also set up a couple of notes files.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-directory (expand-file-name "~/Nextcloud/Notes"))
+  (setq org-default-notes-file (concat org-directory "/notes.org")
+        org-capture-templates
+        '(("t" "Task" entry (file+olp+datetree "~/Nextcloud/Notes/tasks.org")
+           "* TODO %?\n%i" :empty-lines 1)
+          ("j" "Journal" entry (file+datetree "~/Nextcloud/Notes/journal.org")
+           "* %?\nAdded: %U\n%i" :empty-lines 1)
+          ("n" "Note" entry (file "~/Nextcloud/Notes/notes.org")
+           "* %^{Headline}\nAdded: %U\n\n%?" :empty-lines 1)))
+#+END_SRC
+
 *** Org-Babel Language Integration
 
 I want to be able to support C, Emacs Lisp, and GraphViz blocks in
