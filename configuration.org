@@ -629,6 +629,12 @@ will not wrap.
   (setq truncate-partial-width-windows nil)
 #+END_SRC
 
+I also prefer my fill-column to be at 74, not the default of 70
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default fill-column 74)
+#+END_SRC
+
 ** Parentheses
 
 Whenever the cursor is on a paren, highlight the matching paren.
@@ -1382,6 +1388,9 @@ lsp-mode.
     (lsp-ui-sideline-show-hover t)
     (lsp-ui-doc-enable t)
     (lsp-ui-doc-delay 2))
+
+  (add-hook 'c-mode-hook 'lsp)
+  (add-hook 'c++-mode-hook 'lsp)
 #+END_SRC
 
 ** Corfu
