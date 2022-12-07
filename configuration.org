@@ -1080,8 +1080,8 @@ with nicer looking defaults using Unicode.
 #+BEGIN_SRC emacs-lisp
   (use-package mastodon
     :ensure t
-    :config (setq mastodon-instance-url "https://vulpine.club/"
-                  mastodon-active-user "tilton"))
+    :config (setq mastodon-instance-url "https://mastodon.sdf.org"
+                  mastodon-active-user "twylo"))
 #+END_SRC
 
 ** Sly
