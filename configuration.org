@@ -1112,8 +1112,7 @@ additional features.
   (use-package magit
     :ensure t
     :init
-    (global-set-key (kbd "C-x g") 'magit-status)
-    (add-hook 'prog-mode-hook #'git-gutter-mode))
+    (global-set-key (kbd "C-x g") 'magit-status))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
