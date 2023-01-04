@@ -1075,6 +1075,15 @@ with nicer looking defaults using Unicode.
     (setq auth-sources '("~/.authinfo.gpg")))
 #+END_SRC
 
+** Tera Mode
+
+Tera is a templating language used by [[https://www.getzola.org/][Zola]].
+
+#+BEGIN_SRC emacs-lisp
+  (use-package tera-mode
+    :load-path "lisp/tera-mode")
+#+END_SRC
+
 ** Mastodon
 
 #+BEGIN_SRC emacs-lisp
