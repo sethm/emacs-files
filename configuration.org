@@ -721,18 +721,13 @@ often.
           modus-themes-completions '((matches . (extrabold))
                                      (selection . (semibold accented))
                                      (popup . (accented intense)))
-          modus-themes-mode-line '(accented borderless padded)))
+          modus-themes-mode-line '(accented borderless padded))
+    (load-theme 'modus-vivendi t))
 
   (use-package olivetti
     :ensure t
     :config
     (setq olivetti-body-width 90))
-
-  ;;; I can never decide whether I want light or dark...
-  ;;; -- vivendi is dark
-  (modus-themes-load-vivendi)
-  ;;; -- operandi is light
-  ;; (modus-themes-load-operandi)
 #+END_SRC
 
 ** Org Mode
@@ -1182,7 +1177,7 @@ the =snippets= directory.
      ("\\.md\\'" . markdown-mode)
      ("\\.markdown\\'" . markdown-mode))
     :init
-    (setq markdown-command "multimarkdown")
+    (setq markdown-command "markdown")
     :config
     (use-package edit-indirect
       :ensure t))
