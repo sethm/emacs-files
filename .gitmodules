@@ -1,6 +1,3 @@
-[submodule "packages/loomcom-blog"]
-	path = lisp/loomcom-blog
-	url = https://github.com/sethm/loomcom-blog.git
 [submodule "lisp/tera-mode"]
 	path = lisp/tera-mode
 	url = https://github.com/svavs/tera-mode.git
