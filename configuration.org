@@ -295,8 +295,8 @@ Then, I up some default values to make editing large directories
 happy.
 
 #+BEGIN_SRC emacs-lisp
-  (setq max-lisp-eval-depth 4000)   ; default is 400
-  (setq max-specpdl-size 5000)      ; default is 1000
+  (setq max-lisp-eval-depth 10000)   ; default is 400
+  (setq max-specpdl-size 10000)      ; default is 1000
 #+END_SRC
 
 ** Recent Files
@@ -1365,23 +1365,31 @@ lsp-mode.
     :commands lsp
     :config
     ;; Improve performance and enable features
-    (setq read-process-output-max (* 1024 1024)
-          gc-cons-threshold 100000000
-          lsp-rust-analyzer-proc-macro-enable t
-          lsp-rust-analyzer-cargo-watch-command "clippy"
-          lsp-rust-analyzer-cargo-load-out-dirs-from-check t
-          ;; These three make things significantly less flashy...
-          lsp-eldoc-render-all nil
-          lsp-eldoc-hook nil
-          lsp-idle-delay 0.5
-          lsp-eldoc-hook nil
-          lsp-enable-symbol-highlighting nil
-          lsp-signature-auto-activate nil
-          ;; Do not automatically include headers for me!
-          lsp-clients-clangd-args '("--header-insertion=never")
-          ;; Do not auto-format for me!
-          lsp-enable-indentation nil
-          lsp-enable-on-type-formatting nil))
+    (progn
+      (setq read-process-output-max (* 1024 1024)
+            gc-cons-threshold 100000000
+            vc-handled-backends '(Git) ;; Only support git
+            lsp-rust-analyzer-proc-macro-enable t
+            lsp-rust-analyzer-cargo-watch-command "clippy"
+            lsp-rust-analyzer-cargo-load-out-dirs-from-check t
+            ;; These three make things significantly less flashy...
+            lsp-eldoc-render-all nil
+            lsp-eldoc-hook nil
+            lsp-idle-delay 0.5
+            lsp-eldoc-hook nil
+            lsp-enable-symbol-highlighting nil
+            lsp-signature-auto-activate nil
+            ;; Do not automatically include headers for me!
+            lsp-clients-clangd-args '("--header-insertion=never")
+            ;; Do not auto-format for me!
+            lsp-enable-indentation nil
+            lsp-enable-on-type-formatting nil)
+
+      (lsp-register-client
+       (make-lsp-client :new-connection (lsp-tramp-connection "/usr/bin/clangd")
+                        :major-modes '(c-mode)
+                        :remote? t
+                        :server-id 'clangd-remote))))
 
   (use-package lsp-ui
     :ensure t
