@@ -1114,9 +1114,7 @@ additional features.
 
 #+BEGIN_SRC emacs-lisp
   (use-package magit
-    :ensure t
-    :init
-    (global-set-key (kbd "C-x g") 'magit-status))
+    :ensure t)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
