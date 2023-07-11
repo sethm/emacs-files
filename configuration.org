@@ -893,6 +893,15 @@ directory, rather than the default behavior of renaming them to
                       (lambda ()
                         (interactive)
                         (find-file "~/Nextcloud/agenda/agenda.org")))
+      (setq org-directory (expand-file-name "~/Nextcloud/Notes"))
+      (setq org-default-notes-file (concat org-directory "/notes.org")
+            org-capture-templates
+            '(("t" "Task" entry (file+olp+datetree "~/Nextcloud/Notes/tasks.org")
+               "* TODO %?\n%i" :empty-lines 1)
+              ("j" "Journal" entry (file+datetree "~/Nextcloud/Notes/journal.org")
+               "* %?\nAdded: %U\n%i" :empty-lines 1)
+              ("n" "Note" entry (file "~/Nextcloud/Notes/notes.org")
+               "* %^{Headline}\nAdded: %U\n\n%?" :empty-lines 1)))
       (setq org-habit-show-habits-only-for-today nil
             org-agenda-files (file-expand-wildcards "~/Nextcloud/agenda/*.org")
             org-default-notes-file "~/Nextcloud/agenda/agenda.org")))
@@ -940,20 +949,6 @@ of =C-c c=.
   (global-set-key (kbd "C-c c") 'org-capture)
 #+END_SRC
 
-I also set up a couple of notes files.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-directory (expand-file-name "~/Nextcloud/Notes"))
-  (setq org-default-notes-file (concat org-directory "/notes.org")
-        org-capture-templates
-        '(("t" "Task" entry (file+olp+datetree "~/Nextcloud/Notes/tasks.org")
-           "* TODO %?\n%i" :empty-lines 1)
-          ("j" "Journal" entry (file+datetree "~/Nextcloud/Notes/journal.org")
-           "* %?\nAdded: %U\n%i" :empty-lines 1)
-          ("n" "Note" entry (file "~/Nextcloud/Notes/notes.org")
-           "* %^{Headline}\nAdded: %U\n\n%?" :empty-lines 1)))
-#+END_SRC
-
 *** Org-Babel Language Integration
 
 I want to be able to support C, Emacs Lisp, shell, python, and
@@ -993,7 +988,7 @@ collapsed.
 
 #+BEGIN_SRC emacs-lisp
   (setq org-pretty-entities t
-        org-ellipsis "↴")
+        org-ellipsis " ↴")
 #+END_SRC
 
 ** Org Roam
@@ -1364,7 +1359,9 @@ lsp-mode.
     :config
     ;; Improve performance and enable features
     (progn
-      (setq read-process-output-max (* 1024 1024)
+      (setq vc-ignore-dir-regexp
+            (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp)
+            read-process-output-max (* 1024 1024)
             gc-cons-threshold 100000000
             vc-handled-backends '(Git) ;; Only support git
             lsp-rust-analyzer-proc-macro-enable t
