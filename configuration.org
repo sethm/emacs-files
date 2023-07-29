@@ -88,10 +88,12 @@ startup messages, the splash screen, tool bar, and tooltips.
   (setq warning-minimum-level :emergency
         inhibit-startup-message t
         inhibit-splash-screen t)
-  (tool-bar-mode -1)
-  (tooltip-mode -1)
-  (scroll-bar-mode -1)
   (menu-bar-mode -1)
+  (when window-system
+    (progn
+      (tool-bar-mode -1)
+      (tooltip-mode -1)
+      (scroll-bar-mode -1)))
 #+END_SRC
 
 ** Local lisp directory
