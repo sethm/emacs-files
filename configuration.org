@@ -19,13 +19,13 @@
 :CUSTOM_ID: introduction
 :END:
 
-This document contains my entire GNU Emacs configuration file in
-/Literate Programming/ style. Literate Programming strives to invert the
-normal programming paradigm; Instead of source code scattered with
-comments, Literate Programming encourages code to be written as a
-human readable document, in prose, with source code blocks embedded
-inside of it. The source code is later interpreted, while the human
-readable prose is ignored by the interpreter or compiler.
+This document contains my entire GNU Emacs configuration file in /Literate
+Programming/ style. Literate Programming strives to invert the normal
+programming paradigm; Instead of source code scattered with comments,
+Literate Programming encourages code to be written as a human readable
+document, in prose, with source code blocks embedded inside of it. The
+source code is later interpreted, while the human readable prose is
+ignored by the interpreter or compiler.
 
 The magic here is provided by =org-babel=, which provides a method for
 extracting and evaluating Emacs Lisp expressions inside an =org-mode=
@@ -140,7 +140,6 @@ I prefer to use ~ibuffer~ when listing buffers
 #+BEGIN_SRC emacs-lisp
   (global-set-key [remap list-buffers] 'ibuffer)
 #+END_SRC
-
 
 ** Long line improvements
 
@@ -601,7 +600,6 @@ Tabs are all wrong in assembly mode, so here's a fix.
                              (setq tab-stop-list (number-sequence 8 60 8))))
 #+END_SRC
 
-
 ** Line Numbers
 
 I like to see /(Line,Column)/ displayed in the modeline.
@@ -739,6 +737,27 @@ often.
     :ensure t
     :config
     (setq olivetti-body-width 90))
+#+END_SRC
+
+** Completion UI - Vertico
+
+I recently switched to Vertico for completion UI, which replaces Helm / Ivy.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package vertico
+    :ensure t
+    :init (vertico-mode))
+
+  (use-package savehist
+    :ensure t
+    :init (savehist-mode))
+
+  (use-package orderless
+    :ensure t
+    :init
+    (setq completion-styles '(orderless basic)
+          completion-category-defaults nil
+          completion-category-overrides '((file (styles partial-completion)))))
 #+END_SRC
 
 ** Org Mode
@@ -1129,12 +1148,12 @@ additional features.
 
 ** Git Integration
 
+Magit is essential, I can't live without it.
+
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :ensure t)
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp
   (use-package git-gutter
     :ensure t)
 #+END_SRC
@@ -1228,6 +1247,12 @@ is stolen verbatim from [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs
   (use-package elpy
     :ensure t
     :init (elpy-enable))
+
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (setq-default indent-tabs-mode nil)
+              (setq-default tab-width 4)
+              (setq-default py-indent-tabs-mode nil)))
 #+END_SRC
 
 ** Web Mode
@@ -1243,17 +1268,6 @@ is stolen verbatim from [[https://robert.kra.hn/posts/2021-02-07_rust-with-emacs
     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode)))
-#+END_SRC
-
-** Ivy
-
-Let's use Ivy for completion. See: [[https://github.com/abo-abo/swiper][https://github.com/abo-abo/swiper]]
-
-#+BEGIN_SRC emacs-lisp
-  (use-package ivy
-    :ensure t
-    :config
-    (ivy-mode 1))
 #+END_SRC
 
 ** SQL Indent Mode
@@ -1350,7 +1364,7 @@ Support for the Rust Programming Language.
     (setq-local buffer-save-without-query t))
 #+END_SRC
 
-** COMMENT CCLS
+** CCLS
 
 #+BEGIN_SRC emacs-lisp
   (use-package ccls
@@ -1465,7 +1479,6 @@ it's been checked out.
       :ensure nil
       :load-path "~/.emacs.d/lisp/loomcom-blog"))
 #+END_SRC
-
 
 * Email
 :PROPERTIES:
