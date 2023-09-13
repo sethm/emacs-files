@@ -1176,6 +1176,15 @@ This is just a bit of fun. See: [[https://github.com/alphapapa/snow.el]["Let It 
     :ensure t)
 #+END_SRC
 
+** Fireplace
+
+Sometimes you want a roaring fire.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package fireplace
+    :ensure t)
+#+END_SRC
+
 ** Snippets
 
 Snippets build in support for typing a few keys, pressing tab, and
