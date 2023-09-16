@@ -121,10 +121,11 @@ Next, stretch the cursor to fill a full glyph cell
   (setq-default x-stretch-cursor t)
 #+END_SRC
 
-I prefer to use ~ibuffer~ when listing buffers
+On macOS, I turn off ~--dired~, because ~ls~ does not support it there!
 
 #+BEGIN_SRC emacs-lisp
-  (global-set-key [remap list-buffers] 'ibuffer)
+  (when (string= system-type "darwin")
+    (setq dired-use-ls-dired nil))
 #+END_SRC
 
 I completely disable lockfiles, which I don't need, and which only cause
