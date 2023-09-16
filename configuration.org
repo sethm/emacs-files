@@ -1528,20 +1528,6 @@ lsp-mode.
     :ensure t)
 #+END_SRC
 
-** Loom Communications Blog
-
-I keep my website in ~org-mode~, and I have a long-running blog
-hosted there. Rather than clutter up this file with a lot of
-blogging stuff, I put it in a git submodule and load it here if
-it's been checked out.
-
-#+BEGIN_SRC emacs-lisp
-  (when (file-exists-p "~/.emacs.d/lisp/loomcom-blog")
-    (use-package loomcom-blog
-      :ensure nil
-      :load-path "~/.emacs.d/lisp/loomcom-blog"))
-#+END_SRC
-
 * Email
 :PROPERTIES:
 :CUSTOM_ID: email
