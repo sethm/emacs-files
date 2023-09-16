@@ -1,7 +1,7 @@
 #+AUTHOR: Seth Morabito
 #+EMAIL:  web@loomcom.com
 #+TITLE:  GNU Emacs Configuration File
-#+OPTIONS: toc:nil ':t
+#+OPTIONS: toc:nil ':nil
 #+STARTUP: showall
 
 * Table of Contents
@@ -12,7 +12,7 @@
 - [[#appearance][Appearance]]
 - [[#package-management][Package Management]]
 - [[#development][Development and Languages]]
-- [[#misc-hacks][Miscellaneous Hacks]]
+- [[#email][Email]]
 
 * Introduction
 :PROPERTIES:
@@ -83,12 +83,17 @@ messages, the splash screen, tool bar, and tooltips.
   (setq warning-minimum-level :emergency
         inhibit-startup-message t
         inhibit-splash-screen t)
-  (menu-bar-mode -1)
   (when window-system
     (progn
       (tool-bar-mode -1)
-      (tooltip-mode -1)
-      (scroll-bar-mode -1)))
+      (tooltip-mode -1)))
+#+END_SRC
+
+That said, I do often want a menu and a scroll bar, so those can stay on.
+
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode t)
+  (when (fboundp #'scroll-bar-mode) (scroll-bar-mode t))
 #+END_SRC
 
 ** Local lisp directory
@@ -121,7 +126,7 @@ Next, stretch the cursor to fill a full glyph cell
   (setq-default x-stretch-cursor t)
 #+END_SRC
 
-On macOS, I turn off ~--dired~, because ~ls~ does not support it there!
+On macOS, I turn off =--dired=, because =ls= does not support it there!
 
 #+BEGIN_SRC emacs-lisp
   (when (string= system-type "darwin")
@@ -389,8 +394,8 @@ So instead, I wrap in a lambda that ignores errors (Inspired by:
 
 ** A Resize Helper
 
-I like a standard editor size of 88 by 66 characters (If you know why,
-you win a cookie!)  This helper will set that size automatically.
+I like a standard editor size of 88 by 66 characters (If you know why, you
+win a cookie!)  This helper will set that size automatically.
 
 #+BEGIN_SRC emacs-lisp
   (defun set-frame-standard-size () (interactive)
@@ -436,23 +441,23 @@ changed on disk, automatically reload it.
   (global-auto-revert-mode t)
 #+END_SRC
 
-I'm really not smart sometimes, so I need emacs to warn me when I try
-to quit it.
+I'm really not smart sometimes, so I need emacs to warn me when I try to
+quit it.
 
 #+BEGIN_SRC emacs-lisp
   (setq confirm-kill-emacs 'yes-or-no-p)
 #+END_SRC
 
-Remote X11 seems to have problems with delete for me (mostly XQuartz,
-I believe), so I force erase to be backspace.
+Remote X11 seems to have problems with delete for me (mostly XQuartz, I
+believe), so I force erase to be backspace.
 
 #+BEGIN_SRC emacs-lisp
   (when (eq window-system 'x)
     (normal-erase-is-backspace-mode 1))
 #+END_SRC
 
-When functions are redefined with =defadvice=, a warning is
-emitted. This is annoying, so I disable these warnings.
+When functions are redefined with =defadvice=, a warning is emitted. This is
+annoying, so I disable these warnings.
 
 #+BEGIN_SRC emacs-lisp
   (setq ad-redefinition-action 'accept)
@@ -471,11 +476,10 @@ Tell Python mode to use Python 3
 
 ** Default Face
 
-Not all fonts are installed on all systems where I use Emacs. This
-code will iterate over a list of fonts, in order of my personal
-preference, and set the default face to the first one available. Of
-course, if Emacs is not running in a windowing system, this is
-ignored.
+Not all fonts are installed on all systems where I use Emacs. This code
+will iterate over a list of fonts, in order of my personal preference, and
+set the default face to the first one available. Of course, if Emacs is
+not running in a windowing system, this is ignored.
 
 #+BEGIN_SRC emacs-lisp
   (when window-system
@@ -814,6 +818,18 @@ which replaces Helm / Ivy.
 
 #+END_SRC
 
+** Git Integration
+
+Magit and git-gutter are both essential, I can't live without them.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t)
+
+  (use-package git-gutter
+    :ensure t)
+#+END_SRC
+
 ** Org Mode
 
 Next is =org-mode=, which I use constantly, day in and day out.
@@ -1139,7 +1155,7 @@ with nicer looking defaults using Unicode.
 
 ** Perspective
 
-~perspective.el~ is a tool that allows grouping of buffers into separate
+=perspective.el= is a tool that allows grouping of buffers into separate
 "perspectives", like workgroups in other editors.
 
 #+BEGIN_SRC emacs-lisp
@@ -1153,6 +1169,10 @@ with nicer looking defaults using Unicode.
 
 ** Support for Encrypted Authinfo
 
+Various workflows require accessing authentication credentials stored in
+an encrypted file named =~/.authinfo.gpg=. The =auth-source= package lets
+me get quick access to those credentials.
+
 #+BEGIN_SRC emacs-lisp
   (use-package auth-source
     :ensure t
@@ -1162,26 +1182,18 @@ with nicer looking defaults using Unicode.
 
 ** Tera Mode
 
-Tera is a templating language used by [[https://www.getzola.org/][Zola]].
+Tera is a templating language used by [[https://www.getzola.org/][Zola]], which I use for my website and
+blog. This mode helps with editing those templates.
 
 #+BEGIN_SRC emacs-lisp
   (use-package tera-mode
     :load-path "lisp/tera-mode")
 #+END_SRC
 
-** Mastodon
-
-#+BEGIN_SRC emacs-lisp
-  (use-package mastodon
-    :ensure t
-    :config (setq mastodon-instance-url "https://mastodon.sdf.org"
-                  mastodon-active-user "twylo"))
-#+END_SRC
-
 ** Sly
 
-Sly is a Common Lisp IDE that is a fork of SLIME, with some
-additional features.
+Sly is a Common Lisp IDE that is a fork of SLIME, with some additional
+features.
 
 #+BEGIN_SRC emacs-lisp
   (use-package sly
@@ -1195,26 +1207,17 @@ additional features.
 
 ** GraphViz (dot) Mode
 
+If you don't know GraphViz, you should. It's a very useful language for
+generating visual flowcharts and graphs.
+
 #+BEGIN_SRC emacs-lisp
   (use-package graphviz-dot-mode
     :ensure t)
 #+END_SRC
 
-** Git Integration
-
-Magit is essential, I can't live without it.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :ensure t)
-
-  (use-package git-gutter
-    :ensure t)
-#+END_SRC
-
 ** YAML
 
-YAML mode is useful for editing Docker files.
+YAML mode is useful for editing Docker files, among many other things.
 
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode
