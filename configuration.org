@@ -483,7 +483,8 @@ not running in a windowing system, this is ignored.
 
 #+BEGIN_SRC emacs-lisp
   (when window-system
-    (let* ((families '("Hack"
+    (let* ((families '("BlexMono Nerd Font Mono"
+                       "Hack"
                        "Roboto Mono"
                        "Input Mono"
                        "Inconsolata"
