@@ -117,6 +117,13 @@ around this with a single setting, which is configured below.
   (setq frame-resize-pixelwise t)
 #+END_SRC
 
+According to the manual:
+
+#+BEGIN_QUOTE
+This variable, when set to a non-nil value, in general allows resizing
+frames at pixel resolution, rather than in integral multiples of lines and
+columns.
+#+END_QUOTE
 
 * Behavior
 :PROPERTIES:
