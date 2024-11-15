@@ -106,6 +106,18 @@ this to my load path.
     (normal-top-level-add-subdirs-to-load-path))
 #+END_SRC
 
+** Working Around an Exciting Resize Bug in Wayland!
+
+I'm using Wayland a lot these days, and I've noticed that resizing my
+Emacs frames is /incredibly/ slow. Sometimes it just doesn't work at all, it
+just hangs. Anyway, some clever folks on Reddit figured out you can work
+around this with a single setting, which is configured below.
+
+#+BEGIN_SRC emacs-lisp
+  (setq frame-resize-pixelwise t)
+#+END_SRC
+
+
 * Behavior
 :PROPERTIES:
 :CUSTOM_ID: behavior
