@@ -1552,6 +1552,28 @@ lsp-mode.
     :ensure t)
 #+END_SRC
 
+** MisTTY
+
+[[https://github.com/szermatt/mistty][MisTTY]] is a terminal emulator package for Emacs that I'm giving a try. No
+idea if this will stick!
+
+#+BEGIN_SRC emacs-lisp
+  (use-package mistty
+    :ensure t
+    :bind (("C-c s" . mistty)
+
+           ;; bind here the shortcuts you'd like the
+           ;; shell to handle instead of Emacs.
+           :map mistty-prompt-map
+
+           ;; fish: directory history
+           ("M-<up>" . mistty-send-key)
+           ("M-<down>" . mistty-send-key)
+           ("M-<left>" . mistty-send-key)
+           ("M-<right>" . mistty-send-key)))
+#+END_SRC
+
+
 * Email
 :PROPERTIES:
 :CUSTOM_ID: email
